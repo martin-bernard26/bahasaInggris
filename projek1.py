@@ -88,7 +88,7 @@ def latar():
 </body>
 </html>
     '''
-    st.components.v1.html(koding1,height=2050)
+    st.components.v1.html(koding1,height=5000)
 
 
 
@@ -214,7 +214,7 @@ def tampilkan_materi1():
 </body>
 </html>
     '''
-    st.components.v1.html(koding2,height=2950)
+    st.components.v1.html(koding2,height=5000)
 def tampilkan_materi2():
     koding3='''
         <!DOCTYPE html>
@@ -532,7 +532,7 @@ def tampilkan_materi2():
 </body>
 </html>
     '''
-    st.components.v1.html(koding3,height=3000)
+    st.components.v1.html(koding3,height=5000)
 
 
 if st.session_state.tampilan1:
@@ -560,3 +560,4 @@ if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.rerun()
 
     
+
