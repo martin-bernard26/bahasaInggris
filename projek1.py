@@ -445,7 +445,7 @@ def tampilkan_materi2():
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-8">
         <div class="container mx-auto px-4 text-center">
-            <p>&copy; 2023 Statistik Penelitian R&D. All rights reserved.</p>
+            <p>&copy; 2025 Statistik Penelitian R&D. All rights reserved. (Martin Bernard)</p>
             <p class="mt-2 text-gray-400">Didesain untuk mahasiswa bahasa Inggris</p>
         </div>
     </footer>
@@ -560,5 +560,6 @@ if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.rerun()
 
     
+
 
 
