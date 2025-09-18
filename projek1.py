@@ -1,5 +1,7 @@
 import streamlit as st
-
+import numpy as np
+import pandas as pd
+from statistics import mean, median, mode, stdev, multimode
 
 
 if "tampilan1" not in st.session_state:
@@ -10,6 +12,10 @@ if "tampilan2" not in st.session_state:
 
 if "tampilan3" not in st.session_state:
     st.session_state.tampilan3 = True
+
+if "tampilan4" not in st.session_state:
+    st.session_state.tampilan4 = False
+
 
 def latar():
     koding1='''
@@ -88,7 +94,7 @@ def latar():
 </body>
 </html>
     '''
-    st.components.v1.html(koding1,height=5000)
+    st.components.v1.html(koding1,height=2050)
 
 
 
@@ -214,7 +220,7 @@ def tampilkan_materi1():
 </body>
 </html>
     '''
-    st.components.v1.html(koding2,height=7000)
+    st.components.v1.html(koding2,height=2950)
 def tampilkan_materi2():
     koding3='''
         <!DOCTYPE html>
@@ -445,7 +451,7 @@ def tampilkan_materi2():
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-8">
         <div class="container mx-auto px-4 text-center">
-            <p>&copy; 2025 Statistik Penelitian R&D. All rights reserved. (Martin Bernard)</p>
+            <p>&copy; 2023 Statistik Penelitian R&D. All rights reserved.</p>
             <p class="mt-2 text-gray-400">Didesain untuk mahasiswa bahasa Inggris</p>
         </div>
     </footer>
@@ -532,7 +538,89 @@ def tampilkan_materi2():
 </body>
 </html>
     '''
-    st.components.v1.html(koding3,height=7000)
+    st.components.v1.html(koding3,height=3000)
+
+def tampilkan_materi3():
+    # Judul Aplikasi
+    st.title("📊 Statistik Penelitian Interaktif")
+    st.write("Masukkan data penelitian untuk menghitung **Rata-rata, Median, Modus, dan Standar Deviasi**.")
+    # Input Data
+    data_input = st.text_area(
+        "Masukkan data (pisahkan dengan koma atau spasi):",
+        "70, 75, 80, 90, 85, 75, 80, 95, 100"
+    )
+
+    # Konversi input ke list angka
+    try:
+        # Hilangkan spasi lalu split dengan koma atau spasi
+        data = [float(x) for x in data_input.replace(",", " ").split()]
+    
+        if len(data) > 0:
+            df = pd.DataFrame(data, columns=["Nilai"])
+            st.dataframe(df, use_container_width=True)
+
+            # Hitung statistik
+            rata2 = mean(data)
+            med = median(data)
+            try:
+                mod = mode(data)  # Jika hanya 1 modus
+            except:
+                mod = multimode(data)  # Jika ada lebih dari 1 modus
+            std_dev = stdev(data)
+
+            # Tampilkan hasil
+            st.subheader("📌 Hasil Statistik:")
+            st.metric("Rata-rata (Mean)", f"{rata2:.2f}")
+            with st.expander("Penjelasan Rata-rata"):
+                st.markdown("<div style='text-align:center; font-family:broadway; background-color:yellow; color:black; font-size:25px'>Rata-rata Nilai</div>",unsafe_allow_html=True)
+                st.latex("\\bar{x}=\\frac{\\sum{x_{i}}}{n}")
+                st.markdown("<div style='text-align:center; font-family:broadway; background-color:cyan; color:black; font-size:20px; width:50%'>Jumlah semua Nilai</div>",unsafe_allow_html=True)
+                st.latex("\\sum{x_{i}}="+str(sum(data)))
+                st.markdown("<div style='text-align:center; font-family:broadway; background-color:cyan; color:black; font-size:20px; width:50%'>Banyak Siswa</div>",unsafe_allow_html=True)
+                st.latex("n="+str(len(data)))
+                st.markdown("<div style='text-align:center; font-family:broadway; background-color:cyan; color:black; font-size:20px; width:50%'>Hasil Rata-rata</div>",unsafe_allow_html=True)
+                st.latex("\\bar{x}=\\frac{\\sum{x_i}}{n}=\\frac{"+str(sum(data))+"}{"+str(len(data))+"}="+str(mean(data)))
+            st.metric("Median", f"{med:.2f}")
+            with st.expander("Penjelasan Median"):
+                st.markdown("<div style='text-align:center; font-family:broadway; background-color:yellow; color:black; font-size:25px; margin:10px'>Median</div>",unsafe_allow_html=True)
+                st.markdown("""<div style='text-align:center; font-family:broadway; background-color:cyan; color:black; font-size:20px; width:50%; margin:10px'>Mengurut Data</div>
+                <div>Cari data tengah</div>
+                """,unsafe_allow_html=True)
+                df1 = pd.DataFrame(sorted(data),columns=['Nilai'])
+                st.dataframe(df1,use_container_width=True)
+                st.markdown("""<div style='text-align:center; font-family:broadway; background-color:cyan; color:black; font-size:20px; width:50%; margin:10px'>Urutan Data Tengah</div>
+                <div>Cari data tengah</div>
+                """,unsafe_allow_html=True)
+                st.write("Jumlah Ganjil")
+                st.latex("i=\\frac{n+1}{2}\\\\u_{t}=u_{\\frac{n+1}{2}}")
+                st.write("Jumlah Genap")
+                st.latex("i_{1}=\\frac{n}{2}\\\\i_{2}=\\frac{\\frac{n}{2}+1}{2}\\\\u_{t}=\\frac{u_{i_{1}}+u_{i_{2}}}{2}")
+                nilai=0
+                if len(data)%2==0:
+                    st.write("jumlah Data Genap")
+                    st.latex("u_[t}="+str(med))
+                else:
+                    st.write("jumlah Data Ganjil")
+                    st.latex("u_{t}="+str(med))
+                st.markdown("""<div style='text-align:center; font-family:broadway; background-color:cyan; color:black; font-size:20px; width:50%; margin:10px'>Data Media</div>
+                <div>Cari data tengah</div>
+                """,unsafe_allow_html=True)
+            st.metric("**Modus:**", str(mod))
+            with st.expander("Penjelasan Modus"):
+                st.markdown("<div style='text-align:center; font-family:broadway; background-color:yellow; color:black; font-size:25px; margin:10px'>Modus</div>",unsafe_allow_html=True)
+                data1 = set(data)
+                data2 = {}
+                for i in data1:
+                    data2[int(i)]=data.count(i)
+                st.write(data2)
+            st.metric("Standar Deviasi", f"{std_dev:.2f}")
+
+            # Visualisasi
+            st.subheader("📈 Visualisasi Data")
+            st.bar_chart(df)
+
+    except Exception as e:
+        st.error("⚠️ Pastikan data hanya berisi angka yang dipisahkan dengan koma atau spasi.")
 
 
 if st.session_state.tampilan1:
@@ -541,25 +629,34 @@ if st.session_state.tampilan2:
     tampilkan_materi2()
 if st.session_state.tampilan3:
     latar()
+if st.session_state.tampilan4:
+    tampilkan_materi3()
 
 
 if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan1=False
     st.session_state.tampilan2=False
     st.session_state.tampilan3 = True
+    st.session_state.tampilan4 = False
     st.rerun()
 if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan1=True
     st.session_state.tampilan2=False
     st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
     st.rerun()
 if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan1=False
     st.session_state.tampilan2=True
     st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
     st.rerun()
-
+if st.sidebar.button("Statistik Deskriptif"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = True
+    st.rerun()
     
 
-
-
+    
