@@ -2,6 +2,8 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 from statistics import mean, median, mode, stdev, multimode
+import matplotlib.pyplot as plt
+from scipy.stats import norm
 
 
 if "tampilan1" not in st.session_state:
@@ -15,6 +17,12 @@ if "tampilan3" not in st.session_state:
 
 if "tampilan4" not in st.session_state:
     st.session_state.tampilan4 = False
+
+if "tampilan5" not in st.session_state:
+    st.session_state.tampilan5 = False
+
+if "tampilan6" not in st.session_state:
+    st.session_state.tampilan6 = False
 
 
 def latar():
@@ -622,6 +630,96 @@ def tampilkan_materi3():
     except Exception as e:
         st.error("⚠️ Pastikan data hanya berisi angka yang dipisahkan dengan koma atau spasi.")
 
+def tampilkan_materi4():
+    st.title("Distribusi Normal dengan Interval Standar Deviasi")
+
+    # Input interaktif
+    mu = st.number_input("Rata-rata (μ)", value=0.0)
+    sigma = st.number_input("Standar Deviasi (σ)", value=1.0, min_value=0.1)
+    max_dev = st.slider("Jumlah Batas Standar Deviasi", 1, 10, 5)
+
+    # Data distribusi normal
+    x = np.linspace(mu - (max_dev+1)*sigma, mu + (max_dev+1)*sigma, 1000)
+    y = norm.pdf(x, mu, sigma)
+
+    # Plot
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.plot(x, y, label="Distribusi Normal")
+
+    
+    for i in range(1, max_dev + 1):
+        ax.axvline(mu + i*sigma, color="blue", linestyle="--", linewidth=1)
+        ax.axvline(mu - i*sigma, color="blue", linestyle="--", linewidth=1)
+        ax.text(mu + i*sigma, max(y)*0.9, f"+{i}σ", rotation=90, va="bottom", ha="center", fontsize=8)
+        ax.text(mu - i*sigma, max(y)*0.9, f"-{i}σ", rotation=90, va="bottom", ha="center", fontsize=8)
+
+    # Garis rata-rata
+    ax.axvline(mu, color="black", linestyle="--", linewidth=2, label=f"μ = {mu}")
+
+    ax.set_title("Distribusi Normal dan Interval Standar Deviasi")
+    ax.set_xlabel("X")
+    ax.set_ylabel("Probabilitas")
+    ax.legend()
+    st.pyplot(fig)
+    
+    st.subheader("Batas-batas Interval Standar Deviasi")
+    for k in range(1, max_dev + 1):
+        st.write(f"±{k}σ: {mu - k*sigma:.2f}  s.d.  {mu + k*sigma:.2f}")
+    st.markdown("""
+    **Catatan:**  
+      - Area di bawah kurva untuk setiap ±σ kira-kira:
+      - ±1σ ≈ 68%
+      - ±2σ ≈ 95%
+      - ±3σ ≈ 99.7%  
+    """)
+def tampilkan_materi5():
+    st.title("Uji Z dengan Visualisasi")
+
+    # Input pengguna
+    mu_pop = st.number_input("Rata-rata Populasi (μ0)", value=50.0)
+    sigma_pop = st.number_input("Standar Deviasi Populasi (σ)", value=10.0)
+    n = st.number_input("Ukuran Sampel (n)", value=30, min_value=1)
+    mean_sample = st.number_input("Rata-rata Sampel (x̄)", value=52.0)
+    alpha = st.number_input("Tingkat Signifikansi (α)", value=0.05, min_value=0.001, max_value=0.5, step=0.01)
+
+    # Hitung Z
+    z_hit = (mean_sample - mu_pop) / (sigma_pop / np.sqrt(n))
+    z_kritis = norm.ppf(1 - alpha/2)  # uji 2 sisi
+
+    st.write(f"**Z hitung = {z_hit:.3f}**")
+    st.write(f"**Z kritis = ±{z_kritis:.3f}**")
+
+    # Buat grafik distribusi normal
+    x = np.linspace(-4, 4, 500)
+    y = norm.pdf(x, 0, 1)
+
+    fig, ax = plt.subplots()
+
+    # Plot distribusi normal standar
+    ax.plot(x, y, label="Distribusi Normal Standar")
+
+    # Area kritis (dua sisi)
+    x_crit_left = np.linspace(-4, -z_kritis, 200)
+    x_crit_right = np.linspace(z_kritis, 4, 200)
+    ax.fill_between(x_crit_left, 0, norm.pdf(x_crit_left), color="red", alpha=0.4, label="Daerah Kritis (α/2)")
+    ax.fill_between(x_crit_right, 0, norm.pdf(x_crit_right), color="red", alpha=0.4)
+
+    # Tandai Z hitung
+    ax.axvline(z_hit, color="blue", linestyle="--", linewidth=2, label=f"Z hitung = {z_hit:.2f}")
+
+    # Tambahan garis kritis
+    ax.axvline(-z_kritis, color="black", linestyle="--", label=f"-Z kritis = {-z_kritis:.2f}")
+    ax.axvline(z_kritis, color="black", linestyle="--", label=f"Z kritis = {z_kritis:.2f}")
+
+    ax.legend()
+    ax.set_title("Uji Z - Visualisasi Daerah Kritis")
+    st.pyplot(fig)
+
+    # Keputusan
+    if abs(z_hit) > z_kritis:
+        st.error("Tolak H0: Ada perbedaan signifikan.")
+    else:
+        st.success("Gagal Tolak H0: Tidak ada perbedaan signifikan.")
 
 if st.session_state.tampilan1:
     tampilkan_materi1()
@@ -631,6 +729,10 @@ if st.session_state.tampilan3:
     latar()
 if st.session_state.tampilan4:
     tampilkan_materi3()
+if st.session_state.tampilan5:
+    tampilkan_materi4()
+if st.session_state.tampilan6:
+    tampilkan_materi5()
 
 
 if st.sidebar.button("Pengenalan"):
@@ -638,24 +740,48 @@ if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan2=False
     st.session_state.tampilan3 = True
     st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
     st.rerun()
 if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan1=True
     st.session_state.tampilan2=False
     st.session_state.tampilan3 = False
     st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
     st.rerun()
 if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan1=False
     st.session_state.tampilan2=True
     st.session_state.tampilan3 = False
     st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
     st.rerun()
 if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan1=False
     st.session_state.tampilan2=False
     st.session_state.tampilan3 = False
     st.session_state.tampilan4 = True
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.rerun()
+if st.sidebar.button("Grafik Z"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = True
+    st.session_state.tampilan6 = False
+    st.rerun()
+if st.sidebar.button("Grafik Uji Z"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = True
     st.rerun()
     
 
