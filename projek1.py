@@ -4,7 +4,15 @@ import pandas as pd
 from statistics import mean, median, mode, stdev, multimode
 import matplotlib.pyplot as plt
 from scipy.stats import norm
+import requests
+import base64
 
+st.set_page_config(
+    page_title="Aplikasi Upload ke Google Drive",
+    page_icon="📤",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 if "tampilan1" not in st.session_state:
     st.session_state.tampilan1 = False
@@ -24,7 +32,12 @@ if "tampilan5" not in st.session_state:
 if "tampilan6" not in st.session_state:
     st.session_state.tampilan6 = False
 
-
+if "tampilan7" not in st.session_state:
+    st.session_state.tampilan7 = False
+    
+if "tampilan8" not in st.session_state:
+    st.session_state.tampilan8 = False
+    
 def latar():
     koding1='''
     <!DOCTYPE html>
@@ -646,7 +659,7 @@ def tampilkan_materi4():
     fig, ax = plt.subplots(figsize=(8, 5))
     ax.plot(x, y, label="Distribusi Normal")
 
-    
+    interval = st.number_input("")
     for i in range(1, max_dev + 1):
         ax.axvline(mu + i*sigma, color="blue", linestyle="--", linewidth=1)
         ax.axvline(mu - i*sigma, color="blue", linestyle="--", linewidth=1)
@@ -663,8 +676,16 @@ def tampilkan_materi4():
     st.pyplot(fig)
     
     st.subheader("Batas-batas Interval Standar Deviasi")
+    kump_interval=[mu-i*sigma for i in range(-max_dev,max_dev+1)]
     for k in range(1, max_dev + 1):
         st.write(f"±{k}σ: {mu - k*sigma:.2f}  s.d.  {mu + k*sigma:.2f}")
+    st.header("Melihat interval nilai")
+    try:
+        for i in range(len(kump_interval)):
+            st.write(f"Kelompok {i}")
+            st.write(f'{kump_interval[i]} - {kump_interval[i+1]}')
+    except:
+        pass
     st.markdown("""
     **Catatan:**  
       - Area di bawah kurva untuk setiap ±σ kira-kira:
@@ -720,6 +741,75 @@ def tampilkan_materi5():
         st.error("Tolak H0: Ada perbedaan signifikan.")
     else:
         st.success("Gagal Tolak H0: Tidak ada perbedaan signifikan.")
+#===========Tugas============
+def tampilkan_tugas():
+    GOOGLE_FORM_URL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSevmMv-SgWK8OoG-WBt04PAJqttBBIu_iavDfus6ABC4MzWgA/formResponse"
+    ENTRY_IDS = {
+    "nama": "entry.75935386",
+    "nim":"entry.1727447679",
+    "deskripsi": "entry.1051471251"
+    }
+   #  KONFIGURASI GOOGLE APPS SCRIPT UNTUK UPLOAD FILE ===
+    UPLOAD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCnwMFDRhKEy5h7KRaAHshuQ1JuGBYXwtXmJEVEc3TLSZu7vBvs3idUJImMjTqkOoM/exec"
+
+   # TAMPILAN STREAMLIT ===
+    st.title("📤 Kirim Data & File ke Google Sheet dan Drive (Tanpa API)")
+
+    nama = st.text_input("Nama Lengkap")
+    nim = st.text_input("NIM")
+    deskripsi = st.text_area("Deskripsi / Keterangan Tugas ke berapa")
+    uploaded_file = st.file_uploader("Unggah File", type=["pdf", "jpg", "png", "docx"])
+
+    if st.button("Kirim Data"):
+        if nama and deskripsi:
+            file_url = None
+
+            # --- Upload File ke Google Drive ---
+            if uploaded_file is not None:
+                try:
+                    # kirim file sebagai bytes biasa, bukan multipart
+                    encoded_file = base64.b64encode(uploaded_file.getvalue()).decode('utf-8')
+                    response_upload = requests.post(
+                        UPLOAD_SCRIPT_URL,
+                        data=encoded_file,
+                        params={
+                            "filename": uploaded_file.name
+                        }
+                    )
+
+                    if response_upload.status_code == 200 and "Error" not in response_upload.text:
+                        file_url = response_upload.text.strip()
+                        st.success(f"📎 File berhasil diupload ke Drive: [Lihat File]({file_url})")
+                    else:
+                        st.warning(f"⚠️ Upload gagal: {response_upload.text}")
+
+                except Exception as e:
+                    st.error(f"❌ Gagal upload file: {e}")
+
+            # --- Kirim data teks ke Google Form ---
+            data = {
+                ENTRY_IDS["nama"]: nama,
+                ENTRY_IDS["nim"]:nim,
+                ENTRY_IDS["deskripsi"]: deskripsi,
+            }
+            if file_url:
+                data["entry.1605146254"] = file_url  # tambahkan kolom link file di form
+
+            response = requests.post(GOOGLE_FORM_URL, data=data)
+            if response.status_code == 200:
+                st.success("✅ Data berhasil dikirim ke Google Sheet!")
+            else:
+                st.warning(f"⚠️ Gagal kirim data ke Sheet! Kode: {response.status_code}")
+        else:
+            st.error("Mohon isi semua kolom teks sebelum mengirim.")
+
+#==========Akhir Tugas++++++++
+#==========Latihan1==========
+def tampilkan_latihan1():
+    st.markdown("""
+    <iframe src="https://martin123-oke.github.io/LatianUjiZ/latihan_distribusi_Z.html" style="width:100%; height:3000px;"></iframe>
+    """,unsafe_allow_html=True)
+#========Akhir Latihan1=========
 
 if st.session_state.tampilan1:
     tampilkan_materi1()
@@ -733,8 +823,21 @@ if st.session_state.tampilan5:
     tampilkan_materi4()
 if st.session_state.tampilan6:
     tampilkan_materi5()
+if st.session_state.tampilan7:
+    tampilkan_tugas()
+if st.session_state.tampilan8:
+    tampilkan_latihan1()
 
-
+if st.sidebar.button("Masukan Tugas"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = True
+    st.session_state.tampilan8 = False
+    st.rerun()
 if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan1=False
     st.session_state.tampilan2=False
@@ -742,6 +845,8 @@ if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan4 = False
     st.session_state.tampilan5 = False
     st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
     st.rerun()
 if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan1=True
@@ -750,6 +855,8 @@ if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan4 = False
     st.session_state.tampilan5 = False
     st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
     st.rerun()
 if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan1=False
@@ -758,6 +865,8 @@ if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan4 = False
     st.session_state.tampilan5 = False
     st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
     st.rerun()
 if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan1=False
@@ -766,6 +875,8 @@ if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan4 = True
     st.session_state.tampilan5 = False
     st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
     st.rerun()
 if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan1=False
@@ -774,6 +885,8 @@ if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan4 = False
     st.session_state.tampilan5 = True
     st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
     st.rerun()
 if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan1=False
@@ -782,6 +895,18 @@ if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan4 = False
     st.session_state.tampilan5 = False
     st.session_state.tampilan6 = True
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.rerun()
+if st.sidebar.button("Latihan Uji Z"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = True
     st.rerun()
     
 
