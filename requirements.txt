@@ -4,5 +4,4 @@ pandas
 statistics
 matplotlib
 scipy
-requests
-base64
+
