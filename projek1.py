@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import norm
 import requests
 import base64
+import math
 
 st.set_page_config(
     page_title="Aplikasi Upload ke Google Drive",
@@ -37,6 +38,12 @@ if "tampilan7" not in st.session_state:
     
 if "tampilan8" not in st.session_state:
     st.session_state.tampilan8 = False
+
+if "tampilan9" not in st.session_state:
+    st.session_state.tampilan9 = False
+
+if "kontrol" not in st.session_state:
+    st.session_state.kontrol = True
     
 def latar():
     koding1='''
@@ -242,6 +249,7 @@ def tampilkan_materi1():
 </html>
     '''
     st.components.v1.html(koding2,height=2950)
+    
 def tampilkan_materi2():
     koding3='''
         <!DOCTYPE html>
@@ -693,6 +701,7 @@ def tampilkan_materi4():
       - ±2σ ≈ 95%
       - ±3σ ≈ 99.7%  
     """)
+    
 def tampilkan_materi5():
     st.title("Uji Z dengan Visualisasi")
 
@@ -763,7 +772,7 @@ def tampilkan_tugas():
     if st.button("Kirim Data"):
         if nama and deskripsi:
             file_url = None
-
+            st.session_state.kontrol = False
             # --- Upload File ke Google Drive ---
             if uploaded_file is not None:
                 try:
@@ -798,6 +807,7 @@ def tampilkan_tugas():
             response = requests.post(GOOGLE_FORM_URL, data=data)
             if response.status_code == 200:
                 st.success("✅ Data berhasil dikirim ke Google Sheet!")
+                st.session_state.kontrol = True
             else:
                 st.warning(f"⚠️ Gagal kirim data ke Sheet! Kode: {response.status_code}")
         else:
@@ -810,6 +820,232 @@ def tampilkan_latihan1():
     <iframe src="https://martin123-oke.github.io/LatianUjiZ/latihan_distribusi_Z.html" style="width:100%; height:3000px;"></iframe>
     """,unsafe_allow_html=True)
 #========Akhir Latihan1=========
+#==========Lanjutkan Materi 6=====
+def tampilkan_materi6():
+    halaman1 = st.tabs(['Pendahuluan','Contoh','Grafik','Latihan'])
+    with halaman1[0]:
+        st.markdown('''
+        <iframe src="https://martin123-oke.github.io/LatianUjiZ/UjiHipotesisZ.html" style="width:100%; height:3000px;"></iframe>
+        ''',unsafe_allow_html=True)
+    with halaman1[1]:
+        with st.expander("📘 Materi: Konsep Dasar Uji Z"):
+            st.markdown("""
+            ### 🔹 Pengertian
+            Uji Z digunakan untuk **menguji hipotesis tentang rata-rata populasi** jika:
+            - Standar deviasi populasi (σ) diketahui, dan
+            - Ukuran sampel (n) cukup besar (biasanya n ≥ 30).
+
+            ### 🔹 Rumus Statistik Uji Z
+            $$
+            Z = \\frac{\\bar{X} - \\mu_0}{\\frac{\\sigma}{\\sqrt{n}}}
+            $$
+            di mana:
+            - $ \\bar{X} $: rata-rata sampel  
+            - $ \\mu_0 $: rata-rata populasi (hipotesis nol)  
+            - $ \\sigma $: standar deviasi populasi  
+            - $ n $: jumlah sampel  
+
+            ### 🔹 Langkah-langkah Uji Hipotesis
+            1. **Tentukan hipotesis**
+                - H₀ : μ = μ₀  
+                - H₁ : μ ≠ μ₀ (dua sisi) atau μ > μ₀ / μ < μ₀ (satu sisi)
+            2. **Tentukan taraf signifikansi (α)**
+            3. **Hitung nilai Z hitung**
+            4. **Bandingkan dengan Z tabel**
+            5. **Buat keputusan**
+                - Tolak H₀ jika |Z hitung| > Z tabel (dua sisi)  
+                - Tolak H₀ jika Z hitung > Z tabel (kanan) atau Z hitung < -Z tabel (kiri)
+            """)
+
+        # ==============================
+        # Input Data Uji Z
+        # ==============================
+        st.subheader("🔢 Input Data Uji Z")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            x_bar = st.number_input("Rata-rata sampel (x̄)", value=50.0)
+            mu0 = st.number_input("Rata-rata populasi (μ₀)", value=45.0)
+            sigma = st.number_input("Standar deviasi populasi (σ)", value=10.0)
+        with col2:
+            n = st.number_input("Jumlah sampel (n)", min_value=1, value=30)
+            alpha = st.selectbox("Taraf signifikansi (α)", [0.10, 0.05, 0.01])
+            jenis_uji = st.radio("Jenis Uji", ["Dua sisi", "Satu sisi kanan", "Satu sisi kiri"])
+
+        # ==============================
+        # Perhitungan Uji Z
+        # ==============================
+        if st.button("🔍 Hitung Uji Z"):
+            # Hitung Z hitung
+            z_hitung = (x_bar - mu0) / (sigma / math.sqrt(n))
+
+            # Nilai kritis (Z tabel)
+            if jenis_uji == "Dua sisi":
+                z_tabel = norm.ppf(1 - alpha / 2)
+                keputusan = "Tolak H₀" if abs(z_hitung) > z_tabel else "Gagal tolak H₀"
+            elif jenis_uji == "Satu sisi kanan":
+                z_tabel = norm.ppf(1 - alpha)
+                keputusan = "Tolak H₀" if z_hitung > z_tabel else "Gagal tolak H₀"
+            else:  # kiri
+                z_tabel = norm.ppf(alpha)
+                keputusan = "Tolak H₀" if z_hitung < z_tabel else "Gagal tolak H₀"
+
+            # ==============================
+            # Hasil Analisis
+            # ==============================
+            st.markdown("---")
+            st.subheader("📈 Hasil Analisis Uji Z")
+            st.metric(label="Z Hitung", value=f"{z_hitung:.3f}")
+            st.metric(label="Z Tabel", value=f"{z_tabel:.3f}")
+            st.success(f"**Keputusan:** {keputusan}")
+
+            # ==============================
+            # Interpretasi
+            # ==============================
+            if keputusan == "Tolak H₀":
+                st.markdown(f"✅ Karena kriteria uji terpenuhi, maka **H₀ ditolak**. Artinya terdapat cukup bukti bahwa rata-rata populasi **berbeda atau lebih besar/kecil dari μ₀** tergantung jenis uji.")
+            else:
+                st.markdown(f"ℹ️ Karena kriteria uji tidak terpenuhi, maka **tidak ada bukti cukup untuk menolak H₀**. Rata-rata populasi dianggap sama dengan μ₀.")
+
+        # ==============================
+        # Catatan Tambahan
+        # ==============================
+        with st.expander("🧠 Contoh Kasus"):
+            st.markdown("""
+            **Contoh Soal:**  
+            Sebuah perusahaan ingin mengetahui apakah rata-rata berat produk berbeda dari 45 gram.  
+            Diketahui σ = 10, n = 30, dan hasil pengamatan sampel menunjukkan rata-rata = 50 gram.  
+            Uji dengan α = 0.05 (dua sisi).  
+
+            **Hasil:**  
+            - Z hitung = (50 - 45) / (10 / √30) = 2.738  
+            - Z tabel = 1.96  
+            Karena |2.738| > 1.96 → **Tolak H₀**, terdapat bukti bahwa rata-rata berat produk ≠ 45 gram.
+            """)
+        
+        st.markdown("---")
+        st.caption("Dibuat Oleh Martin Bernard")
+    with halaman1[2]:
+        with st.expander("📘 Penjelasan Singkat"):
+            st.markdown("""
+                ### 🔹 Apa itu Uji Z?
+                Uji Z digunakan untuk menguji hipotesis tentang rata-rata populasi saat standar deviasi populasi (σ) diketahui.
+
+                Rumus:
+                $$
+                Z = \\frac{\\bar{X} - \\mu_0}{\\sigma / \\sqrt{n}}
+                $$
+                """)
+
+        # ==============================
+        # Input Data
+        # ==============================
+        st.subheader("🔢 Input Data")
+        col1, col2 = st.columns(2)
+        with col1:
+            x_bar = st.number_input("Rata-rata1 sampel (x̄)", value=50.0)
+            mu0 = st.number_input("Rata-rata1 populasi (μ₀)", value=45.0)
+            sigma = st.number_input("Standar1 deviasi populasi (σ)", value=10.0)
+        with col2:
+            n = st.number_input("Jumlah sampel1 (n)", min_value=1, value=30)
+            alpha = st.selectbox("Taraf signifikansi1 (α)", [0.10, 0.05, 0.01])
+            jenis_uji = st.radio("Jenis Uji1", ["Dua sisi", "Satu sisi kanan", "Satu sisi kiri"])
+
+        # ==============================
+        # Hitung Nilai Z
+        # ==============================
+        if st.button("📈 Tampilkan Grafik Uji Z"):
+            # Hitung nilai Z hitung
+            z_hitung = (x_bar - mu0) / (sigma / math.sqrt(n))
+
+            # Rentang Z
+            z_values = np.linspace(-4, 4, 1000)
+            y_values = norm.pdf(z_values, 0, 1)
+
+            # ==============================
+            # Menentukan Z Tabel dan Area
+            # ==============================
+            if jenis_uji == "Dua sisi":
+                z_tabel = norm.ppf(1 - alpha / 2)
+                left_critical = -z_tabel
+                right_critical = z_tabel
+                keputusan = "Tolak H₀" if abs(z_hitung) > z_tabel else "Gagal tolak H₀"
+            elif jenis_uji == "Satu sisi kanan":
+                z_tabel = norm.ppf(1 - alpha)
+                left_critical = None
+                right_critical = z_tabel
+                keputusan = "Tolak H₀" if z_hitung > z_tabel else "Gagal tolak H₀"
+            else:  # kiri
+                z_tabel = norm.ppf(alpha)
+                left_critical = z_tabel
+                right_critical = None
+                keputusan = "Tolak H₀" if z_hitung < z_tabel else "Gagal tolak H₀"
+
+            # ==============================
+            # Plot Kurva Distribusi Z
+            # ==============================
+            fig, ax = plt.subplots(figsize=(8, 4))
+            ax.plot(z_values, y_values, color="blue", linewidth=2)
+
+            # Arsiran area kritis
+            if jenis_uji == "Dua sisi":
+                ax.fill_between(z_values, 0, y_values, where=(z_values <= left_critical), color='red', alpha=0.3)
+                ax.fill_between(z_values, 0, y_values, where=(z_values >= right_critical), color='red', alpha=0.3)
+            elif jenis_uji == "Satu sisi kanan":
+                ax.fill_between(z_values, 0, y_values, where=(z_values >= right_critical), color='red', alpha=0.3)
+            else:
+                ax.fill_between(z_values, 0, y_values, where=(z_values <= left_critical), color='red', alpha=0.3)
+
+            # Garis vertikal untuk Z hitung
+            ax.axvline(z_hitung, color='green', linestyle='--', linewidth=2, label=f"Z Hitung = {z_hitung:.2f}")
+
+            # Garis vertikal untuk batas kritis
+            if left_critical is not None:
+                ax.axvline(left_critical, color='red', linestyle=':', label=f"Z Kritis (kiri) = {left_critical:.2f}")
+            if right_critical is not None:
+                ax.axvline(right_critical, color='red', linestyle=':', label=f"Z Kritis (kanan) = {right_critical:.2f}")
+
+            # Dekorasi grafik
+            ax.set_title("Distribusi Normal Standar (Z)", fontsize=14)
+            ax.set_xlabel("Nilai Z")
+            ax.set_ylabel("Probabilitas")
+            ax.legend()
+            ax.grid(alpha=0.2)
+
+            # Tampilkan grafik di Streamlit
+            st.pyplot(fig)
+
+            # ==============================
+            # Tampilkan Hasil Perhitungan
+            # ==============================
+            st.markdown("---")
+            st.subheader("📊 Hasil Uji Z")
+            st.metric(label="Z Hitung", value=f"{z_hitung:.3f}")
+            st.metric(label="Z Tabel", value=f"{z_tabel:.3f}")
+            st.success(f"**Keputusan:** {keputusan}")
+
+            if keputusan == "Tolak H₀":
+                st.markdown("✅ Hasil menunjukkan bahwa **hipotesis nol ditolak**. Ada cukup bukti bahwa rata-rata populasi berbeda atau lebih besar/kecil dari μ₀.")
+            else:
+                st.markdown("ℹ️ Hasil menunjukkan bahwa **tidak ada bukti cukup untuk menolak H₀**. Rata-rata populasi dianggap sama dengan μ₀.")
+
+        # ==============================
+        # Catatan Tambahan
+        # ==============================
+        with st.expander("🧠 Contoh Interpretasi"):
+            st.markdown("""
+            **Contoh:**  
+            Diketahui μ₀ = 45, σ = 10, n = 30, x̄ = 50, α = 0.05 (dua sisi).  
+            Hasil menunjukkan Z hitung = 2.738 dan Z tabel = 1.96 → **|2.738| > 1.96 → Tolak H₀**.  
+            Artinya, terdapat perbedaan signifikan antara rata-rata sampel dan populasi.
+            """)
+    with halaman1[3]:
+        st.markdown('''
+        <iframe src="https://martin123-oke.github.io/LatianUjiZ/LatihanUjiZ.html" style="width:100%; height:3000px;"></iframe>
+        ''',unsafe_allow_html=True)
+
+
+#================================
 
 if st.session_state.tampilan1:
     tampilkan_materi1()
@@ -827,7 +1063,9 @@ if st.session_state.tampilan7:
     tampilkan_tugas()
 if st.session_state.tampilan8:
     tampilkan_latihan1()
-
+if st.session_state.tampilan9:
+    tampilkan_materi6()
+#======================================
 if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan1=False
     st.session_state.tampilan2=False
@@ -837,6 +1075,7 @@ if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan6 = False
     st.session_state.tampilan7 = True
     st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
     st.rerun()
 if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan1=False
@@ -847,6 +1086,7 @@ if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan6 = False
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
     st.rerun()
 if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan1=True
@@ -857,6 +1097,7 @@ if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan6 = False
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
     st.rerun()
 if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan1=False
@@ -867,6 +1108,8 @@ if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan6 = False
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan9 = False
     st.rerun()
 if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan1=False
@@ -877,6 +1120,7 @@ if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan6 = False
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
     st.rerun()
 if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan1=False
@@ -887,6 +1131,7 @@ if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan6 = False
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
     st.rerun()
 if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan1=False
@@ -897,6 +1142,7 @@ if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan6 = True
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
     st.rerun()
 if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan1=False
@@ -907,7 +1153,19 @@ if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan6 = False
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = True
+    st.session_state.tampilan9 = False
     st.rerun()
-    
+if st.sidebar.button("Uji Hipotesis"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = True
+    st.rerun()
+
 
     
