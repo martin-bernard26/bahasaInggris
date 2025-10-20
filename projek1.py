@@ -8,6 +8,12 @@ import requests
 import base64
 import math
 
+import seaborn as sns
+from scipy import stats
+from scipy.stats import shapiro, normaltest, anderson, kstest
+import plotly.express as px
+import plotly.graph_objects as go
+
 st.set_page_config(
     page_title="Aplikasi Upload ke Google Drive",
     page_icon="📤",
@@ -41,6 +47,9 @@ if "tampilan8" not in st.session_state:
 
 if "tampilan9" not in st.session_state:
     st.session_state.tampilan9 = False
+
+if "tampilan10" not in st.session_state:
+    st.session_state.tampilan10 = False
 
 if "kontrol" not in st.session_state:
     st.session_state.kontrol = True
@@ -1044,7 +1053,1325 @@ def tampilkan_materi6():
         <iframe src="https://martin123-oke.github.io/LatianUjiZ/LatihanUjiZ.html" style="width:100%; height:3000px;"></iframe>
         ''',unsafe_allow_html=True)
 
+def tampilkan_materi7():
+    pilihan = st.tabs(['Pengertian','Simulasi'])
+    with pilihan[0]:
+        koding='''
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uji Normalitas Data Nilai</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin: 20px 0 10px 0;
+        }
+
+        .section p, .section li {
+            line-height: 1.8;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .section ul, .section ol {
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .info-box.warning {
+            background: #fff4e6;
+            border-left-color: #ff9800;
+        }
+
+        .info-box.success {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+
+        .formula {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            overflow-x: auto;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            cursor: pointer;
+            background: #f5f5f5;
+            border: none;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            border-radius: 10px 10px 0 0;
+            margin-right: 5px;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab:hover {
+            background: #764ba2;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .calculator {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #667eea;
+        }
+
+        .result h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin: 10px 0;
+            background: #f0f4ff;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        table th {
+            background: #667eea;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .highlight {
+            background: #fff9c4;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Uji Normalitas Data Nilai</h1>
+            <p>Panduan Lengkap dan Kalkulator Interaktif</p>
+        </div>
+
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="openTab(event, 'pengertian')">Pengertian</button>
+                <button class="tab" onclick="openTab(event, 'metode')">Metode Uji</button>
+                <button class="tab" onclick="openTab(event, 'langkah')">Langkah-langkah</button>
+                <button class="tab" onclick="openTab(event, 'kalkulator')">Kalkulator</button>
+            </div>
+
+            <!-- Tab Pengertian -->
+            <div id="pengertian" class="tab-content active">
+                <div class="section">
+                    <h2>Pengertian Uji Normalitas</h2>
+                    <p>Uji normalitas adalah prosedur statistik yang digunakan untuk menentukan apakah data yang dikumpulkan berasal dari populasi yang berdistribusi normal atau tidak. Dalam konteks data nilai siswa, uji ini sangat penting untuk menentukan apakah:</p>
+                    
+                    <ul>
+                        <li>Nilai-nilai siswa tersebar secara merata di sekitar rata-rata</li>
+                        <li>Data memenuhi asumsi untuk analisis statistik parametrik</li>
+                        <li>Hasil evaluasi pembelajaran mencerminkan distribusi yang wajar</li>
+                    </ul>
+
+                    <div class="info-box">
+                        <h3>Mengapa Uji Normalitas Penting?</h3>
+                        <p><strong>1. Prasyarat Analisis Statistik:</strong> Banyak uji statistik parametrik (seperti uji t, ANOVA) mengasumsikan data berdistribusi normal.</p>
+                        <p><strong>2. Validitas Hasil:</strong> Jika data tidak normal, hasil analisis statistik mungkin tidak akurat.</p>
+                        <p><strong>3. Pemilihan Metode:</strong> Membantu menentukan apakah menggunakan statistik parametrik atau non-parametrik.</p>
+                    </div>
+
+                    <h3>Karakteristik Distribusi Normal</h3>
+                    <ul>
+                        <li><strong>Simetris:</strong> Kurva berbentuk lonceng dengan nilai tengah sebagai puncak</li>
+                        <li><strong>Mean = Median = Modus:</strong> Ketiga ukuran pemusatan data berada pada titik yang sama</li>
+                        <li><strong>Aturan 68-95-99.7:</strong> 68% data dalam 1 SD, 95% dalam 2 SD, 99.7% dalam 3 SD</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Tab Metode -->
+            <div id="metode" class="tab-content">
+                <div class="section">
+                    <h2>Metode-Metode Uji Normalitas</h2>
+
+                    <h3>1. Uji Kolmogorov-Smirnov</h3>
+                    <p>Metode yang membandingkan distribusi frekuensi kumulatif data dengan distribusi normal teoretis.</p>
+                    
+                    <div class="formula">
+                        D = max |F₀(x) - Sₙ(x)|
+                    </div>
+
+                    <div class="info-box">
+                        <strong>Keterangan:</strong>
+                        <ul>
+                            <li>D = Nilai statistik Kolmogorov-Smirnov</li>
+                            <li>F₀(x) = Fungsi distribusi frekuensi kumulatif teoritis</li>
+                            <li>Sₙ(x) = Fungsi distribusi frekuensi kumulatif observasi</li>
+                        </ul>
+                    </div>
+
+                    <h3>2. Uji Shapiro-Wilk</h3>
+                    <p>Metode yang sangat sensitif untuk sampel kecil (n < 50), menghitung korelasi antara data dan skor normal.</p>
+                    
+                    <div class="formula">
+                        W = (Σaᵢxᵢ)² / Σ(xᵢ - x̄)²
+                    </div>
+
+                    <h3>3. Uji Lilliefors</h3>
+                    <p>Modifikasi dari uji Kolmogorov-Smirnov yang tidak memerlukan mean dan standar deviasi populasi.</p>
+
+                    <h3>4. Uji Chi-Square (Kai Kuadrat)</h3>
+                    <p>Membandingkan frekuensi observasi dengan frekuensi ekspektasi pada distribusi normal.</p>
+                    
+                    <div class="formula">
+                        χ² = Σ [(Oᵢ - Eᵢ)² / Eᵢ]
+                    </div>
+
+                    <div class="info-box warning">
+                        <strong>Kriteria Keputusan:</strong>
+                        <ul>
+                            <li>Jika nilai signifikansi (p-value) > 0.05 → Data <span class="highlight">berdistribusi normal</span></li>
+                            <li>Jika nilai signifikansi (p-value) ≤ 0.05 → Data <span class="highlight">tidak berdistribusi normal</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Langkah-langkah -->
+            <div id="langkah" class="tab-content">
+                <div class="section">
+                    <h2>Langkah-langkah Uji Normalitas Manual</h2>
+
+                    <h3>Metode: Uji Chi-Square (Kai Kuadrat)</h3>
+
+                    <div class="info-box success">
+                        <strong>Contoh Data Nilai Siswa:</strong><br>
+                        65, 70, 75, 80, 85, 75, 80, 70, 85, 90, 75, 80, 85, 70, 75, 80, 85, 90, 75, 80
+                    </div>
+
+                    <h3>Langkah 1: Hitung Statistik Deskriptif</h3>
+                    <ol>
+                        <li>Hitung Mean (rata-rata): x̄ = Σx / n</li>
+                        <li>Hitung Standar Deviasi: SD = √[Σ(x - x̄)² / n]</li>
+                        <li>Tentukan nilai minimum dan maksimum</li>
+                    </ol>
+
+                    <h3>Langkah 2: Buat Tabel Distribusi Frekuensi</h3>
+                    <ol>
+                        <li>Tentukan jumlah kelas (K) = 1 + 3.3 log n</li>
+                        <li>Hitung rentang (R) = nilai max - nilai min</li>
+                        <li>Hitung panjang kelas (P) = R / K</li>
+                        <li>Buat interval kelas</li>
+                    </ol>
+
+                    <table>
+                        <tr>
+                            <th>Kelas</th>
+                            <th>Frekuensi Observasi (Oᵢ)</th>
+                            <th>Frekuensi Harapan (Eᵢ)</th>
+                            <th>(Oᵢ - Eᵢ)²/Eᵢ</th>
+                        </tr>
+                        <tr>
+                            <td>65-69</td>
+                            <td>1</td>
+                            <td>1.5</td>
+                            <td>0.17</td>
+                        </tr>
+                        <tr>
+                            <td>70-74</td>
+                            <td>3</td>
+                            <td>3.2</td>
+                            <td>0.01</td>
+                        </tr>
+                        <tr>
+                            <td>75-79</td>
+                            <td>5</td>
+                            <td>5.0</td>
+                            <td>0.00</td>
+                        </tr>
+                        <tr>
+                            <td>80-84</td>
+                            <td>5</td>
+                            <td>5.0</td>
+                            <td>0.00</td>
+                        </tr>
+                        <tr>
+                            <td>85-89</td>
+                            <td>4</td>
+                            <td>3.8</td>
+                            <td>0.01</td>
+                        </tr>
+                        <tr>
+                            <td>90-94</td>
+                            <td>2</td>
+                            <td>1.5</td>
+                            <td>0.17</td>
+                        </tr>
+                    </table>
+
+                    <h3>Langkah 3: Hitung Chi-Square</h3>
+                    <div class="formula">
+                        χ² = Σ [(Oᵢ - Eᵢ)² / Eᵢ] = 0.36
+                    </div>
+
+                    <h3>Langkah 4: Bandingkan dengan Tabel Chi-Square</h3>
+                    <ul>
+                        <li>df (derajat bebas) = k - 3 = 6 - 3 = 3</li>
+                        <li>α = 0.05</li>
+                        <li>χ²tabel = 7.815</li>
+                    </ul>
+
+                    <h3>Langkah 5: Kesimpulan</h3>
+                    <div class="info-box success">
+                        <p>Karena χ²hitung (0.36) < χ²tabel (7.815), maka <strong>H₀ diterima</strong>.</p>
+                        <p><strong>Kesimpulan:</strong> Data nilai siswa <span class="highlight">berdistribusi normal</span> pada tingkat signifikansi 5%.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Kalkulator -->
+            <div id="kalkulator" class="tab-content">
+                <div class="section">
+                    <h2>Kalkulator Uji Normalitas</h2>
+                    <p>Masukkan data nilai siswa untuk menghitung statistik deskriptif dan uji normalitas secara otomatis.</p>
+
+                    <div class="calculator">
+                        <div class="input-group">
+                            <label for="dataInput">Masukkan Data Nilai (pisahkan dengan koma atau spasi):</label>
+                            <textarea id="dataInput" rows="4" placeholder="Contoh: 65, 70, 75, 80, 85, 75, 80, 70, 85, 90"></textarea>
+                        </div>
+
+                        <button class="btn" onclick="hitungNormalitas()">Hitung Uji Normalitas</button>
+
+                        <div id="hasil" class="result" style="display: none;">
+                            <h3>Hasil Analisis</h3>
+                            <div id="hasilContent"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        function hitungNormalitas() {
+            const input = document.getElementById('dataInput').value;
+            const data = input.split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
+
+            if (data.length < 3) {
+                alert('Masukkan minimal 3 data nilai!');
+                return;
+            }
+
+            // Statistik Deskriptif
+            const n = data.length;
+            const sum = data.reduce((a, b) => a + b, 0);
+            const mean = sum / n;
+            
+            const sortedData = [...data].sort((a, b) => a - b);
+            const min = sortedData[0];
+            const max = sortedData[n - 1];
+            
+            // Median
+            let median;
+            if (n % 2 === 0) {
+                median = (sortedData[n/2 - 1] + sortedData[n/2]) / 2;
+            } else {
+                median = sortedData[Math.floor(n/2)];
+            }
+
+            // Standar Deviasi
+            const variance = data.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / n;
+            const sd = Math.sqrt(variance);
+
+            // Skewness (Kemencengan)
+            const skewness = (data.reduce((acc, val) => acc + Math.pow(val - mean, 3), 0) / n) / Math.pow(sd, 3);
+
+            // Kurtosis
+            const kurtosis = (data.reduce((acc, val) => acc + Math.pow(val - mean, 4), 0) / n) / Math.pow(sd, 4) - 3;
+
+            // Interpretasi
+            let interpretasiSkew = '';
+            if (Math.abs(skewness) < 0.5) {
+                interpretasiSkew = '✅ Data cenderung simetris (mendekati normal)';
+            } else if (skewness > 0) {
+                interpretasiSkew = '⚠️ Data menceng ke kanan (positif)';
+            } else {
+                interpretasiSkew = '⚠️ Data menceng ke kiri (negatif)';
+            }
+
+            let interpretasiKurt = '';
+            if (Math.abs(kurtosis) < 1) {
+                interpretasiKurt = '✅ Kurva mendekati normal (mesokurtik)';
+            } else if (kurtosis > 0) {
+                interpretasiKurt = '⚠️ Kurva lebih lancip (leptokurtik)';
+            } else {
+                interpretasiKurt = '⚠️ Kurva lebih datar (platikurtik)';
+            }
+
+            // Uji Normalitas Sederhana (berdasarkan skewness dan kurtosis)
+            let kesimpulan = '';
+            if (Math.abs(skewness) < 0.5 && Math.abs(kurtosis) < 1) {
+                kesimpulan = '<strong style="color: green;">✅ Data BERDISTRIBUSI NORMAL</strong>';
+            } else if (Math.abs(skewness) < 1 && Math.abs(kurtosis) < 2) {
+                kesimpulan = '<strong style="color: orange;">⚠️ Data MENDEKATI NORMAL (perlu uji lebih lanjut)</strong>';
+            } else {
+                kesimpulan = '<strong style="color: red;">❌ Data TIDAK BERDISTRIBUSI NORMAL</strong>';
+            }
+
+            // Tampilkan Hasil
+            const hasilHTML = `
+                <div class="result-item">
+                    <strong>Jumlah Data (n):</strong> ${n}
+                </div>
+                <div class="result-item">
+                    <strong>Nilai Minimum:</strong> ${min.toFixed(2)}
+                </div>
+                <div class="result-item">
+                    <strong>Nilai Maksimum:</strong> ${max.toFixed(2)}
+                </div>
+                <div class="result-item">
+                    <strong>Mean (Rata-rata):</strong> ${mean.toFixed(2)}
+                </div>
+                <div class="result-item">
+                    <strong>Median:</strong> ${median.toFixed(2)}
+                </div>
+                <div class="result-item">
+                    <strong>Standar Deviasi:</strong> ${sd.toFixed(2)}
+                </div>
+                <div class="result-item">
+                    <strong>Varians:</strong> ${variance.toFixed(2)}
+                </div>
+                <div class="result-item">
+                    <strong>Skewness (Kemencengan):</strong> ${skewness.toFixed(4)}<br>
+                    <em>${interpretasiSkew}</em>
+                </div>
+                <div class="result-item">
+                    <strong>Kurtosis:</strong> ${kurtosis.toFixed(4)}<br>
+                    <em>${interpretasiKurt}</em>
+                </div>
+                <div class="result-item" style="background: #f0f4ff; border: 2px solid #667eea; margin-top: 20px;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">Kesimpulan Uji Normalitas:</h4>
+                    ${kesimpulan}
+                    <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                        <em>Catatan: Hasil ini berdasarkan metode skewness dan kurtosis. Untuk hasil yang lebih akurat, gunakan uji Kolmogorov-Smirnov atau Shapiro-Wilk dengan software statistik.</em>
+                    </p>
+                </div>
+            `;
+
+            document.getElementById('hasilContent').innerHTML = hasilHTML;
+            document.getElementById('hasil').style.display = 'block';
+            document.getElementById('hasil').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>
+        '''
+        st.components.v1.html(koding, height=2000)
+    with pilihan[1]:
+        st.write('oke')
+        # Fungsi-fungsi statistik
+        def hitung_statistik(data):
+            """Menghitung statistik deskriptif"""
+            return {
+                'n': len(data),
+                'mean': np.mean(data),
+                'median': np.median(data),
+                'std': np.std(data, ddof=1),
+                'min': np.min(data),
+                'max': np.max(data),
+                'q1': np.percentile(data, 25),
+                'q3': np.percentile(data, 75),
+                'skewness': stats.skew(data),
+                'kurtosis': stats.kurtosis(data)
+            }
+
+        def uji_normalitas_lengkap(data):
+            """Melakukan berbagai uji normalitas"""
+            hasil = {}
+    
+            # Shapiro-Wilk Test
+            if len(data) >= 3:
+                stat_shapiro, p_shapiro = shapiro(data)
+                hasil['shapiro'] = {
+                    'statistic': stat_shapiro,
+                    'p_value': p_shapiro,
+                    'normal': p_shapiro > 0.05
+                }
+    
+            # Kolmogorov-Smirnov Test
+            stat_ks, p_ks = kstest(data, 'norm', args=(np.mean(data), np.std(data, ddof=1)))
+            hasil['ks'] = {
+                'statistic': stat_ks,
+                'p_value': p_ks,
+                'normal': p_ks > 0.05
+            }
+    
+            # D'Agostino-Pearson Test
+            if len(data) >= 8:
+                stat_dp, p_dp = normaltest(data)
+                hasil['dagostino'] = {
+                    'statistic': stat_dp,
+                    'p_value': p_dp,
+                    'normal': p_dp > 0.05
+                }
+    
+            return hasil
+
+        def buat_histogram(data):
+            """Membuat histogram dengan kurva normal"""
+            fig, ax = plt.subplots(figsize=(10, 6))
+    
+            # Histogram
+            n, bins, patches = ax.hist(data, bins='auto', density=True, 
+                                        alpha=0.7, color='steelblue', 
+                                        edgecolor='black', label='Data Aktual')
+    
+            # Kurva normal teoritis
+            mu, std = np.mean(data), np.std(data, ddof=1)
+            x = np.linspace(mu - 4*std, mu + 4*std, 100)
+            ax.plot(x, stats.norm.pdf(x, mu, std), 'r-', 
+                    linewidth=2, label='Distribusi Normal')
+    
+            ax.set_xlabel('Nilai', fontsize=12)
+            ax.set_ylabel('Densitas', fontsize=12)
+            ax.set_title('Histogram dengan Kurva Normal', fontsize=14, fontweight='bold')
+            ax.legend()
+            ax.grid(True, alpha=0.3)
+    
+            return fig
+
+        def buat_qq_plot(data):
+            """Membuat Q-Q Plot"""
+            fig, ax = plt.subplots(figsize=(8, 8))
+            stats.probplot(data, dist="norm", plot=ax)
+            ax.set_title('Q-Q Plot', fontsize=14, fontweight='bold')
+            ax.grid(True, alpha=0.3)
+            return fig
+
+        def buat_boxplot(data):
+            """Membuat boxplot"""
+            fig, ax = plt.subplots(figsize=(10, 6))
+            ax.boxplot(data, vert=False, patch_artist=True,
+                       boxprops=dict(facecolor='lightblue', color='blue'),
+                       whiskerprops=dict(color='blue'),
+                       capprops=dict(color='blue'),
+                       medianprops=dict(color='red', linewidth=2))
+            ax.set_xlabel('Nilai', fontsize=12)
+            ax.set_title('Boxplot Data Nilai', fontsize=14, fontweight='bold')
+            ax.grid(True, alpha=0.3)
+            return fig
+
+        # Inisialisasi session state
+        if 'data_nilai' not in st.session_state:
+            st.session_state.data_nilai = [65, 70, 75, 80, 85, 70, 75, 80, 85, 90, 
+                                            75, 80, 85, 90, 95, 72, 78, 82, 88, 92]
+
+        if 'quiz_submitted' not in st.session_state:
+            st.session_state.quiz_submitted = False
+
+        if 'quiz_answers' not in st.session_state:
+            st.session_state.quiz_answers = {}
+
+        # Header
+        st.title("📊 Uji Normalitas Data Nilai Kelas")
+        st.markdown("### Aplikasi Pembelajaran Statistik Interaktif")
+        st.markdown("---")
+
+        # Tabs
+        tab1, tab2, tab3, tab4 = st.tabs(["📚 Materi", "🎮 Praktik Interaktif", "✏️ Latihan Soal", "🧮 Kalkulator"])
+
+        # ==================== TAB MATERI ====================
+        with tab1:
+            st.header("📖 Materi Uji Normalitas")
+    
+            # Pengertian
+            st.subheader("🎯 Apa itu Uji Normalitas?")
+            st.info("""
+            **Uji normalitas** adalah prosedur statistik untuk menguji apakah data yang dikumpulkan 
+            berdistribusi normal atau tidak. Hal ini penting karena banyak uji statistik parametrik 
+            mengasumsikan data berdistribusi normal.
+    
+            Dalam konteks nilai kelas, uji normalitas membantu kita memahami apakah sebaran nilai 
+            siswa mengikuti pola distribusi normal (kurva lonceng), di mana sebagian besar siswa 
+            mendapat nilai rata-rata, sementara nilai sangat tinggi dan sangat rendah lebih sedikit.
+            """)
+    
+            # Metode Pengujian
+            st.subheader("🔬 Metode Pengujian Normalitas")
+    
+            col1, col2 = st.columns(2)
+    
+            with col1:
+                st.markdown("#### 1️⃣ Metode Grafis")
+                st.success("""
+                **a. Histogram**
+                - Visualisasi distribusi frekuensi data
+                - Data normal membentuk kurva lonceng simetris
+        
+                **b. Q-Q Plot (Quantile-Quantile Plot)**
+                - Membandingkan kuantil data dengan distribusi normal teoritis
+                - Jika titik-titik mendekati garis diagonal → data normal
+        
+                **c. Boxplot**
+                - Melihat simetri dan outlier
+                - Data normal: median di tengah, whisker seimbang
+                """)
+    
+            with col2:
+                st.markdown("#### 2️⃣ Metode Numerik")
+                st.warning("""
+                **a. Shapiro-Wilk Test**
+                - Paling powerful untuk sampel kecil (n < 50)
+                - H₀: Data berdistribusi normal
+                - Keputusan: p-value > 0.05 → normal
+        
+                **b. Kolmogorov-Smirnov Test**
+                - Untuk sampel besar (n > 50)
+                - Membandingkan distribusi empiris dengan teoritis
+        
+                **c. Skewness & Kurtosis**
+                - Skewness ≈ 0: simetris
+                - Kurtosis ≈ 0: ketebalan normal
+                """)
+    
+            # Interpretasi
+            st.subheader("📊 Interpretasi Hasil")
+    
+            tab_skew, tab_kurt, tab_uji = st.tabs(["Skewness", "Kurtosis", "Uji Statistik"])
+    
+            with tab_skew:
+                st.markdown("""
+                **Skewness (Kemencengan)**
+        
+                | Nilai | Interpretasi | Bentuk Distribusi |
+                |-------|--------------|-------------------|
+                | Skewness ≈ 0 | Simetris (Normal) | Kurva lonceng sempurna |
+                | Skewness > 0 | Menceng ke kanan (Positif) | Ekor memanjang ke kanan |
+                | Skewness < 0 | Menceng ke kiri (Negatif) | Ekor memanjang ke kiri |
+        
+                **Kriteria:** Data normal jika **|Skewness| < 2**
+                """)
+    
+            with tab_kurt:
+                st.markdown("""
+                **Kurtosis (Keruncingan)**
+        
+                | Nilai | Interpretasi | Karakteristik |
+                |-------|--------------|---------------|
+                | Kurtosis ≈ 0 | Mesokurtik (Normal) | Ketebalan ekor normal |
+                | Kurtosis > 0 | Leptokurtik | Runcing, ekor tebal |
+                | Kurtosis < 0 | Platikurtik | Datar, ekor tipis |
+        
+                **Kriteria:** Data normal jika **|Kurtosis| < 7**
+                """)
+    
+            with tab_uji:
+                st.markdown("""
+                **Pengujian Hipotesis**
+        
+                - **H₀ (Hipotesis Nol):** Data berdistribusi normal
+                - **H₁ (Hipotesis Alternatif):** Data tidak berdistribusi normal
+                - **α (Tingkat Signifikansi):** 0.05 (5%)
+        
+                **Keputusan:**
+                - Jika **p-value > 0.05** → Terima H₀ (Data Normal)
+                - Jika **p-value ≤ 0.05** → Tolak H₀ (Data Tidak Normal)
+                """)
+    
+            # Pentingnya
+            st.subheader("⭐ Pentingnya Uji Normalitas")
+            st.error("""
+            1. **Menentukan metode statistik yang tepat** untuk analisis lanjutan
+            2. **Memvalidasi asumsi** untuk uji parametrik (t-test, ANOVA, regresi)
+            3. **Memahami karakteristik** distribusi data nilai siswa
+            4. **Mendeteksi outlier** atau nilai ekstrem dalam data
+            5. **Meningkatkan validitas** kesimpulan penelitian
+            """)
+
+        # ==================== TAB PRAKTIK INTERAKTIF ====================
+        with tab2:
+            st.header("🎮 Praktik Interaktif: Analisis Data Nilai")
+    
+            # Input Data
+            st.subheader("📝 Input Data Nilai")
+    
+            col_input1, col_input2 = st.columns([2, 1])
+    
+            with col_input1:
+                metode_input = st.radio(
+                    "Pilih metode input data:",
+                    ["Manual (ketik)", "Generate Random", "Upload File CSV"],
+                    horizontal=True
+                )
+        
+                if metode_input == "Manual (ketik)":
+                    input_text = st.text_area(
+                        "Masukkan data nilai (pisahkan dengan koma atau spasi):",
+                        value=", ".join(map(str, st.session_state.data_nilai)),
+                        height=100
+                    )
+                    if st.button("🔄 Proses Data"):
+                        try:
+                            # Parse input
+                            data_baru = [float(x.strip()) for x in input_text.replace(',', ' ').split() if x.strip()]
+                            if len(data_baru) < 3:
+                                st.error("Minimal 3 data diperlukan!")
+                            else:
+                                st.session_state.data_nilai = data_baru
+                                st.success(f"✅ Berhasil memproses {len(data_baru)} data!")
+                                st.rerun()
+                        except:
+                            st.error("Format data tidak valid! Gunakan angka yang dipisahkan koma atau spasi.")
+        
+                elif metode_input == "Generate Random":
+                    col_gen1, col_gen2, col_gen3 = st.columns(3)
+                    with col_gen1:
+                        n_data = st.number_input("Jumlah data:", 10, 100, 30)
+                    with col_gen2:
+                        mean_val = st.number_input("Rata-rata:", 0, 100, 75)
+                    with col_gen3:
+                        std_val = st.number_input("Std Dev:", 1, 30, 10)
+            
+                    if st.button("🎲 Generate Data Random"):
+                        st.session_state.data_nilai = np.random.normal(mean_val, std_val, n_data).tolist()
+                        st.session_state.data_nilai = [round(max(0, min(100, x)), 1) for x in st.session_state.data_nilai]
+                        st.success(f"✅ Generated {n_data} data nilai!")
+                        st.rerun()
+        
+                else:  # Upload CSV
+                    uploaded_file = st.file_uploader("Upload file CSV", type=['csv'])
+                    if uploaded_file is not None:
+                        try:
+                            df = pd.read_csv(uploaded_file)
+                            kolom = st.selectbox("Pilih kolom yang berisi nilai:", df.columns)
+                            if st.button("📥 Load Data dari CSV"):
+                                st.session_state.data_nilai = df[kolom].dropna().tolist()
+                                st.success(f"✅ Berhasil load {len(st.session_state.data_nilai)} data!")
+                                st.rerun()
+                        except Exception as e:
+                            st.error(f"Error membaca file: {e}")
+    
+            with col_input2:
+                st.info(f"""
+                **Data Saat Ini:**
+                - Jumlah: {len(st.session_state.data_nilai)}
+                - Range: {min(st.session_state.data_nilai):.1f} - {max(st.session_state.data_nilai):.1f}
+                """)
+    
+            st.markdown("---")
+    
+            # Analisis Data
+            if len(st.session_state.data_nilai) >= 3:
+                data = np.array(st.session_state.data_nilai)
+                stats_data = hitung_statistik(data)
+                hasil_uji = uji_normalitas_lengkap(data)
+        
+                # Statistik Deskriptif
+                st.subheader("📊 Statistik Deskriptif")
+        
+                col1, col2, col3, col4, col5 = st.columns(5)
+                col1.metric("Jumlah Data", f"{stats_data['n']}")
+                col2.metric("Rata-rata", f"{stats_data['mean']:.2f}")
+                col3.metric("Median", f"{stats_data['median']:.2f}")
+                col4.metric("Std Dev", f"{stats_data['std']:.2f}")
+                col5.metric("Range", f"{stats_data['max'] - stats_data['min']:.1f}")
+        
+                st.markdown("---")
+        
+                # Hasil Uji Normalitas
+                st.subheader("🔬 Hasil Uji Normalitas")
+        
+                col_uji1, col_uji2 = st.columns(2)
+        
+                with col_uji1:
+                    st.markdown("#### 📈 Ukuran Bentuk Distribusi")
+            
+                    skew_val = stats_data['skewness']
+                    kurt_val = stats_data['kurtosis']
+            
+                    # Skewness
+                    skew_color = "green" if abs(skew_val) < 2 else "red"
+                    st.markdown(f"**Skewness:** :{skew_color}[{skew_val:.3f}]")
+                    if abs(skew_val) < 0.5:
+                        st.success("✅ Data sangat simetris (mendekati normal)")
+                    elif abs(skew_val) < 2:
+                        st.warning("⚠️ Data agak menceng (masih dapat diterima)")
+                    else:
+                        st.error("❌ Data sangat menceng (tidak normal)")
+            
+                    # Kurtosis
+                    kurt_color = "green" if abs(kurt_val) < 7 else "red"
+                    st.markdown(f"**Kurtosis:** :{kurt_color}[{kurt_val:.3f}]")
+                    if abs(kurt_val) < 3:
+                        st.success("✅ Ketebalan ekor normal")
+                    elif abs(kurt_val) < 7:
+                        st.warning("⚠️ Ketebalan ekor agak ekstrem")
+                    else:
+                        st.error("❌ Ketebalan ekor sangat ekstrem (tidak normal)")
+        
+                with col_uji2:
+                    st.markdown("#### 🧪 Uji Statistik")
+            
+                    # Shapiro-Wilk
+                    if 'shapiro' in hasil_uji:
+                        sw = hasil_uji['shapiro']
+                        st.markdown(f"**Shapiro-Wilk Test**")
+                        st.write(f"- Statistik: {sw['statistic']:.4f}")
+                        st.write(f"- p-value: {sw['p_value']:.4f}")
+                        if sw['normal']:
+                            st.success("✅ Data berdistribusi normal (p > 0.05)")
+                        else:
+                            st.error("❌ Data tidak berdistribusi normal (p ≤ 0.05)")
+            
+                    # Kolmogorov-Smirnov
+                    if 'ks' in hasil_uji:
+                        ks = hasil_uji['ks']
+                        st.markdown(f"**Kolmogorov-Smirnov Test**")
+                        st.write(f"- Statistik: {ks['statistic']:.4f}")
+                        st.write(f"- p-value: {ks['p_value']:.4f}")
+                        if ks['normal']:
+                            st.success("✅ Data berdistribusi normal (p > 0.05)")
+                        else:
+                            st.error("❌ Data tidak berdistribusi normal (p ≤ 0.05)")
+        
+                # Kesimpulan
+                st.markdown("---")
+                st.subheader("📋 Kesimpulan")
+        
+                # Hitung berapa banyak kriteria yang terpenuhi
+                kriteria_terpenuhi = 0
+                total_kriteria = 0
+        
+                # Skewness & Kurtosis
+                if abs(stats_data['skewness']) < 2:
+                    kriteria_terpenuhi += 1
+                total_kriteria += 1
+        
+                if abs(stats_data['kurtosis']) < 7:
+                    kriteria_terpenuhi += 1
+                total_kriteria += 1
+        
+                # Uji statistik
+                for key in ['shapiro', 'ks']:
+                    if key in hasil_uji:
+                        if hasil_uji[key]['normal']:
+                            kriteria_terpenuhi += 1
+                        total_kriteria += 1
+        
+                persentase = (kriteria_terpenuhi / total_kriteria) * 100
+        
+                if persentase >= 75:
+                    st.success(f"""
+                    ### ✅ Data BERDISTRIBUSI NORMAL
+            
+                    **Kriteria terpenuhi:** {kriteria_terpenuhi}/{total_kriteria} ({persentase:.0f}%)
+            
+                    **Interpretasi:** Data nilai kelas ini mengikuti distribusi normal. 
+                    Anda dapat menggunakan uji statistik parametrik (t-test, ANOVA, dll.) 
+                        untuk analisis lebih lanjut.
+                        """)
+                else:
+                    st.error(f"""
+                    ### ❌ Data TIDAK BERDISTRIBUSI NORMAL
+            
+                    **Kriteria terpenuhi:** {kriteria_terpenuhi}/{total_kriteria} ({persentase:.0f}%)
+            
+                    **Interpretasi:** Data nilai kelas ini tidak mengikuti distribusi normal. 
+                    Pertimbangkan menggunakan uji statistik non-parametrik (Mann-Whitney, 
+                    Kruskal-Wallis, dll.) atau transformasi data.
+                    """)
+        
+                st.markdown("---")
+        
+                # Visualisasi
+                st.subheader("📊 Visualisasi Data")
+        
+                tab_hist, tab_qq, tab_box = st.tabs(["Histogram", "Q-Q Plot", "Boxplot"])
+        
+                with tab_hist:
+                    st.pyplot(buat_histogram(data))
+                    st.info("""
+                    **Cara Membaca:**
+                    - Batang biru: distribusi data aktual
+                    - Garis merah: kurva normal teoritis
+                    - Jika batang mengikuti garis merah → data normal
+                    """)
+        
+                with tab_qq:
+                    st.pyplot(buat_qq_plot(data))
+                    st.info("""
+                    **Cara Membaca:**
+                    - Titik biru: data observasi
+                    - Garis merah: garis referensi normal
+                    - Jika titik mendekati garis → data normal
+                    - Titik menyimpang dari garis → data tidak normal
+                    """)
+        
+                with tab_box:
+                    st.pyplot(buat_boxplot(data))
+                    st.info("""
+                    **Cara Membaca:**
+                    - Kotak: Q1, Median (garis merah), Q3
+                    - Whisker: nilai min dan max (tanpa outlier)
+                    - Titik: outlier
+                    - Jika median di tengah kotak dan whisker seimbang → data normal
+                    """)
+        
+                # Tabel Data
+                st.markdown("---")
+                with st.expander("📋 Lihat Tabel Data Lengkap"):
+                    df_data = pd.DataFrame({
+                        'No': range(1, len(data) + 1),
+                        'Nilai': data
+                    })
+                    st.dataframe(df_data, use_container_width=True)
+            
+                    # Download
+                    csv = df_data.to_csv(index=False)
+                    st.download_button(
+                        label="📥 Download Data CSV",
+                        data=csv,
+                        file_name="data_nilai.csv",
+                        mime="text/csv"
+                    )
+
+        # ==================== TAB LATIHAN SOAL ====================
+        with tab3:
+            st.header("✏️ Latihan Soal Pilihan Ganda")
+    
+            # Definisi soal
+            soal_quiz = [
+                {
+                    "no": 1,
+                    "pertanyaan": "Apa tujuan utama dari uji normalitas data?",
+                    "pilihan": [
+                        "Menghitung rata-rata data",
+                        "Menguji apakah data berdistribusi normal",
+                        "Mencari nilai tertinggi dalam data",
+                        "Menghitung median data"
+                    ],
+                    "jawaban": 1,
+                    "pembahasan": "Uji normalitas bertujuan untuk menguji apakah data berdistribusi normal atau tidak, yang penting untuk menentukan jenis uji statistik yang akan digunakan."
+                },
+                {
+                    "no": 2,
+                    "pertanyaan": "Jika nilai skewness mendekati 0, maka distribusi data adalah?",
+                    "pilihan": [
+                        "Menceng ke kiri (negatif)",
+                        "Menceng ke kanan (positif)",
+                        "Simetris (mendekati normal)",
+                        "Tidak dapat ditentukan"
+                    ],
+                    "jawaban": 2,
+                    "pembahasan": "Skewness mengukur tingkat kemencengan distribusi. Nilai skewness ≈ 0 menunjukkan distribusi yang simetris atau mendekati normal."
+                },
+                {
+                    "no": 3,
+                    "pertanyaan": "Metode grafis yang paling tepat untuk melihat normalitas data adalah?",
+                   "pilihan": [
+                        "Diagram lingkaran (pie chart)",
+                        "Histogram dan Q-Q Plot",
+                        "Diagram batang biasa",
+                        "Line chart"
+                    ],
+                    "jawaban": 1,
+                    "pembahasan": "Histogram menunjukkan bentuk distribusi data, sedangkan Q-Q Plot membandingkan kuantil data dengan distribusi normal teoritis."
+                },
+                {
+                    "no": 4,
+                    "pertanyaan": "Pada uji Shapiro-Wilk, jika p-value = 0.08, maka kesimpulannya adalah?",
+                    "pilihan": [
+                        "Data tidak berdistribusi normal",
+                        "Data berdistribusi normal",
+                        "Perlu uji ulang",
+                        "Data memiliki outlier"
+                    ],
+                    "jawaban": 1,
+                    "pembahasan": "Dengan α = 0.05, jika p-value (0.08) > 0.05, maka kita terima H₀ yang berarti data berdistribusi normal."
+                },
+                {
+                    "no": 5,
+                    "pertanyaan": "Kurtosis mengukur apa dalam distribusi data?",
+                    "pilihan": [
+                        "Tingkat kemencengan distribusi",
+                        "Ketebalan ekor distribusi",
+                        "Nilai tengah distribusi",
+                        "Penyebaran data"
+                    ],
+                    "jawaban": 1,
+                    "pembahasan": "Kurtosis mengukur ketebalan ekor dan keruncingan distribusi. Nilai kurtosis ≈ 0 menunjukkan distribusi normal (mesokurtik)."
+                },
+                {
+                    "no": 6,
+                    "pertanyaan": "Jika data tidak berdistribusi normal, uji statistik apa yang sebaiknya digunakan?",
+                    "pilihan": [
+                        "Uji t (t-test)",
+                        "ANOVA",
+                        "Uji non-parametrik (Mann-Whitney, Kruskal-Wallis)",
+                        "Regresi linear"
+                    ],
+                    "jawaban": 2,
+                    "pembahasan": "Untuk data yang tidak berdistribusi normal, gunakan uji non-parametrik yang tidak mengasumsikan distribusi normal."
+                },
+                {
+                    "no": 7,
+                    "pertanyaan": "Pada Q-Q Plot, jika titik-titik data menyebar jauh dari garis diagonal, artinya?",
+                    "pilihan": [
+                        "Data berdistribusi normal",
+                        "Data tidak berdistribusi normal",
+                        "Data memiliki rata-rata tinggi",
+                        "Data tidak memiliki outlier"
+                    ],
+                    "jawaban": 1,
+                    "pembahasan": "Jika titik-titik pada Q-Q Plot menyimpang jauh dari garis diagonal, ini mengindikasikan bahwa data tidak mengikuti distribusi normal."
+                },
+                {
+                    "no": 8,
+                    "pertanyaan": "Kriteria skewness untuk data berdistribusi normal adalah?",
+                    "pilihan": [
+                        "|Skewness| > 5",
+                        "|Skewness| < 2",
+                        "|Skewness| = 10",
+                        "Skewness > 0"
+                    ],
+                    "jawaban": 1,
+                    "pembahasan": "Data dianggap berdistribusi normal jika nilai absolut skewness kurang dari 2 (|Skewness| < 2)."
+                }
+            ]
+    
+            # Tampilkan soal
+            for soal in soal_quiz:
+                st.markdown(f"### Soal {soal['no']}")
+                st.write(soal['pertanyaan'])
+        
+                jawaban_user = st.radio(
+                    f"Pilih jawaban untuk soal {soal['no']}:",
+                    soal['pilihan'],
+                    key=f"soal_{soal['no']}",
+                    index=None
+                )
+        
+                if jawaban_user:
+                    st.session_state.quiz_answers[soal['no']] = soal['pilihan'].index(jawaban_user)
+        
+                st.markdown("---")
+    
+            # Tombol submit
+            col_submit1, col_submit2 = st.columns([1, 3])
+    
+            with col_submit1:
+                if st.button("✅ Submit Jawaban", use_container_width=True):
+                    st.session_state.quiz_submitted = True
+    
+            with col_submit2:
+                if st.button("🔄 Reset Quiz", use_container_width=True):
+                    st.session_state.quiz_submitted = False
+                    st.session_state.quiz_answers = {}
+                    st.rerun()
+    
+            # Tampilkan hasil
+            if st.session_state.quiz_submitted:
+                st.markdown("---")
+                st.subheader("📊 Hasil Quiz")
+        
+                benar = 0
+                total = len(soal_quiz)
+        
+                for soal in soal_quiz:
+                    jawaban_user = st.session_state.quiz_answers.get(soal['no'])
+                    jawaban_benar = soal['jawaban']
+            
+                    if jawaban_user == jawaban_benar:
+                        benar += 1
+                        st.success(f"**Soal {soal['no']}:** ✅ Benar!")
+                    else:
+                        st.error(f"**Soal {soal['no']}:** ❌ Salah!")
+                        if jawaban_user is not None:
+                            st.write(f"Jawaban Anda: {soal['pilihan'][jawaban_user]}")
+                        st.write(f"Jawaban Benar: {soal['pilihan'][jawaban_benar]}")
+            
+                    with st.expander(f"💡 Pembahasan Soal {soal['no']}"):
+                        st.info(soal['pembahasan'])
+        
+                # Nilai akhir
+                nilai = (benar / total) * 100
+        
+                st.markdown("---")
+                col_nilai1, col_nilai2, col_nilai3 = st.columns(3)
+        
+                with col_nilai1:
+                    st.metric("Jawaban Benar", f"{benar}/{total}")
+                with col_nilai2:
+                    st.metric("Nilai Akhir", f"{nilai:.1f}")
+                with col_nilai3:
+                    if nilai >= 80:
+                        st.success("🌟 Excellent!")
+                    elif nilai >= 60:
+                        st.info("👍 Good Job!")
+                    else:
+                        st.warning("💪 Keep Learning!")
+    
+            # Latihan Praktik Tambahan
+            st.markdown("---")
+            st.subheader("💡 Latihan Praktik Mandiri")
+    
+            with st.expander("📝 Soal Latihan 1: Analisis Data Manual"):
+                st.write("""
+        **Soal:**
+        Diberikan data nilai ujian matematika dari 15 siswa:
+        
+        **60, 65, 70, 70, 75, 75, 75, 80, 80, 85, 85, 90, 90, 95, 100**
+        
+        **Tugas:**
+        1. Hitung rata-rata dan standar deviasi
+        2. Hitung skewness dan kurtosis
+        3. Buat histogram distribusi frekuensi (kelompokkan dalam interval)
+        4. Tentukan apakah data berdistribusi normal
+        5. Berikan interpretasi hasil analisis
+        
+        **Tips:** Gunakan tab "Praktik Interaktif" untuk memverifikasi jawaban Anda!
+        """)
+    
+            with st.expander("📝 Soal Latihan 2: Interpretasi Hasil"):
+                st.write("""
+        **Soal:**
+        Hasil uji normalitas suatu data nilai menunjukkan:
+        - Skewness = 0.15
+        - Kurtosis = -0.45
+        - Shapiro-Wilk p-value = 0.23
+        - Kolmogorov-Smirnov p-value = 0.18
+        
+        **Pertanyaan:**
+        1. Apakah data berdistribusi normal? Jelaskan!
+        2. Bagaimana bentuk distribusi data tersebut?
+        3. Uji statistik apa yang tepat digunakan untuk data ini?
+        
+        **Jawaban:**
+        1. Ya, data berdistribusi normal karena:
+           - |Skewness| = 0.15 < 2 ✅
+           - |Kurtosis| = 0.45 < 7 ✅
+           - p-value Shapiro-Wilk = 0.23 > 0.05 ✅
+           - p-value K-S = 0.18 > 0.05 ✅
+        
+        2. Distribusi hampir simetris (skewness ≈ 0) dengan ketebalan ekor normal (kurtosis ≈ 0)
+        
+        3. Dapat menggunakan uji parametrik seperti t-test, ANOVA, atau regresi linear
+        """)
+    
+            with st.expander("📝 Soal Latihan 3: Kasus Nyata"):
+                st.write("""
+        **Kasus:**
+        Seorang guru ingin menganalisis nilai ujian akhir semester dari 2 kelas:
+        - **Kelas A:** 85, 87, 89, 90, 91, 88, 86, 92, 93, 88
+        - **Kelas B:** 60, 70, 85, 90, 95, 75, 80, 85, 65, 100
+        
+        **Tugas:**
+        1. Uji normalitas kedua kelas
+        2. Bandingkan distribusi kedua kelas
+        3. Metode statistik apa yang tepat untuk membandingkan kedua kelas?
+        4. Kelas mana yang memiliki performa lebih konsisten?
+        
+        **Petunjuk Analisis:**
+        - Masukkan data Kelas A dan Kelas B ke tab "Praktik Interaktif"
+        - Perhatikan mean, std dev, dan hasil uji normalitas
+        - Std dev lebih kecil = lebih konsisten
+        """)
+
+        # ==================== TAB KALKULATOR ====================
+        with tab4:
+            st.header("🧮 Kalkulator Uji Normalitas")
+            st.write("Masukkan data dan dapatkan hasil analisis lengkap dengan cepat!")
+    
+            col_kalk1, col_kalk2 = st.columns([3, 2])
+    
+            with col_kalk1:
+                st.subheader("Input Data")
+        
+                input_kalkulator = st.text_area(
+                    "Masukkan data (pisahkan dengan koma, spasi, atau baris baru):",
+                    height=150,
+                    placeholder="Contoh:\n75, 80, 85, 90\natau\n75\n80\n85\n90"
+                )
+        
+                alpha_level = st.select_slider(
+                    "Pilih tingkat signifikansi (α):",
+                    options=[0.01, 0.05, 0.10],
+                    value=0.05,
+                    format_func=lambda x: f"{x*100:.0f}% ({x})"
+                )
+        
 #================================
 
 if st.session_state.tampilan1:
@@ -1065,6 +2392,8 @@ if st.session_state.tampilan8:
     tampilkan_latihan1()
 if st.session_state.tampilan9:
     tampilkan_materi6()
+if st.session_state.tampilan10:
+    tampilkan_materi7()
 #======================================
 if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan1=False
@@ -1076,6 +2405,7 @@ if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan7 = True
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
     st.rerun()
 if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan1=False
@@ -1087,6 +2417,7 @@ if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
     st.rerun()
 if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan1=True
@@ -1098,6 +2429,7 @@ if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
     st.rerun()
 if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan1=False
@@ -1109,7 +2441,7 @@ if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
-    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
     st.rerun()
 if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan1=False
@@ -1121,6 +2453,7 @@ if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
     st.rerun()
 if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan1=False
@@ -1132,6 +2465,7 @@ if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
     st.rerun()
 if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan1=False
@@ -1143,6 +2477,7 @@ if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
     st.rerun()
 if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan1=False
@@ -1154,6 +2489,7 @@ if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = True
     st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
     st.rerun()
 if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan1=False
@@ -1165,7 +2501,22 @@ if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan7 = False
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = True
+    st.session_state.tampilan10 = False
     st.rerun()
+if st.sidebar.button("Uji Normalitas"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = True
+    st.rerun()
+
+
 
 
     
