@@ -1,7 +1,8 @@
 streamlit
 numpy
 pandas
-statistics
 matplotlib
 scipy
-
+seaborn
+plotly
+requests
