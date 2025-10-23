@@ -51,6 +51,9 @@ if "tampilan9" not in st.session_state:
 if "tampilan10" not in st.session_state:
     st.session_state.tampilan10 = False
 
+if "tampilan11" not in st.session_state:
+    st.session_state.tampilan11 = False
+
 if "kontrol" not in st.session_state:
     st.session_state.kontrol = True
     
@@ -2371,7 +2374,10 @@ def tampilkan_materi7():
                     value=0.05,
                     format_func=lambda x: f"{x*100:.0f}% ({x})"
                 )
-        
+
+def tampilkan_materi8():
+    st.markdown('''<iframe src="https://martin-bernard26.github.io/Angket_kepuasan/angket_kepuasan.html" style="width:100%; height:4500px"></iframe>''', unsafe_allow_html=True)
+    
 #================================
 
 if st.session_state.tampilan1:
@@ -2394,6 +2400,8 @@ if st.session_state.tampilan9:
     tampilkan_materi6()
 if st.session_state.tampilan10:
     tampilkan_materi7()
+if st.session_state.tampilan11:
+    tampilkan_materi8()
 #======================================
 if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan1=False
@@ -2406,6 +2414,7 @@ if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
     st.rerun()
 if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan1=False
@@ -2418,6 +2427,7 @@ if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
     st.rerun()
 if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan1=True
@@ -2430,6 +2440,7 @@ if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
     st.rerun()
 if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan1=False
@@ -2442,6 +2453,7 @@ if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
     st.rerun()
 if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan1=False
@@ -2454,6 +2466,7 @@ if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
     st.rerun()
 if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan1=False
@@ -2466,6 +2479,7 @@ if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
     st.rerun()
 if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan1=False
@@ -2478,6 +2492,7 @@ if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
     st.rerun()
 if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan1=False
@@ -2490,6 +2505,7 @@ if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan8 = True
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
     st.rerun()
 if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan1=False
@@ -2502,6 +2518,7 @@ if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = True
     st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
     st.rerun()
 if st.sidebar.button("Uji Normalitas"):
     st.session_state.tampilan1=False
@@ -2514,8 +2531,21 @@ if st.sidebar.button("Uji Normalitas"):
     st.session_state.tampilan8 = False
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = True
+    st.session_state.tampilan11 = False
     st.rerun()
-
+if st.sidebar.button("Angket dan Saran"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = True
+    st.rerun()
 
 
 
