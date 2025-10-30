@@ -3,11 +3,15 @@ import numpy as np
 import pandas as pd
 from statistics import mean, median, mode, stdev, multimode
 import matplotlib.pyplot as plt
-from scipy.stats import norm
+from scipy.stats import norm, f, t, wilcoxon, pearsonr
 import requests
 import base64
 import math
-
+import seaborn as sns
+from scipy import stats
+import plotly.graph_objects as go
+import plotly.express as px
+from io import StringIO
 import seaborn as sns
 from scipy import stats
 from scipy.stats import shapiro, normaltest, anderson, kstest
@@ -53,7 +57,37 @@ if "tampilan10" not in st.session_state:
 
 if "tampilan11" not in st.session_state:
     st.session_state.tampilan11 = False
+if "tampilan12" not in st.session_state:
+    st.session_state.tampilan12 = False
 
+if "tampilan13" not in st.session_state:
+    st.session_state.tampilan13 = False
+
+if "tampilan14" not in st.session_state:
+    st.session_state.tampilan14 = False
+
+if "tampilan15" not in st.session_state:
+    st.session_state.tampilan15 = False
+
+if "tampilan16" not in st.session_state:
+    st.session_state.tampilan16 = False
+
+if "tampilan17" not in st.session_state:
+    st.session_state.tampilan17 = False
+if "tampilan18" not in st.session_state:
+    st.session_state.tampilan18 = False
+if "tampilan19" not in st.session_state:
+    st.session_state.tampilan19 = False
+
+if "tampilan20" not in st.session_state:
+    st.session_state.tampilan20 = False
+
+if "tampilan21" not in st.session_state:
+    st.session_state.tampilan21 = False
+
+if "masukan1" not in st.session_state:
+    st.session_state.masukan1=""
+    
 if "kontrol" not in st.session_state:
     st.session_state.kontrol = True
     
@@ -655,6 +689,25 @@ def tampilkan_materi3():
                     data2[int(i)]=data.count(i)
                 st.write(data2)
             st.metric("Standar Deviasi", f"{std_dev:.2f}")
+            with st.expander("Penjelasan Standar Deviasi"):
+                st.markdown("<div style='text-align:center; font-family:broadway; background-color:yellow; color:black; font-size:25px'>Standar Deviasi</div>",unsafe_allow_html=True)
+                st.latex("SD=\\sqrt{\\frac{\\sum{(x_i-\\bar{x})^2}}{n-1}}\\\\Standar\\;\\;Deviasi\\;Sampel")
+                st.markdown("""<div style='text-align:center; font-family:broadway; background-color:cyan; color:black; font-size:20px; width:80%; margin:10px'>
+                                Langkah Pertama: Mencari Rata-rata Nilai</div>""",unsafe_allow_html=True)
+                st.latex(f'\\bar{{x}}={rata2:.2f}')
+                st.markdown("""<div style='text-align:center; font-family:broadway; background-color:cyan; color:black; font-size:20px; width:80%; margin:10px'>
+                                Langkah Kedua: Kurangi masing-masing nilai dengan rata2 lalu hasilnya dikuadratkan </div>""",unsafe_allow_html=True)
+                kolom = ['Nilai','rata2','(x_{i}-\\bar{x}','(x_{i}-\\bar{x})^2']
+                data_masukan = {'Nilai':[float(i) for i in data_input.replace(",", " ").split()],
+                                'Rata-rata':[float(rata2) for i in data_input.replace(",", " ").split()],
+                                r'$x_{i}-\bar{x}$':[float(i)-float(rata2) for i in data_input.replace(",", " ").split()]}
+                df1 = pd.DataFrame(data_masukan)
+                st.markdown(
+                    df1.to_html(escape=False),
+                    unsafe_allow_html=True
+                    )
+                st.dataframe(df1,use_container_width=True)
+                
 
             # Visualisasi
             st.subheader("📈 Visualisasi Data")
@@ -1057,8 +1110,12 @@ def tampilkan_materi6():
         ''',unsafe_allow_html=True)
 
 def tampilkan_materi7():
-    pilihan = st.tabs(['Pengertian','Simulasi'])
+    pilihan = st.tabs(['Teori Pegantar','Teori','Simulasi'])
     with pilihan[0]:
+        st.markdown('''
+        <iframe src="https://martin-bernard26.github.io/statistika/TeoriNormal.html" style="width:100%; height:1800px"></iframe>
+        ''',unsafe_allow_html=True)
+    with pilihan[1]:
         koding='''
 <!DOCTYPE html>
 <html lang="id">
@@ -1145,6 +1202,7 @@ def tampilkan_materi7():
             padding: 20px;
             margin: 20px 0;
             border-radius: 5px;
+            color:blue;
         }
 
         .info-box.warning {
@@ -1642,7 +1700,7 @@ def tampilkan_materi7():
 </html>
         '''
         st.components.v1.html(koding, height=2000)
-    with pilihan[1]:
+    with pilihan[2]:
         st.write('oke')
         # Fungsi-fungsi statistik
         def hitung_statistik(data):
@@ -2378,6 +2436,2019 @@ def tampilkan_materi7():
 def tampilkan_materi8():
     st.markdown('''<iframe src="https://martin-bernard26.github.io/Angket_kepuasan/angket_kepuasan.html" style="width:100%; height:4500px"></iframe>''', unsafe_allow_html=True)
     
+def tampilkan_materi9():
+    kolom = st.columns(3)
+    with kolom[0]:
+        if st.button("Teori Homogen"):
+            st.session_state.tampilan1=False
+            st.session_state.tampilan2=False
+            st.session_state.tampilan3 = False
+            st.session_state.tampilan4 = False
+            st.session_state.tampilan5 = False
+            st.session_state.tampilan6 = False
+            st.session_state.tampilan7 = False
+            st.session_state.tampilan8 = False
+            st.session_state.tampilan9 = False
+            st.session_state.tampilan10 = False
+            st.session_state.tampilan11 = False
+            st.session_state.tampilan12 = False
+            st.session_state.tampilan13 = False
+            st.session_state.tampilan14 = True
+            st.session_state.tampilan15 = False
+            st.session_state.tampilan16 = False
+            st.session_state.tampilan17 = False
+            st.session_state.tampilan18 = False
+            st.session_state.tampilan19 = False
+            st.session_state.tampilan20 = False
+            st.session_state.tampilan21 = False
+            st.rerun()
+    with kolom[1]:
+        if st.button("Uji F"):
+            st.session_state.tampilan1=False
+            st.session_state.tampilan2=False
+            st.session_state.tampilan3 = False
+            st.session_state.tampilan4 = False
+            st.session_state.tampilan5 = False
+            st.session_state.tampilan6 = False
+            st.session_state.tampilan7 = False
+            st.session_state.tampilan8 = False
+            st.session_state.tampilan9 = False
+            st.session_state.tampilan10 = False
+            st.session_state.tampilan11 = False
+            st.session_state.tampilan12 = False
+            st.session_state.tampilan13 = False
+            st.session_state.tampilan14 = False
+            st.session_state.tampilan15 = True
+            st.session_state.tampilan16 = False
+            st.session_state.tampilan17 = False
+            st.session_state.tampilan18 = False
+            st.session_state.tampilan19 = False
+            st.session_state.tampilan20 = False
+            st.session_state.tampilan21 = False
+            st.rerun()
+    with kolom[2]:
+        if st.button("Contoh Uji Homogen Lainnya"):
+            st.session_state.tampilan1=False
+            st.session_state.tampilan2=False
+            st.session_state.tampilan3 = False
+            st.session_state.tampilan4 = False
+            st.session_state.tampilan5 = False
+            st.session_state.tampilan6 = False
+            st.session_state.tampilan7 = False
+            st.session_state.tampilan8 = False
+            st.session_state.tampilan9 = False
+            st.session_state.tampilan10 = False
+            st.session_state.tampilan11 = False
+            st.session_state.tampilan12 = False
+            st.session_state.tampilan13 = True
+            st.session_state.tampilan14 = False
+            st.session_state.tampilan15 = False
+            st.session_state.tampilan16 = False
+            st.session_state.tampilan17 = False
+            st.session_state.tampilan18 = False
+            st.session_state.tampilan19 = False
+            st.session_state.tampilan20 = False
+            st.session_state.tampilan21 = False
+            st.rerun()
+    # Custom CSS
+    st.markdown("""
+    <style>
+    .main {
+        padding: 0rem 1rem;
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        padding: 10px 20px;
+        background-color: #f0f2f6;
+        border-radius: 10px;
+    }
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .info-box {
+        background-color: #d1ecf1;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 5px solid #17a2b8;
+        margin: 10px 0;
+    }
+    .warning-box {
+        background-color: #f8d7da;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 5px solid #dc3545;
+        margin: 10px 0;
+    }
+    .success-box {
+        background-color: #d4edda;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 5px solid #28a745;
+        margin: 10px 0;
+    }
+    .formula-box {
+        background-color: #fff3cd;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 5px solid #ffc107;
+        margin: 10px 0;
+        font-family: monospace;
+        text-align: center;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Header
+    st.markdown("""
+    <h1 style='text-align: center; color: #667eea;'>
+        📊 Uji Homogenitas Varians
+    </h1>
+    <p style='text-align: center; font-size: 1.2em; color: #666;'>
+        Memahami dan Mempraktikkan Uji Homogenitas dalam Analisis Statistik
+    </p>
+    <hr>
+    """, unsafe_allow_html=True)
+
+    # Tabs
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    "📚 Teori", "🎯 Metode Uji", "🧪 Simulasi Data", 
+    "📂 Upload Data", "📈 Analisis Lanjutan", "💡 Studi Kasus"
+    ])
+
+    # TAB 1: TEORI
+    with tab1:
+        st.header("📚 Pengertian Uji Homogenitas")
+    
+        col1, col2 = st.columns([2, 1])
+    
+        with col1:
+            st.markdown("""
+        <div class="info-box" style="color:black">
+        <h3>Apa itu Uji Homogenitas?</h3>
+        <p>
+        Uji homogenitas adalah uji statistik yang digunakan untuk mengetahui apakah 
+        beberapa kelompok data memiliki varians (ragam) yang sama atau tidak. 
+        Uji ini merupakan <strong>syarat penting</strong> dalam analisis parametrik seperti 
+        ANOVA, uji-t, dan regresi.
+        </p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+            st.markdown("""
+        ### 🎯 Tujuan Uji Homogenitas
+        
+        1. **Memenuhi Asumsi ANOVA**: Memastikan varians antar kelompok sama
+        2. **Validitas Uji Statistik**: Meningkatkan keakuratan hasil analisis
+        3. **Pemilihan Metode**: Menentukan uji statistik yang tepat
+        4. **Interpretasi Data**: Memahami karakteristik variabilitas data
+        """)
+        
+            st.markdown("""
+        ### ✅ Kapan Uji Homogenitas Diperlukan?
+        
+        - Sebelum melakukan **ANOVA** (Analysis of Variance)
+        - Sebelum melakukan **uji-t untuk dua sampel independen**
+        - Dalam **analisis regresi** dengan variabel dummy
+        - Ketika membandingkan **3 kelompok atau lebih**
+        - Dalam **desain eksperimen** dengan beberapa perlakuan
+        """)
+    
+        with col2:
+            st.markdown("""
+        <div class="warning-box" style="color:black">
+        <h4>⚠️ Hipotesis</h4>
+        <p><strong>H₀:</strong> Varians semua kelompok sama (homogen)</p>
+        <p><strong>H₁:</strong> Minimal ada satu varians kelompok yang berbeda</p>
+        </div>
+        """, unsafe_allow_html=True)
+        
+            st.markdown("""
+        <div class="success-box" style="color:black">
+        <h4>📊 Interpretasi</h4>
+        <p><strong>p-value > 0.05:</strong><br>Gagal tolak H₀<br>→ Data homogen ✅</p>
+        <p><strong>p-value ≤ 0.05:</strong><br>Tolak H₀<br>→ Data tidak homogen ❌</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+        st.markdown("---")
+    
+        # Karakteristik
+        st.subheader("📋 Karakteristik Data Homogen vs Tidak Homogen")
+    
+        col1, col2 = st.columns(2)
+    
+        with col1:
+            st.markdown("""
+        **Data Homogen (Varians Sama):**
+        - Sebaran data antar kelompok relatif sama
+        - Box plot menunjukkan lebar yang mirip
+        - Cocok untuk uji parametrik
+        - Hasil analisis lebih reliabel
+        """)
+    
+        with col2:
+            st.markdown("""
+        **Data Tidak Homogen (Varians Berbeda):**
+        - Sebaran data antar kelompok berbeda signifikan
+        - Box plot menunjukkan lebar yang berbeda
+        - Perlu uji non-parametrik atau transformasi data
+        - Gunakan Welch's ANOVA atau Kruskal-Wallis
+        """)
+
+    # TAB 2: METODE UJI
+    with tab2:
+        st.header("🎯 Metode-Metode Uji Homogenitas")
+    
+        method_tab1, method_tab2, method_tab3, method_tab4 = st.tabs([
+        "Levene Test", "Bartlett Test", "Fligner-Killeen", "Perbandingan"
+        ])
+    
+        with method_tab1:
+            st.subheader("1️⃣ Uji Levene")
+        
+            col1, col2 = st.columns([3, 2])
+        
+            with col1:
+                st.markdown("""
+            ### 📖 Deskripsi
+            Uji Levene adalah uji yang paling umum digunakan untuk menguji homogenitas varians. 
+            Uji ini **robust terhadap pelanggaran asumsi normalitas** dan dapat digunakan 
+            untuk berbagai jenis distribusi data.
+            
+            ### 🔢 Formula
+            """)
+            
+                st.markdown("""
+            <div class="formula-box" style='color:black'>
+            W = [(N - k) / (k - 1)] × [Σnᵢ(Zᵢ. - Z..)² / Σ(Zᵢⱼ - Zᵢ.)²]
+            </div>
+            """, unsafe_allow_html=True)
+            
+                st.markdown("""
+            Dimana:
+            - **N** = total sampel
+            - **k** = jumlah kelompok
+            - **Zᵢⱼ** = |Xᵢⱼ - median kelompok i|
+            - **nᵢ** = ukuran sampel kelompok ke-i
+            """)
+        
+            with col2:
+                st.markdown("""
+            ### ✅ Kelebihan
+            - Robust terhadap non-normalitas
+            - Cocok untuk data skewed
+            - Paling sering digunakan
+            - Tidak sensitif terhadap outlier
+            
+            ### ⚠️ Kekurangan
+            - Memerlukan sampel minimal 20
+            - Power test sedang untuk sampel kecil
+            
+            ### 📊 Penggunaan
+            - **Sangat direkomendasikan** untuk data yang tidak normal
+            - Pilihan utama dalam SPSS dan software statistik
+            """)
+    
+        with method_tab2:
+            st.subheader("2️⃣ Uji Bartlett")
+        
+            col1, col2 = st.columns([3, 2])
+        
+            with col1:
+                st.markdown("""
+            ### 📖 Deskripsi
+            Uji Bartlett digunakan untuk menguji homogenitas varians dari k kelompok. 
+            Uji ini **sangat sensitif terhadap asumsi normalitas**, sehingga hanya 
+            direkomendasikan jika data benar-benar berdistribusi normal.
+            
+            ### 🔢 Formula
+            """)
+            
+                st.markdown("""
+            <div class="formula-box" style="color:black">
+            χ² = [(N - k) × ln(S²pooled) - Σ(nᵢ - 1) × ln(S²ᵢ)] / C
+            </div>
+            """, unsafe_allow_html=True)
+            
+                st.markdown("""
+            Dimana:
+            - **S²pooled** = varians gabungan
+            - **S²ᵢ** = varians kelompok ke-i
+            - **C** = faktor koreksi
+            - Distribusi mengikuti Chi-square
+            """)
+        
+            with col2:
+                st.markdown("""
+            ### ✅ Kelebihan
+            - Power test tinggi untuk data normal
+            - Akurat untuk distribusi normal
+            - Mudah dihitung
+            
+            ### ⚠️ Kekurangan
+            - **Sangat sensitif** terhadap non-normalitas
+            - Tidak robust terhadap outlier
+            - Memberikan hasil false positive jika data tidak normal
+            
+            ### 📊 Penggunaan
+            - Hanya untuk data yang **benar-benar normal**
+            - Uji normalitas terlebih dahulu
+            """)
+    
+        with method_tab3:
+            st.subheader("3️⃣ Uji Fligner-Killeen")
+        
+            col1, col2 = st.columns([3, 2])
+        
+            with col1:
+                st.markdown("""
+            ### 📖 Deskripsi
+            Uji Fligner-Killeen adalah uji non-parametrik yang menggunakan ranking 
+            dan median. Uji ini sangat robust dan cocok untuk data yang tidak normal 
+            atau memiliki outlier.
+            
+            ### 🔢 Karakteristik
+            - Menggunakan **rank (peringkat)** data
+            - Berbasis **median absolut deviasi**
+            - Distribusi Chi-square
+            - Lebih robust dari Levene dan Bartlett
+            """)
+        
+            with col2:
+                st.markdown("""
+            ### ✅ Kelebihan
+            - **Paling robust** terhadap non-normalitas
+            - Tahan terhadap outlier
+            - Cocok untuk data ordinal
+            - Power test baik
+            
+            ### ⚠️ Kekurangan
+            - Kurang populer
+            - Komputasi lebih kompleks
+            
+            ### 📊 Penggunaan
+            - Data dengan **distribusi tidak diketahui**
+            - Banyak outlier
+            - Alternatif Levene
+            """)
+    
+        with method_tab4:
+            st.subheader("📊 Perbandingan Metode Uji Homogenitas")
+        
+            comparison_data = pd.DataFrame({
+            'Metode': ['Levene Test', 'Bartlett Test', 'Fligner-Killeen'],
+            'Asumsi Normalitas': ['Tidak perlu', 'Harus normal', 'Tidak perlu'],
+            'Robustness': ['Tinggi', 'Rendah', 'Sangat Tinggi'],
+            'Power Test': ['Sedang-Tinggi', 'Tinggi (jika normal)', 'Sedang-Tinggi'],
+            'Sensitivitas Outlier': ['Rendah', 'Tinggi', 'Sangat Rendah'],
+            'Rekomendasi': ['Pilihan utama', 'Hanya jika data normal', 'Alternatif robust']
+        })
+        
+            st.dataframe(comparison_data, use_container_width=True)
+        
+            st.markdown("---")
+        
+            st.markdown("""
+        ### 🎯 Rekomendasi Pemilihan Metode:
+        
+        **Gunakan Levene Test jika:**
+        - Data tidak berdistribusi normal atau tidak diketahui distribusinya
+        - Analisis umum (paling sering digunakan)
+        - Ingin metode yang robust dan reliable
+        
+        **Gunakan Bartlett Test jika:**
+        - Data sudah dipastikan berdistribusi normal
+        - Tidak ada outlier
+        - Ingin power test maksimal untuk data normal
+        
+        **Gunakan Fligner-Killeen jika:**
+        - Data memiliki banyak outlier
+        - Distribusi sangat tidak normal
+        - Ingin metode paling robust
+        """)
+
+    # TAB 3: SIMULASI DATA
+    with tab3:
+        st.header("🧪 Simulasi dan Visualisasi Data")
+    
+        st.markdown("""
+    Bagian ini memungkinkan Anda untuk membuat data simulasi dengan karakteristik 
+    yang berbeda dan melakukan uji homogenitas secara langsung.
+    """)
+    
+        col1, col2 = st.columns([1, 2])
+    
+        with col1:
+            st.subheader("⚙️ Pengaturan Simulasi")
+        
+            num_groups = st.slider("Jumlah Kelompok", 2, 5, 3)
+            sample_size = st.slider("Ukuran Sampel per Kelompok", 20, 100, 30)
+        
+            st.markdown("---")
+            st.markdown("### 📊 Parameter Kelompok")
+        
+            group_params = []
+            for i in range(num_groups):
+                with st.expander(f"Kelompok {i+1}"):
+                    mean = st.number_input(f"Mean Kelompok {i+1}", 0.0, 100.0, 50.0 + i*5, key=f"mean_{i}")
+                    std = st.number_input(f"Std Dev Kelompok {i+1}", 1.0, 20.0, 5.0 + i*2, key=f"std_{i}")
+                    group_params.append((mean, std))
+        
+            st.markdown("---")
+            generate_button = st.button("🎲 Generate Data", type="primary", use_container_width=True)
+    
+        with col2:
+            if generate_button:
+                # Generate data
+                groups_data = []
+                all_data = []
+                group_labels = []
+            
+                for i, (mean, std) in enumerate(group_params):
+                    data = np.random.normal(mean, std, sample_size)
+                    groups_data.append(data)
+                    all_data.extend(data)
+                    group_labels.extend([f'Kelompok {i+1}'] * sample_size)
+            
+                df_sim = pd.DataFrame({
+                'Nilai': all_data,
+                'Kelompok': group_labels
+                })
+            
+                # Visualisasi
+                st.subheader("📈 Visualisasi Data")
+            
+                viz_col1, viz_col2 = st.columns(2)
+            
+                with viz_col1:
+                    # Box Plot
+                    fig1 = px.box(df_sim, x='Kelompok', y='Nilai', 
+                             title='Box Plot - Perbandingan Distribusi',
+                             color='Kelompok')
+                    fig1.update_layout(showlegend=False, height=400)
+                    st.plotly_chart(fig1, use_container_width=True)
+            
+                with viz_col2:
+                    # Violin Plot
+                    fig2 = px.violin(df_sim, x='Kelompok', y='Nilai',
+                                title='Violin Plot - Distribusi Detail',
+                                color='Kelompok', box=True)
+                    fig2.update_layout(showlegend=False, height=400)
+                    st.plotly_chart(fig2, use_container_width=True)
+            
+                # Histogram
+                fig3 = px.histogram(df_sim, x='Nilai', color='Kelompok',
+                               title='Histogram - Distribusi Frekuensi',
+                               barmode='overlay', opacity=0.7)
+                fig3.update_layout(height=300)
+                st.plotly_chart(fig3, use_container_width=True)
+            
+                st.markdown("---")
+            
+                # Statistik Deskriptif
+                st.subheader("📊 Statistik Deskriptif")
+            
+                stats_df = df_sim.groupby('Kelompok')['Nilai'].agg([
+                ('Jumlah Data', 'count'),
+                ('Mean', 'mean'),
+                ('Median', 'median'),
+                ('Std Dev', 'std'),
+                ('Varians', 'var'),
+                ('Min', 'min'),
+                ('Max', 'max')
+                ]).round(3)
+            
+                st.dataframe(stats_df, use_container_width=True)
+            
+                st.markdown("---")
+            
+                # Uji Homogenitas
+                st.subheader("🔬 Hasil Uji Homogenitas")
+            
+                # Levene Test
+                stat_levene, p_levene = stats.levene(*groups_data)
+            
+                # Bartlett Test
+                stat_bartlett, p_bartlett = stats.bartlett(*groups_data)
+            
+                # Fligner-Killeen Test (custom implementation)
+                from scipy.stats import fligner
+                stat_fligner, p_fligner = fligner(*groups_data)
+            
+                results_df = pd.DataFrame({
+                'Metode Uji': ['Levene Test', 'Bartlett Test', 'Fligner-Killeen Test'],
+                'Statistik': [f'{stat_levene:.4f}', f'{stat_bartlett:.4f}', f'{stat_fligner:.4f}'],
+                'P-value': [f'{p_levene:.4f}', f'{p_bartlett:.4f}', f'{p_fligner:.4f}'],
+                'Keputusan (α=0.05)': [
+                    'Homogen ✅' if p_levene > 0.05 else 'Tidak Homogen ❌',
+                    'Homogen ✅' if p_bartlett > 0.05 else 'Tidak Homogen ❌',
+                    'Homogen ✅' if p_fligner > 0.05 else 'Tidak Homogen ❌'
+                    ]
+                })
+            
+                st.dataframe(results_df, use_container_width=True)
+            
+                # Interpretasi
+                st.markdown("---")
+                st.subheader("💡 Interpretasi Hasil")
+            
+                if p_levene > 0.05:
+                    st.markdown("""
+                <div class="success-box" style="color:black">
+                <h4>✅ Kesimpulan (Levene Test - Rekomendasi)</h4>
+                <p>Dengan p-value = {:.4f} > α (0.05), maka <strong>gagal tolak H₀</strong>.</p>
+                <p><strong>Kesimpulan:</strong> Varians antar kelompok adalah <strong>homogen</strong>.</p>
+                <p><strong>Rekomendasi:</strong> Anda dapat melanjutkan dengan uji ANOVA atau uji-t parametrik.</p>
+                </div>
+                """.format(p_levene), unsafe_allow_html=True)
+                else:
+                    st.markdown("""
+                <div class="warning-box" style="color:black">
+                <h4>❌ Kesimpulan (Levene Test - Rekomendasi)</h4>
+                <p>Dengan p-value = {:.4f} ≤ α (0.05), maka <strong>tolak H₀</strong>.</p>
+                <p><strong>Kesimpulan:</strong> Varians antar kelompok <strong>tidak homogen</strong>.</p>
+                <p><strong>Rekomendasi:</strong> Gunakan Welch's ANOVA, Kruskal-Wallis Test, atau transformasi data.</p>
+                </div>
+                """.format(p_levene), unsafe_allow_html=True)
+            
+                # Download data
+                st.markdown("---")
+                csv = df_sim.to_csv(index=False)
+                st.download_button(
+                    label="📥 Download Data Simulasi (CSV)",
+                    data=csv,
+                    file_name="data_simulasi_homogenitas.csv",
+                    mime="text/csv"
+                )
+
+    # TAB 4: UPLOAD DATA
+    with tab4:
+        st.header("📂 Upload dan Analisis Data Sendiri")
+    
+        st.markdown("""
+    Upload file CSV Anda untuk melakukan uji homogenitas. File harus memiliki minimal 
+    dua kolom: satu untuk nilai data dan satu untuk kategori/kelompok.
+    """)
+    
+        # Contoh format
+        with st.expander("📋 Lihat Format Data yang Diharapkan"):
+            example_df = pd.DataFrame({
+            'Kelompok': ['A', 'A', 'A', 'B', 'B', 'B', 'C', 'C', 'C'],
+            'Nilai': [85, 90, 88, 75, 80, 78, 92, 95, 93]
+            })
+            st.dataframe(example_df)
+            st.markdown("**Catatan:** Kolom dapat memiliki nama apa saja, Anda akan memilih kolom mana yang digunakan.")
+    
+        uploaded_file = st.file_uploader("Upload file CSV", type=['csv'])
+    
+        if uploaded_file is not None:
+            try:
+                df_upload = pd.read_csv(uploaded_file)
+            
+                st.success("✅ File berhasil diupload!")
+            
+                col1, col2 = st.columns([1, 2])
+            
+                with col1:
+                    st.subheader("⚙️ Pengaturan Kolom")
+                
+                    # Pilih kolom
+                    value_col = st.selectbox("Pilih kolom nilai (numerik)", df_upload.columns)
+                    group_col = st.selectbox("Pilih kolom kelompok (kategori)", 
+                                        [col for col in df_upload.columns if col != value_col])
+                
+                    # Pilih metode
+                    test_method = st.radio("Pilih Metode Uji", 
+                                      ["Levene Test (Rekomendasi)", "Bartlett Test", 
+                                       "Fligner-Killeen Test", "Semua Metode"])
+                
+                    analyze_button = st.button("🔍 Analisis Data", type="primary", use_container_width=True)
+            
+                with col2:
+                    st.subheader("👀 Preview Data")
+                    st.dataframe(df_upload.head(10), use_container_width=True)
+                    st.caption(f"Total: {len(df_upload)} baris, {len(df_upload.columns)} kolom")
+            
+                if analyze_button:
+                    # Bersihkan data
+                    df_clean = df_upload[[group_col, value_col]].dropna()
+                
+                    # Group data
+                    groups = df_clean[group_col].unique()
+                    groups_list = [df_clean[df_clean[group_col] == g][value_col].values for g in groups]
+                
+                    st.markdown("---")
+                
+                    # Visualisasi
+                    st.subheader("📊 Visualisasi Data")
+                
+                    viz_col1, viz_col2 = st.columns(2)
+                
+                    with viz_col1:
+                        fig1 = px.box(df_clean, x=group_col, y=value_col,
+                                 title='Box Plot', color=group_col)
+                        fig1.update_layout(showlegend=False, height=400)
+                        st.plotly_chart(fig1, use_container_width=True)
+                
+                    with viz_col2:
+                        fig2 = px.violin(df_clean, x=group_col, y=value_col,
+                                    title='Violin Plot', color=group_col, box=True)
+                        fig2.update_layout(showlegend=False, height=400)
+                        st.plotly_chart(fig2, use_container_width=True)
+                
+                    # Statistik
+                    st.markdown("---")
+                    st.subheader("📈 Statistik Deskriptif")
+                
+                    stats_df = df_clean.groupby(group_col)[value_col].agg([
+                    ('Count', 'count'),
+                    ('Mean', 'mean'),
+                    ('Median', 'median'),
+                    ('Std Dev', 'std'),
+                    ('Variance', 'var'),
+                    ('Min', 'min'),
+                    ('Max', 'max')
+                    ]).round(3)
+                
+                    st.dataframe(stats_df, use_container_width=True)
+                
+                    # Uji Homogenitas
+                    st.markdown("---")
+                    st.subheader("🔬 Hasil Uji Homogenitas")
+                
+                    if test_method == "Semua Metode":
+                        stat_levene, p_levene = stats.levene(*groups_list)
+                        stat_bartlett, p_bartlett = stats.bartlett(*groups_list)
+                        stat_fligner, p_fligner = stats.fligner(*groups_list)
+                    
+                        results = pd.DataFrame({
+                        'Metode': ['Levene Test', 'Bartlett Test', 'Fligner-Killeen'],
+                        'Statistik': [stat_levene, stat_bartlett, stat_fligner],
+                        'P-value': [p_levene, p_bartlett, p_fligner],
+                        'Kesimpulan': [
+                            'Homogen ✅' if p_levene > 0.05 else 'Tidak Homogen ❌',
+                            'Homogen ✅' if p_bartlett > 0.05 else 'Tidak Homogen ❌',
+                            'Homogen ✅' if p_fligner > 0.05 else 'Tidak Homogen ❌'
+                            ]
+                        })
+                    
+                        st.dataframe(results, use_container_width=True)
+                    
+                        # Interpretasi Levene (rekomendasi)
+                        st.markdown("---")
+                        st.subheader("💡 Interpretasi (Berdasarkan Levene Test)")
+                        if p_levene > 0.05:
+                            st.markdown(f"""
+                        <div class="success-box">
+                        <p><strong>P-value = {p_levene:.4f} > 0.05</strong></p>
+                        <p>✅ Data memiliki varians yang <strong>homogen</strong></p>
+                        <p>Anda dapat melanjutkan dengan uji parametrik (ANOVA, t-test)</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        else:
+                            st.markdown(f"""
+                        <div class="warning-box">
+                        <p><strong>P-value = {p_levene:.4f} ≤ 0.05</strong></p>
+                        <p>❌ Data memiliki varians yang <strong>tidak homogen</strong></p>
+                        <p>Gunakan Welch's ANOVA atau Kruskal-Wallis Test</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                
+                    else:
+                        # Single test
+                        if "Levene" in test_method:
+                            stat, p_value = stats.levene(*groups_list)
+                            method_name = "Levene Test"
+                        elif "Bartlett" in test_method:
+                            stat, p_value = stats.bartlett(*groups_list)
+                            method_name = "Bartlett Test"
+                        else:
+                            stat, p_value = stats.fligner(*groups_list)
+                            method_name = "Fligner-Killeen Test"
+                    
+                        st.markdown(f"""
+                    **Metode:** {method_name}  
+                    **Statistik Uji:** {stat:.4f}  
+                    **P-value:** {p_value:.4f}  
+                    **Tingkat Signifikansi:** α = 0.05
+                    """)
+                    
+                        if p_value > 0.05:
+                            st.markdown(f"""
+                        <div class="success-box">
+                        <h4>✅ Kesimpulan</h4>
+                        <p>Dengan p-value = {p_value:.4f} > 0.05, gagal tolak H₀</p>
+                        <p>Data memiliki varians yang <strong>homogen</strong></p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        else:
+                            st.markdown(f"""
+                        <div class="warning-box">
+                        <h4>❌ Kesimpulan</h4>
+                        <p>Dengan p-value = {p_value:.4f} ≤ 0.05, tolak H₀</p>
+                        <p>Data memiliki varians yang <strong>tidak homogen</strong></p>
+                        </div>
+                        """, unsafe_allow_html=True)
+        
+            except Exception as e:
+                st.error(f"❌ Error membaca file: {str(e)}")
+                st.info("Pastikan file CSV Anda memiliki format yang benar dengan kolom numerik dan kategori.")
+
+    # TAB 5: ANALISIS LANJUTAN
+    with tab5:
+        st.header("📈 Analisis Lanjutan")
+    
+        st.markdown("""
+        Bagian ini menampilkan analisis mendalam dan visualisasi tambahan untuk 
+        memahami homogenitas data secara komprehensif.
+        """)
+    
+        # Mini simulasi untuk tab ini
+        st.subheader("🎲 Generate Data untuk Analisis")
+    
+        col1, col2, col3 = st.columns(3)
+    
+        with col1:
+            scenario = st.selectbox(
+            "Pilih Skenario",
+            ["Data Homogen", "Data Tidak Homogen (Varians Berbeda)", 
+             "Data Campuran", "Custom"]
+            )
+    
+        with col2:
+            n_groups_adv = st.number_input("Jumlah Kelompok", 2, 5, 3, key="adv_groups")
+    
+        with col3:
+            n_samples_adv = st.number_input("Sampel per Kelompok", 20, 100, 50, key="adv_samples")
+    
+        if st.button("🚀 Generate & Analisis", type="primary"):
+            # Generate berdasarkan skenario
+            groups_adv = []
+        
+            if scenario == "Data Homogen":
+                # Semua kelompok dengan varians sama
+                for i in range(n_groups_adv):
+                    data = np.random.normal(50 + i*5, 5, n_samples_adv)
+                    groups_adv.append(data)
+        
+            elif scenario == "Data Tidak Homogen (Varians Berbeda)":
+                # Varians berbeda antar kelompok
+                for i in range(n_groups_adv):
+                    data = np.random.normal(50, 5 + i*5, n_samples_adv)
+                    groups_adv.append(data)
+        
+            elif scenario == "Data Campuran":
+                # Kombinasi varians sama dan berbeda
+                for i in range(n_groups_adv):
+                    if i % 2 == 0:
+                        data = np.random.normal(50, 5, n_samples_adv)
+                    else:
+                        data = np.random.normal(50, 15, n_samples_adv)
+                    groups_adv.append(data)
+        
+            else:  # Custom
+                for i in range(n_groups_adv):
+                    mean = 50 + np.random.randint(-10, 10)
+                    std = np.random.uniform(3, 15)
+                    data = np.random.normal(mean, std, n_samples_adv)
+                    groups_adv.append(data)
+        
+            # Buat DataFrame
+            all_data_adv = []
+            group_labels_adv = []
+            for i, data in enumerate(groups_adv):
+                all_data_adv.extend(data)
+                group_labels_adv.extend([f'Grup {i+1}'] * len(data))
+        
+            df_adv = pd.DataFrame({
+            'Nilai': all_data_adv,
+            'Kelompok': group_labels_adv
+            })
+        
+            st.markdown("---")
+        
+            # 1. Visualisasi Komprehensif
+            st.subheader("📊 Visualisasi Komprehensif")
+        
+            fig = go.Figure()
+        
+            # Subplot layout
+            from plotly.subplots import make_subplots
+        
+            fig_subplots = make_subplots(
+                rows=2, cols=2,
+                subplot_titles=('Box Plot', 'Violin Plot', 'Histogram', 'Scatter Plot'),
+                specs=[[{'type': 'box'}, {'type': 'violin'}],
+                   [{'type': 'bar'}, {'type': 'scatter'}]]
+            )
+        
+            colors = px.colors.qualitative.Set2[:n_groups_adv]
+        
+            for i, group in enumerate(groups_adv):
+                group_name = f'Grup {i+1}'
+            
+                # Box plot
+                fig_subplots.add_trace(
+                    go.Box(y=group, name=group_name, marker_color=colors[i],
+                       showlegend=False),
+                    row=1, col=1
+                )
+            
+                # Violin plot
+                fig_subplots.add_trace(
+                    go.Violin(y=group, name=group_name, marker_color=colors[i],
+                         showlegend=False),
+                    row=1, col=2
+                )
+            
+                # Histogram
+                fig_subplots.add_trace(
+                    go.Histogram(x=group, name=group_name, marker_color=colors[i],
+                            opacity=0.7),
+                    row=2, col=1
+                )
+            
+                # Scatter
+                fig_subplots.add_trace(
+                    go.Scatter(x=np.arange(len(group)), y=group, mode='markers',
+                              name=group_name, marker=dict(color=colors[i], size=8)),
+                    row=2, col=2
+                )   
+        
+            fig_subplots.update_layout(height=700, showlegend=True)
+            st.plotly_chart(fig_subplots, use_container_width=True)
+        
+            st.markdown("---")
+        
+            # 2. Statistik Detail
+            st.subheader("📈 Statistik Detail per Kelompok")
+        
+            stats_detail = []
+            for i, group in enumerate(groups_adv):
+                stats_detail.append({
+                    'Kelompok': f'Grup {i+1}',
+                    'N': len(group),
+                    'Mean': np.mean(group),
+                    'Median': np.median(group),
+                    'Std Dev': np.std(group, ddof=1),
+                    'Variance': np.var(group, ddof=1),
+                    'CV (%)': (np.std(group, ddof=1) / np.mean(group)) * 100,
+                    'Range': np.max(group) - np.min(group),
+                    'IQR': np.percentile(group, 75) - np.percentile(group, 25)
+                })
+        
+            stats_detail_df = pd.DataFrame(stats_detail)
+            st.dataframe(stats_detail_df.round(3), use_container_width=True)
+        
+            st.markdown("---")
+        
+            # 3. Perbandingan Varians Visual
+            st.subheader("🔍 Perbandingan Varians Antar Kelompok")
+        
+            variances = [np.var(g, ddof=1) for g in groups_adv]
+        
+            fig_var = go.Figure(data=[
+                go.Bar(x=[f'Grup {i+1}' for i in range(n_groups_adv)],
+                       y=variances,
+                       marker_color=colors,
+                       text=[f'{v:.2f}' for v in variances],
+                       textposition='auto')
+            ])
+        
+            fig_var.update_layout(
+                title='Perbandingan Varians (Semakin sama, semakin homogen)',
+                xaxis_title='Kelompok',
+                yaxis_title='Varians',
+                height=400
+            )
+        
+            st.plotly_chart(fig_var, use_container_width=True)
+        
+            # Rasio varians
+            max_var = max(variances)
+            min_var = min(variances)
+            ratio = max_var / min_var if min_var > 0 else float('inf')
+        
+            st.markdown(f"""
+        **Rasio Varians (Max/Min):** {ratio:.2f}
+        
+        - **Rasio < 2:** Data kemungkinan homogen ✅
+        - **Rasio 2-4:** Data borderline, perlu uji statistik 🟡
+        - **Rasio > 4:** Data kemungkinan tidak homogen ❌
+        """)
+        
+            st.markdown("---")
+        
+            # 4. Uji Homogenitas Lengkap
+            st.subheader("🔬 Hasil Uji Homogenitas (Semua Metode)")
+        
+            stat_l, p_l = stats.levene(*groups_adv)
+            stat_b, p_b = stats.bartlett(*groups_adv)
+            stat_f, p_f = stats.fligner(*groups_adv)
+        
+            results_complete = pd.DataFrame({
+            'Metode': ['Levene Test', 'Bartlett Test', 'Fligner-Killeen Test'],
+            'Statistik Uji': [f'{stat_l:.4f}', f'{stat_b:.4f}', f'{stat_f:.4f}'],
+            'P-value': [f'{p_l:.6f}', f'{p_b:.6f}', f'{p_f:.6f}'],
+            'α = 0.05': [
+                'Homogen ✅' if p_l > 0.05 else 'Tidak Homogen ❌',
+                'Homogen ✅' if p_b > 0.05 else 'Tidak Homogen ❌',
+                'Homogen ✅' if p_f > 0.05 else 'Tidak Homogen ❌'
+            ],
+            'α = 0.01': [
+                'Homogen ✅' if p_l > 0.01 else 'Tidak Homogen ❌',
+                'Homogen ✅' if p_b > 0.01 else 'Tidak Homogen ❌',
+                'Homogen ✅' if p_f > 0.01 else 'Tidak Homogen ❌'
+            ]
+            })
+        
+            st.dataframe(results_complete, use_container_width=True)
+        
+            # Visualisasi p-values
+            fig_pval = go.Figure()
+        
+            methods = ['Levene', 'Bartlett', 'Fligner-K']
+            p_values = [p_l, p_b, p_f]
+        
+            fig_pval.add_trace(go.Bar(
+                x=methods,
+                y=p_values,
+                marker_color=['#667eea', '#764ba2', '#f093fb'],
+                text=[f'{p:.4f}' for p in p_values],
+                textposition='auto'
+            ))
+        
+            fig_pval.add_hline(y=0.05, line_dash="dash", line_color="red",
+                              annotation_text="α = 0.05")
+            fig_pval.add_hline(y=0.01, line_dash="dash", line_color="orange",
+                              annotation_text="α = 0.01")
+        
+            fig_pval.update_layout(
+                title='Perbandingan P-values (Semakin tinggi, semakin homogen)',
+                xaxis_title='Metode Uji',
+                yaxis_title='P-value',
+                height=400
+            )
+        
+            st.plotly_chart(fig_pval, use_container_width=True)
+        
+            st.markdown("---")
+        
+            # 5. Kesimpulan dan Rekomendasi
+            st.subheader("💡 Kesimpulan dan Rekomendasi")
+        
+            # Majority voting
+            homogen_count = sum([p_l > 0.05, p_b > 0.05, p_f > 0.05])
+        
+            if homogen_count >= 2:
+                st.markdown("""
+            <div class="success-box" style="color:black">
+            <h4>✅ KESIMPULAN: Data HOMOGEN</h4>
+            <p>Mayoritas uji ({}/3) menunjukkan varians kelompok adalah homogen.</p>
+            
+            <h4>📋 Rekomendasi Analisis Lanjutan:</h4>
+            <ul>
+                <li>✅ <strong>One-Way ANOVA</strong> - untuk membandingkan mean antar kelompok</li>
+                <li>✅ <strong>Independent t-test</strong> - jika hanya 2 kelompok</li>
+                <li>✅ <strong>Post-hoc tests</strong> (Tukey HSD, Bonferroni) - jika ANOVA signifikan</li>
+                <li>✅ <strong>Regresi Linear</strong> - jika ada variabel prediktor</li>
+            </ul>
+            </div>
+            """.format(homogen_count), unsafe_allow_html=True)
+            else:
+                st.markdown("""
+            <div class="warning-box">
+            <h4>❌ KESIMPULAN: Data TIDAK HOMOGEN</h4>
+            <p>Mayoritas uji ({}/3) menunjukkan varians kelompok tidak homogen.</p>
+            
+            <h4>📋 Rekomendasi Analisis Alternatif:</h4>
+            <ul>
+                <li>🔄 <strong>Transformasi Data</strong> - log, sqrt, atau Box-Cox transformation</li>
+                <li>📊 <strong>Welch's ANOVA</strong> - ANOVA yang tidak mengasumsikan varians sama</li>
+                <li>📉 <strong>Kruskal-Wallis Test</strong> - alternatif non-parametrik</li>
+                <li>🎯 <strong>Welch's t-test</strong> - jika hanya 2 kelompok</li>
+                <li>📈 <strong>Robust Regression</strong> - regresi yang tahan terhadap heteroskedastisitas</li>
+            </ul>
+            
+            <h4>🔧 Opsi Transformasi Data:</h4>
+            <ul>
+                <li><strong>Log transformation:</strong> y' = log(y) - untuk data skewed kanan</li>
+                <li><strong>Square root:</strong> y' = √y - untuk data count</li>
+                <li><strong>Reciprocal:</strong> y' = 1/y - untuk rasio atau rate</li>
+            </ul>
+            </div>
+            """.format(3 - homogen_count), unsafe_allow_html=True)
+        
+            # Download hasil
+            st.markdown("---")
+        
+            # Prepare download data
+            download_df = df_adv.copy()
+            csv_download = download_df.to_csv(index=False)
+        
+            col_dl1, col_dl2 = st.columns(2)
+        
+            with col_dl1:
+                st.download_button(
+                    label="📥 Download Data (CSV)",
+                    data=csv_download,
+                    file_name="data_analisis_homogenitas.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
+        
+            with col_dl2:
+                # Create report
+                report = f"""
+LAPORAN UJI HOMOGENITAS
+========================
+
+Skenario: {scenario}
+Jumlah Kelompok: {n_groups_adv}
+Sampel per Kelompok: {n_samples_adv}
+Total Sampel: {n_groups_adv * n_samples_adv}
+
+HASIL UJI HOMOGENITAS
+----------------------
+1. Levene Test
+   Statistik: {stat_l:.4f}
+   P-value: {p_l:.6f}
+   Kesimpulan: {'Homogen' if p_l > 0.05 else 'Tidak Homogen'}
+
+2. Bartlett Test
+   Statistik: {stat_b:.4f}
+   P-value: {p_b:.6f}
+   Kesimpulan: {'Homogen' if p_b > 0.05 else 'Tidak Homogen'}
+
+3. Fligner-Killeen Test
+   Statistik: {stat_f:.4f}
+   P-value: {p_f:.6f}
+   Kesimpulan: {'Homogen' if p_f > 0.05 else 'Tidak Homogen'}
+
+STATISTIK DESKRIPTIF
+---------------------
+{stats_detail_df.to_string()}
+
+KESIMPULAN AKHIR
+----------------
+{'Data memiliki varians yang homogen.' if homogen_count >= 2 else 'Data memiliki varians yang tidak homogen.'}
+Rekomendasi: {'Gunakan uji parametrik (ANOVA, t-test)' if homogen_count >= 2 else 'Gunakan uji non-parametrik atau Welch ANOVA'}
+"""
+            
+                st.download_button(
+                    label="📄 Download Laporan (TXT)",
+                    data=report,
+                    file_name="laporan_homogenitas.txt",
+                    mime="text/plain",
+                    use_container_width=True
+                )
+
+    # TAB 6: STUDI KASUS
+    with tab6:
+        st.header("💡 Studi Kasus Praktis")
+    
+        st.markdown("""
+    Berikut adalah beberapa contoh kasus nyata penggunaan uji homogenitas 
+    dalam berbagai bidang penelitian.
+    """)
+    
+        case_study = st.selectbox(
+        "Pilih Studi Kasus",
+        ["Kasus 1: Perbandingan Nilai Ujian", 
+         "Kasus 2: Efektivitas Obat",
+         "Kasus 3: Produktivitas Karyawan",
+         "Kasus 4: Kualitas Produk"]
+        )
+    
+        if case_study == "Kasus 1: Perbandingan Nilai Ujian":
+            st.subheader("📚 Studi Kasus: Perbandingan Nilai Ujian Tiga Kelas")
+        
+            st.markdown("""
+        **Latar Belakang:**  
+        Seorang guru ingin membandingkan nilai ujian matematika dari 3 kelas yang berbeda 
+        untuk mengetahui apakah ada perbedaan rata-rata nilai. Sebelum melakukan ANOVA, 
+        guru perlu memastikan varians nilai ketiga kelas homogen.
+        """)
+        
+            # Data
+            np.random.seed(42)
+            kelas_a = np.random.normal(75, 8, 30)
+            kelas_b = np.random.normal(78, 9, 30)
+            kelas_c = np.random.normal(73, 7, 30)
+        
+            df_case1 = pd.DataFrame({
+            'Kelas': ['Kelas A']*30 + ['Kelas B']*30 + ['Kelas C']*30,
+            'Nilai': np.concatenate([kelas_a, kelas_b, kelas_c])
+            })
+        
+            col1, col2 = st.columns([2, 1])
+        
+            with col1:
+                # Visualisasi
+                fig = px.box(df_case1, x='Kelas', y='Nilai', color='Kelas',
+                            title='Distribusi Nilai per Kelas')
+                st.plotly_chart(fig, use_container_width=True)
+        
+            with col2:
+                # Statistik
+                st.markdown("**Statistik Deskriptif:**")
+                stats_case1 = df_case1.groupby('Kelas')['Nilai'].agg([
+                ('Mean', 'mean'),
+                ('Std', 'std'),
+                ('Var', 'var')
+                ]).round(2)
+                st.dataframe(stats_case1)
+        
+            # Uji Homogenitas
+            stat_lev, p_lev = stats.levene(kelas_a, kelas_b, kelas_c)
+        
+            st.markdown(f"""
+        **Hasil Uji Levene:**
+        - Statistik: {stat_lev:.4f}
+        - P-value: {p_lev:.4f}
+        
+        **Interpretasi:**  
+        Dengan p-value = {p_lev:.4f} {'>' if p_lev > 0.05 else '<'} 0.05, 
+        maka varians ketiga kelas {'homogen' if p_lev > 0.05 else 'tidak homogen'}.
+        
+        **Kesimpulan:**  
+        Guru {'dapat' if p_lev > 0.05 else 'tidak dapat'} melanjutkan dengan One-Way ANOVA 
+        {'untuk membandingkan rata-rata nilai ketiga kelas' if p_lev > 0.05 else 'dan sebaiknya menggunakan Welch ANOVA atau Kruskal-Wallis Test'}.
+        """)
+    
+        elif case_study == "Kasus 2: Efektivitas Obat":
+            st.subheader("💊 Studi Kasus: Uji Klinis Efektivitas Obat")
+        
+            st.markdown("""
+        **Latar Belakang:**  
+        Peneliti ingin menguji efektivitas 3 jenis obat penurun tekanan darah. 
+        Data penurunan tekanan darah (mmHg) dikumpulkan dari masing-masing kelompok pasien.
+        """)
+        
+            # Data dengan varians tidak sama (realistis untuk data medis)
+            np.random.seed(123)
+            obat_a = np.random.normal(15, 3, 25)  # Penurunan rata-rata 15 mmHg
+            obat_b = np.random.normal(18, 5, 25)  # Penurunan rata-rata 18 mmHg
+            obat_c = np.random.normal(12, 8, 25)  # Penurunan rata-rata 12 mmHg
+        
+            df_case2 = pd.DataFrame({
+            'Obat': ['Obat A']*25 + ['Obat B']*25 + ['Obat C']*25,
+            'Penurunan_TD': np.concatenate([obat_a, obat_b, obat_c])
+            })
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                fig1 = px.violin(df_case2, x='Obat', y='Penurunan_TD', color='Obat',
+                                box=True, title='Distribusi Penurunan Tekanan Darah')
+                st.plotly_chart(fig1, use_container_width=True)
+        
+            with col2:
+                fig2 = px.box(df_case2, x='Obat', y='Penurunan_TD', color='Obat',
+                             title='Box Plot Penurunan TD')
+                st.plotly_chart(fig2, use_container_width=True)
+        
+            # Stats
+            stats_case2 = df_case2.groupby('Obat')['Penurunan_TD'].agg([
+            ('N', 'count'),
+            ('Mean', 'mean'),
+            ('Std Dev', 'std'),
+            ('Variance', 'var')
+            ]).round(2)
+            st.dataframe(stats_case2, use_container_width=True)
+        
+            # Uji
+            stat_lev2, p_lev2 = stats.levene(obat_a, obat_b, obat_c)
+        
+            if p_lev2 > 0.05:
+                st.markdown(f"""
+            <div class="success-box">
+            <h4>✅ Hasil Uji Levene</h4>
+            <p><strong>Statistik:</strong> {stat_lev2:.4f}</p>
+            <p><strong>P-value:</strong> {p_lev2:.4f}</p>
+            <p><strong>Kesimpulan:</strong> Varians homogen, lanjutkan dengan ANOVA</p>
+            </div>
+            """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+            <div class="warning-box">
+            <h4>⚠️ Hasil Uji Levene</h4>
+            <p><strong>Statistik:</strong> {stat_lev2:.4f}</p>
+            <p><strong>P-value:</strong> {p_lev2:.4f}</p>
+            <p><strong>Kesimpulan:</strong> Varians tidak homogen</p>
+            <p><strong>Rekomendasi:</strong> Gunakan Welch's ANOVA atau transformasi data</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+            st.markdown("""
+        **Implikasi Klinis:**  
+        Perbedaan varians menunjukkan bahwa respon pasien terhadap obat berbeda-beda. 
+        Obat dengan varians tinggi menunjukkan efek yang tidak konsisten antar pasien.
+        """)
+    
+        elif case_study == "Kasus 3: Produktivitas Karyawan":
+            st.subheader("👔 Studi Kasus: Produktivitas Karyawan per Divisi")
+        
+            st.markdown("""
+        **Latar Belakang:**  
+        Manajer HR ingin membandingkan produktivitas (unit produksi per hari) 
+        karyawan di 4 divisi berbeda.
+        """)
+        
+            np.random.seed(456)
+            divisi_1 = np.random.normal(45, 6, 20)
+            divisi_2 = np.random.normal(48, 6.5, 20)
+            divisi_3 = np.random.normal(42, 5.8, 20)
+            divisi_4 = np.random.normal(50, 6.2, 20)
+        
+            df_case3 = pd.DataFrame({
+            'Divisi': ['Divisi 1']*20 + ['Divisi 2']*20 + ['Divisi 3']*20 + ['Divisi 4']*20,
+            'Produktivitas': np.concatenate([divisi_1, divisi_2, divisi_3, divisi_4])
+            })
+        
+            # Visualisasi modern
+            fig3 = px.strip(df_case3, x='Divisi', y='Produktivitas', color='Divisi',
+                           title='Produktivitas Karyawan per Divisi')
+            fig3.update_traces(marker=dict(size=10, opacity=0.6))
+            st.plotly_chart(fig3, use_container_width=True)
+        
+            # Test
+            stat_lev3, p_lev3 = stats.levene(divisi_1, divisi_2, divisi_3, divisi_4)
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                st.metric("Statistik Uji Levene", f"{stat_lev3:.4f}")
+                st.metric("P-value", f"{p_lev3:.4f}")
+        
+            with col2:
+                if p_lev3 > 0.05:
+                    st.success("✅ Varians Homogen")
+                    st.info("Dapat menggunakan ANOVA untuk analisis lanjutan")
+                else:
+                    st.error("❌ Varians Tidak Homogen")
+                    st.warning("Gunakan Welch's ANOVA")
+    
+        else:  # Kasus 4
+            st.subheader("🏭 Studi Kasus: Kontrol Kualitas Produk")
+        
+            st.markdown("""
+        **Latar Belakang:**  
+        Quality Control Engineer ingin memastikan konsistensi dimensi produk 
+        dari 3 mesin produksi yang berbeda.
+            """)
+        
+            np.random.seed(789)
+            # Mesin 3 sengaja dibuat dengan variasi tinggi (masalah kualitas)
+            mesin_1 = np.random.normal(10.0, 0.1, 40)  # Presisi tinggi
+            mesin_2 = np.random.normal(10.0, 0.12, 40)  # Presisi sedang
+            mesin_3 = np.random.normal(10.0, 0.5, 40)  # Presisi rendah (bermasalah)
+        
+            df_case4 = pd.DataFrame({
+            'Mesin': ['Mesin 1']*40 + ['Mesin 2']*40 + ['Mesin 3']*40,
+            'Dimensi_mm': np.concatenate([mesin_1, mesin_2, mesin_3])
+            })
+        
+            # Visualisasi detail
+            fig4 = make_subplots(
+                rows=1, cols=2,
+                subplot_titles=('Box Plot', 'Histogram Overlay')
+            )
+        
+            colors_case4 = ['#667eea', '#764ba2', '#f093fb']
+        
+            for i, mesin in enumerate(['Mesin 1', 'Mesin 2', 'Mesin 3']):
+                data_mesin = df_case4[df_case4['Mesin'] == mesin]['Dimensi_mm']
+            
+                fig4.add_trace(
+                    go.Box(y=data_mesin, name=mesin, marker_color=colors_case4[i]),
+                    row=1, col=1
+                )
+            
+                fig4.add_trace(
+                    go.Histogram(x=data_mesin, name=mesin, marker_color=colors_case4[i],
+                            opacity=0.6, nbinsx=20),
+                    row=1, col=2
+                )
+        
+            fig4.update_layout(height=400, barmode='overlay')
+            st.plotly_chart(fig4, use_container_width=True)
+        
+            # Stats detail
+            stats_case4 = df_case4.groupby('Mesin')['Dimensi_mm'].agg([
+            ('N', 'count'),
+            ('Mean', 'mean'),
+            ('Std Dev', 'std'),
+            ('CV (%)', lambda x: (x.std() / x.mean()) * 100),
+            ('Range', lambda x: x.max() - x.min())
+            ]).round(4)
+        
+            st.dataframe(stats_case4, use_container_width=True)
+        
+            # Uji homogenitas
+            stat_lev4, p_lev4 = stats.levene(mesin_1, mesin_2, mesin_3)
+            stat_bart4, p_bart4 = stats.bartlett(mesin_1, mesin_2, mesin_3)
+        
+            st.markdown("---")
+            st.subheader("🔬 Hasil Uji Homogenitas")
+        
+            results_case4 = pd.DataFrame({
+            'Metode': ['Levene Test', 'Bartlett Test'],
+            'Statistik': [f'{stat_lev4:.4f}', f'{stat_bart4:.4f}'],
+            'P-value': [f'{p_lev4:.6f}', f'{p_bart4:.6f}'],
+            'Kesimpulan': [
+                'Homogen ✅' if p_lev4 > 0.05 else 'Tidak Homogen ❌',
+                'Homogen ✅' if p_bart4 > 0.05 else 'Tidak Homogen ❌'
+                ]
+            })
+        
+            st.dataframe(results_case4, use_container_width=True)
+        
+            if p_lev4 <= 0.05:
+                st.markdown("""
+            <div class="warning-box">
+            <h4>⚠️ Interpretasi Kualitas Produksi</h4>
+            <p><strong>Temuan:</strong> Varians dimensi produk dari ketiga mesin TIDAK homogen.</p>
+            
+            <p><strong>Implikasi:</strong></p>
+            <ul>
+                <li>🔧 <strong>Mesin 3</strong> memiliki varians sangat tinggi → Perlu kalibrasi atau maintenance</li>
+                <li>📊 Konsistensi produksi tidak terjaga</li>
+                <li>⚠️ Risiko produk reject/defect tinggi</li>
+                <li>🎯 Standar deviasi Mesin 3 5x lebih besar dari Mesin 1</li>
+            </ul>
+            
+            <p><strong>Rekomendasi:</strong></p>
+            <ul>
+                <li>✅ Lakukan maintenance mendalam pada Mesin 3</li>
+                <li>✅ Implementasi Statistical Process Control (SPC)</li>
+                <li>✅ Training operator untuk Mesin 3</li>
+                <li>✅ Pertimbangkan penggantian komponen Mesin 3</li>
+            </ul>
+            </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("""
+            <div class="success-box">
+            <h4>✅ Interpretasi Kualitas Produksi</h4>
+            <p><strong>Temuan:</strong> Varians dimensi produk dari ketiga mesin homogen.</p>
+            <p><strong>Kesimpulan:</strong> Semua mesin menghasilkan produk dengan konsistensi yang sebanding.</p>
+            <p><strong>Status:</strong> Proses produksi terkendali dengan baik.</p>
+            </div>
+                """, unsafe_allow_html=True)
+        
+            # Coefficient of Variation comparison
+            st.markdown("---")
+            st.subheader("📊 Perbandingan Koefisien Variasi (CV)")
+        
+            cv_data = stats_case4['CV (%)'].values
+            mesin_names = stats_case4.index.tolist()
+        
+            fig_cv = go.Figure(data=[
+                go.Bar(x=mesin_names, y=cv_data,
+                       marker_color=colors_case4,
+                       text=[f'{cv:.2f}%' for cv in cv_data],
+                      textposition='auto')
+            ])
+        
+            fig_cv.update_layout(
+                title='Koefisien Variasi per Mesin (Semakin rendah, semakin baik)',
+                xaxis_title='Mesin',
+                yaxis_title='CV (%)',
+                height=400
+            )
+        
+            st.plotly_chart(fig_cv, use_container_width=True)
+        
+            st.markdown("""
+        **Interpretasi CV:**
+        - **CV < 10%:** Variasi rendah, presisi sangat baik ✅
+        - **CV 10-20%:** Variasi sedang, presisi cukup baik 🟡
+        - **CV > 20%:** Variasi tinggi, presisi buruk ❌
+            """)
+
+    # SIDEBAR
+    with st.sidebar:
+        st.image("https://via.placeholder.com/300x150/667eea/ffffff?text=Uji+Homogenitas", use_container_width=True)
+    
+        st.markdown("---")
+    
+        st.subheader("📚 Tentang Aplikasi")
+        st.markdown("""
+        Aplikasi ini dibuat untuk membantu memahami dan melakukan uji homogenitas varians 
+        dalam analisis statistik.
+    
+        **Fitur:**
+        - 📖 Materi teori lengkap
+        - 🧪 Simulasi data interaktif
+        - 📂 Upload data sendiri
+        - 📊 Visualisasi komprehensif
+        - 💡 Studi kasus nyata
+        """)
+    
+        st.markdown("---")
+    
+        st.subheader("🎯 Quick Guide")
+        st.markdown("""
+        **Langkah-langkah:**
+    
+    1. **Pelajari Teori** di Tab "📚 Teori"
+    2. **Pahami Metode** di Tab "🎯 Metode Uji"
+    3. **Coba Simulasi** di Tab "🧪 Simulasi Data"
+    4. **Upload Data** Anda di Tab "📂 Upload Data"
+    5. **Analisis Mendalam** di Tab "📈 Analisis Lanjutan"
+    6. **Lihat Contoh** di Tab "💡 Studi Kasus"
+    """)
+    
+        st.markdown("---")
+    
+        st.subheader("🔑 Aturan Keputusan")
+        st.markdown("""
+    **p-value > 0.05:**
+    - ✅ Gagal tolak H₀
+    - Data HOMOGEN
+    - Gunakan uji parametrik
+    
+    **p-value ≤ 0.05:**
+    - ❌ Tolak H₀
+    - Data TIDAK HOMOGEN
+    - Gunakan uji non-parametrik
+    """)
+    
+        st.markdown("---")
+    
+        st.subheader("📖 Referensi")
+        st.markdown("""
+    - Levene, H. (1960). Robust tests for equality of variances
+    - Bartlett, M. S. (1937). Properties of sufficiency and statistical tests
+    - Fligner, M. A., & Killeen, T. J. (1976). Distribution-free two-sample tests
+    """)
+    
+        st.markdown("---")
+    
+        st.info("""
+    💡 **Tips:**
+    
+    Selalu lakukan uji normalitas sebelum memilih metode uji homogenitas!
+    """)
+    
+        st.markdown("---")
+    
+        # Footer
+        st.markdown("""
+    <div style='text-align: center; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+    border-radius: 10px; color: white;'>
+        <p><strong>Uji Homogenitas Data</strong></p>
+        <p style='font-size: 0.8em;'>Dibuat dengan ❤️ menggunakan Streamlit</p>
+        <p style='font-size: 0.7em;'>© 2025 - Statistical Analysis Tools</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Footer di bagian bawah halaman utama
+    st.markdown("---")
+    st.markdown("""
+<div style='text-align: center; padding: 20px;'>
+    <h4>🎓 Tips Penggunaan Uji Homogenitas</h4>
+    <p>
+    1. Pastikan data Anda sudah bersih dari outlier ekstrem<br>
+    2. Cek normalitas data sebelum memilih metode uji<br>
+    3. Gunakan Levene Test sebagai pilihan utama untuk data non-normal<br>
+    4. Bartlett Test hanya untuk data yang benar-benar normal<br>
+    5. Interpretasikan hasil dengan konteks penelitian Anda
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # Informasi tambahan
+    col_info1, col_info2, col_info3 = st.columns(3)
+
+    with col_info1:
+        st.markdown("""
+    <div style='background: #d1ecf1; padding: 20px; border-radius: 10px; text-align: center;color:black'>
+        <h3 style='color: #0c5460;'>📊</h3>
+        <h4>Data Homogen</h4>
+        <p>Varians sama antar kelompok → Gunakan ANOVA</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    with col_info2:
+        st.markdown("""
+    <div style='background: #fff3cd; padding: 20px; border-radius: 10px; text-align: center;color:black'>
+        <h3 style='color: #856404;'>⚠️</h3>
+        <h4>Data Tidak Homogen</h4>
+        <p>Varians berbeda → Gunakan Welch's ANOVA</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    with col_info3:
+        st.markdown("""
+    <div style='background: #d4edda; padding: 20px; border-radius: 10px; text-align: center; color:black'>
+        <h3 style='color: #155724;'>✅</h3>
+        <h4>Alternative</h4>
+        <p>Transformasi data atau uji non-parametrik</p>
+    </div>
+        """, unsafe_allow_html=True)
+
+def tampilkan_materi10():
+    st.title("📊 Aplikasi Uji Homogenitas Sampel")
+    st.write("Bandingkan kesamaan variansi beberapa kelompok data dengan berbagai metode: Bartlett, Levene, Hartley (F-max), dan Cochran C.")
+
+    # --- Input Data ---
+    st.sidebar.header("🔧 Pengaturan Data")
+
+    n = st.sidebar.number_input("Jumlah sampel per kelompok", 5, 200, 30)
+    mean1 = st.sidebar.slider("Rata-rata Kelompok 1", 30, 80, 55)
+    mean2 = st.sidebar.slider("Rata-rata Kelompok 2", 30, 80, 57)
+    mean3 = st.sidebar.slider("Rata-rata Kelompok 3", 30, 80, 60)
+    std = st.sidebar.slider("Standar Deviasi", 1, 20, 8)
+
+    # --- Generate Data ---
+    np.random.seed(42)
+    group1 = np.random.normal(mean1, std, n)
+    group2 = np.random.normal(mean2, std, n)
+    group3 = np.random.normal(mean3, std, n)
+
+    data = pd.DataFrame({
+    "Kelompok 1": group1,
+    "Kelompok 2": group2,
+    "Kelompok 3": group3
+    })
+
+    st.subheader("📋 Data Sampel")
+    st.dataframe(data)
+
+    # --- Uji Bartlett ---
+    bartlett_stat, bartlett_p = stats.bartlett(group1, group2, group3)
+
+    # --- Uji Levene (mean) ---
+    levene_stat, levene_p = stats.levene(group1, group2, group3, center='mean')
+
+    # --- Uji Levene (median) ---
+    levene_median_stat, levene_median_p = stats.levene(group1, group2, group3, center='median')
+
+    # --- Uji Hartley (F-max) ---
+    variances = [np.var(g, ddof=1) for g in [group1, group2, group3]]
+    hartley_fmax = max(variances) / min(variances)
+
+    # --- Uji Cochran C ---
+    cochran_c = max(variances) / sum(variances)
+
+    # --- Hasil ---
+    st.subheader("📈 Hasil Uji Homogenitas")
+    st.write("Semua hasil dibandingkan dengan α = 0.05")
+
+    hasil_df = pd.DataFrame({
+    "Uji": ["Bartlett", "Levene (mean)", "Levene (median)", "Hartley (F-max)", "Cochran C"],
+    "Statistik": [bartlett_stat, levene_stat, levene_median_stat, hartley_fmax, cochran_c],
+    "p-value": [bartlett_p, levene_p, levene_median_p, "-", "-"],
+    "Kesimpulan": [
+        "Homogen" if bartlett_p > 0.05 else "Tidak Homogen",
+        "Homogen" if levene_p > 0.05 else "Tidak Homogen",
+        "Homogen" if levene_median_p > 0.05 else "Tidak Homogen",
+        "—", "—"
+        ]
+    })
+
+    st.dataframe(hasil_df, use_container_width=True)
+
+    # --- Visualisasi ---
+    st.subheader("📊 Visualisasi Distribusi")
+    st.bar_chart(data)
+
+    # --- Kesimpulan umum ---
+    if levene_p > 0.05 and bartlett_p > 0.05:
+        st.success("✅ Variansi antar kelompok **homogen** (tidak berbeda signifikan).")
+    else:
+        st.warning("⚠️ Variansi antar kelompok **tidak homogen** (berbeda signifikan).")
+
+    st.caption("Metode Bartlett sensitif terhadap data tidak normal, sedangkan Levene lebih robust untuk data non-normal.")
+    st.sidebar.markdown("---")
+
+def tampilkan_materi11():
+    st.markdown('''
+    <iframe src="https://martin-bernard26.github.io/statistika/dataHomogen.html" style="width:100%; height:2000px"></iframe>
+    ''',unsafe_allow_html=True)
+def tampilkan_materi12():
+    st.title("📊 Uji Homogenitas Varians (Uji F)")
+    st.write("""
+Aplikasi ini digunakan untuk menguji apakah dua kelompok data memiliki varians yang **homogen** atau tidak.  
+Metode: **Uji F** dengan hipotesis:
+- H₀ : σ₁² = σ₂² (varians sama / homogen) (p-value > 0.05)
+- H₁ : σ₁² ≠ σ₂² (varians berbeda / tidak homogen) (p-value <= 0.05)
+    """)
+
+    st.divider()
+
+    # Input data
+    st.subheader("Masukkan Data")
+    data1 = st.text_area("Data Kelompok 1 (pisahkan dengan koma)", "12, 15, 14, 10, 13, 12, 11")
+    data2 = st.text_area("Data Kelompok 2 (pisahkan dengan koma)", "9, 10, 11, 8, 12, 9, 10")
+
+    if st.button("🔍 Lakukan Uji F"):
+        try:
+            # Ubah ke array numpy
+            x1 = np.array([float(i) for i in data1.split(",")])
+            x2 = np.array([float(i) for i in data2.split(",")])
+
+            # Hitung varians
+            var1 = np.var(x1, ddof=1)
+            var2 = np.var(x2, ddof=1)
+
+            # Tentukan F hitung
+            if var1 > var2:
+                F_hitung = var1 / var2
+                df1, df2 = len(x1) - 1, len(x2) - 1
+            else:
+                F_hitung = var2 / var1
+                df1, df2 = len(x2) - 1, len(x1) - 1
+
+            # Nilai kritis F
+            alpha = 0.05
+            F_tabel_atas = f.ppf(1 - alpha/2, df1, df2)
+            F_tabel_bawah = f.ppf(alpha/2, df1, df2)
+            p_value = 2 * min(f.cdf(F_hitung, df1, df2), 1 - f.cdf(F_hitung, df1, df2))
+            p_kanan = 1 - f.cdf(F_hitung, df1, df2)
+            p_kiri = f.cdf(F_hitung, df1, df2)
+
+            # Keputusan
+            if F_hitung < F_tabel_atas and F_hitung > F_tabel_bawah:
+                keputusan = "✅ Terima H₀ (Varians homogen)"
+            else:
+                keputusan = "❌ Tolak H₀ (Varians tidak homogen)"
+
+            # Hasil
+            st.subheader("📈 Hasil Uji F")
+            hasil_df = pd.DataFrame({
+                "Statistik": ["Varians 1", "Varians 2", "F hitung", "F kritis bawah", "F kritis atas","p-value dua sisi", "p-value sisi kanan","p-value sisi kiri"],
+                "Nilai": [var1, var2, F_hitung, F_tabel_bawah, F_tabel_atas,p_value,p_kanan,p_kiri]
+            })
+            st.dataframe(hasil_df, use_container_width=True)
+
+            st.success(keputusan)
+
+            # Interpretasi
+            st.info(f"""
+        **Interpretasi:**
+        - Nilai F hitung = {F_hitung:.4f}
+        - Nilai F tabel bawah = {F_tabel_bawah:.4f}
+        - Nilai F tabel atas = {F_tabel_atas:.4f}
+        - Derajat kebebasan (df1, df2) = ({df1}, {df2})
+        - Keputusan: {keputusan}
+            """)
+
+        except Exception as e:
+            st.error(f"Terjadi kesalahan dalam input data: {e}")
+
+def tampilkan_materi13():
+    # --- Judul ---
+    st.title("📊 Uji t 1 Sampel (Parametrik)")
+    st.write("""
+    Uji ini digunakan untuk menentukan apakah rata-rata satu kelompok data
+    **berbeda secara signifikan** dari nilai pembanding tertentu (μ₀).
+
+    **Hipotesis:**
+    - H₀ : μ = μ₀  
+    - H₁ : μ ≠ μ₀
+    """)
+
+    st.divider()
+
+    # --- Input Data ---
+    st.subheader("📥 Masukkan Data")
+
+    option = st.radio("Pilih cara input data:", ["Ketik manual", "Upload CSV"])
+
+    if option == "Ketik manual":
+        data_text = st.text_area("Masukkan data (pisahkan dengan koma)", "12, 15, 14, 10, 13, 12, 11")
+        data = np.array([float(i) for i in data_text.split(",")])
+    else:
+        uploaded = st.file_uploader("Upload file CSV dengan satu kolom data", type=["csv"])
+        if uploaded is not None:
+            df = pd.read_csv(uploaded)
+            st.dataframe(df)
+            col = st.selectbox("Pilih kolom data", df.columns)
+            data = df[col].dropna().values
+        else:
+            st.warning("Silakan upload file CSV terlebih dahulu.")
+            st.stop()
+
+    # --- Input Parameter Uji ---
+    mu0 = st.number_input("Masukkan nilai pembanding (μ₀)", value=10.0, step=0.1)
+    alpha = st.slider("Tingkat signifikansi (α)", 0.01, 0.10, 0.05, step=0.01)
+    arah = st.radio("Pilih arah uji:", ["Dua sisi", "Satu sisi (kanan)", "Satu sisi (kiri)"])
+
+    # --- Tombol Eksekusi ---
+    if st.button("🔍 Jalankan Uji t 1 Sampel"):
+        try:
+            n = len(data)
+            mean_x = np.mean(data)
+            std_x = np.std(data, ddof=1)
+            se = std_x / np.sqrt(n)
+            t_hitung = (mean_x - mu0) / se
+            df = n - 1
+
+            # --- P-value berdasarkan arah uji ---
+            if arah == "Dua sisi":
+                p_value = 2 * (1 - t.cdf(abs(t_hitung), df))
+            elif arah == "Satu sisi (kanan)":
+                p_value = 1 - t.cdf(t_hitung, df)
+            else:
+                p_value = t.cdf(t_hitung, df)
+
+            # --- Nilai t kritis ---
+            if arah == "Dua sisi":
+                t_kritis = t.ppf(1 - alpha/2, df)
+            else:
+                t_kritis = t.ppf(1 - alpha, df)
+
+            # --- Keputusan ---
+            if p_value > alpha:
+                keputusan = "✅ Terima H₀ (tidak ada perbedaan signifikan)"
+            else:
+                keputusan = "❌ Tolak H₀ (ada perbedaan signifikan)"
+
+            # --- Hasil Tabel ---
+            st.subheader("📈 Hasil Uji t")
+            hasil_df = pd.DataFrame({
+                "Statistik": ["Jumlah Sampel", "Rata-rata (x̄)", "Simpangan Baku (s)", "t hitung", "Derajat bebas (df)", "p-value"],
+                "Nilai": [n, mean_x, std_x, t_hitung, df, p_value]
+            })
+            st.dataframe(hasil_df, use_container_width=True)
+
+            # --- Hasil dan Interpretasi ---
+            st.success(keputusan)
+            st.info(f"""
+        **Interpretasi:**
+        - Nilai t hitung = {t_hitung:.4f}
+        - Derajat bebas = {df}
+        - p-value = {p_value:.4f}
+        - α = {alpha}
+        - Keputusan: {keputusan}
+            """)
+
+            # --- Visualisasi Distribusi t ---
+            st.subheader("📊 Distribusi t dan Posisi t hitung")
+            x = np.linspace(-4, 4, 400)
+            y = t.pdf(x, df)
+            fig, ax = plt.subplots()
+            ax.plot(x, y, label='Distribusi t')
+            ax.axvline(t_hitung, color='r', linestyle='--', label=f't hitung = {t_hitung:.2f}')
+            if arah == "Dua sisi":
+                ax.axvline(t_kritis, color='g', linestyle='--', label=f'±t kritis = {t_kritis:.2f}')
+                ax.axvline(-t_kritis, color='g', linestyle='--')
+            else:
+                ax.axvline(t_kritis, color='g', linestyle='--', label=f't kritis = {t_kritis:.2f}')
+            ax.legend()
+            st.pyplot(fig)
+
+        except Exception as e:
+            st.error(f"Terjadi kesalahan: {e}")
+
+def tampilkan_materi14():
+    pass
+    # --- Judul dan deskripsi ---
+    st.title("📊 Uji Wilcoxon Signed-Rank 1 Sampel (Non-Parametrik)")
+    st.write("""
+Uji ini digunakan untuk menguji apakah **median sampel berbeda secara signifikan**
+dari nilai pembanding tertentu (M₀).
+
+**Catatan:**
+- Uji ini digunakan **jika data tidak berdistribusi normal.**
+- Padanan non-parametrik dari **Uji t 1 Sampel.**
+
+**Hipotesis:**
+- H₀ : median = M₀  
+- H₁ : median ≠ M₀
+    """)
+
+    st.divider()
+
+    # --- Input Data ---
+    st.subheader("📥 Masukkan Data")
+
+    option = st.radio("Pilih cara input data:", ["Ketik manual", "Upload CSV"])
+
+    if option == "Ketik manual":
+        data_text = st.text_area("Masukkan data (pisahkan dengan koma)", "12, 15, 14, 10, 13, 12, 11")
+        data = np.array([float(i) for i in data_text.split(",")])
+    else:
+        uploaded = st.file_uploader("Upload file CSV dengan satu kolom data", type=["csv"])
+        if uploaded is not None:
+            df = pd.read_csv(uploaded)
+            st.dataframe(df)
+            col = st.selectbox("Pilih kolom data", df.columns)
+            data = df[col].dropna().values
+        else:
+            st.warning("Silakan upload file CSV terlebih dahulu.")
+            st.stop()
+
+    # --- Input Parameter Uji ---
+    M0 = st.number_input("Masukkan nilai median pembanding (M₀)", value=10.0, step=0.1)
+    alpha = st.slider("Tingkat signifikansi (α)", 0.01, 0.10, 0.05, step=0.01)
+    arah = st.radio("Pilih arah uji:", ["Dua sisi", "Satu sisi (kanan)", "Satu sisi (kiri)"])
+
+    # --- Tombol Eksekusi ---
+    if st.button("🔍 Jalankan Uji Wilcoxon 1 Sampel"):
+        try:
+            # Hitung selisih
+            diff = data - M0
+
+            # Jalankan uji Wilcoxon
+            if arah == "Dua sisi":
+                stat, p_value = wilcoxon(diff, alternative='two-sided')
+            elif arah == "Satu sisi (kanan)":
+                stat, p_value = wilcoxon(diff, alternative='greater')
+            else:
+                stat, p_value = wilcoxon(diff, alternative='less')
+
+            # --- Hasil dan Keputusan ---
+            if p_value > alpha:
+                keputusan = "✅ Terima H₀ (tidak ada perbedaan signifikan)"
+            else:
+                keputusan = "❌ Tolak H₀ (ada perbedaan signifikan)"
+
+            # --- Hasil Tabel ---
+            st.subheader("📈 Hasil Uji Wilcoxon 1 Sampel")
+            hasil_df = pd.DataFrame({
+                "Statistik": ["Jumlah Sampel (n)", "Statistik Wilcoxon (W)", "p-value"],
+                "Nilai": [len(data), stat, p_value]
+            })
+            st.dataframe(hasil_df, use_container_width=True)
+
+            # --- Interpretasi ---
+            st.success(keputusan)
+            st.info(f"""
+        **Interpretasi:**
+        - Nilai W = {stat:.4f}
+        - p-value = {p_value:.4f}
+        - α = {alpha}
+        - Keputusan: {keputusan}
+        """)
+
+            # --- Visualisasi ---
+            st.subheader("📊 Visualisasi Selisih terhadap Median Pembanding (M₀)")
+            fig, ax = plt.subplots()
+            ax.axhline(0, color='gray', linestyle='--')
+            ax.bar(range(1, len(diff)+1), diff, color=['red' if d < 0 else 'blue' for d in diff])
+            ax.set_xlabel("Data ke-")
+            ax.set_ylabel("Selisih (X - M₀)")
+            ax.set_title("Visualisasi Selisih Data terhadap Median Pembanding")
+            st.pyplot(fig)
+
+        except Exception as e:
+            st.error(f"Terjadi kesalahan: {e}")
+
+def tampilkan_materi15():
+    st.title("🧩 Evaluasi Instrumen Tes Esai")
+    st.write("""
+Aplikasi ini menghitung:
+
+1️⃣ **Validitas butir soal**  
+2️⃣ **Reliabilitas (Cronbach's Alpha)**  
+3️⃣ **Daya pembeda**  
+4️⃣ **Indeks kesukaran**
+
+### 📘 Petunjuk:
+- Upload file **CSV** berisi skor siswa untuk tiap butir soal (kolom soal_1, soal_2, dst).  
+- Baris = responden, kolom = skor tiap soal.  
+- Skor tiap butir dapat **bervariasi (misal 0–5 atau 0–10)**.
+""")
+
+    # --- Upload data ---
+    uploaded_file = st.file_uploader("📥 Upload data skor siswa (CSV)", type=["csv"])
+
+    if uploaded_file is not None:
+        df = pd.read_csv(uploaded_file)
+        st.subheader("📄 Data Skor Siswa")
+        st.dataframe(df.head(), use_container_width=True)
+    
+        # --- Hitung total skor ---
+        df["Total"] = df.sum(axis=1)
+    
+        # --- Validitas butir ---
+        st.subheader("✅ Validitas Butir Soal (Korelasi Pearson)")
+        validitas = []
+        for col in df.columns[:-1]:  # semua kolom kecuali total
+            r, p = pearsonr(df[col], df["Total"])
+            validitas.append({"Soal": col, "r_hitung": r, "p_value": p})
+        validitas_df = pd.DataFrame(validitas)
+        validitas_df["Kategori"] = pd.cut(validitas_df["r_hitung"],
+                                      bins=[-1, 0.2, 0.4, 0.6, 0.8, 1],
+                                      labels=["Sangat Rendah", "Rendah", "Cukup", "Tinggi", "Sangat Tinggi"])
+        st.dataframe(validitas_df, use_container_width=True)
+    
+        # --- Reliabilitas (Cronbach's Alpha) ---
+        st.subheader("🔁 Reliabilitas (Cronbach's Alpha)")
+        items = df.drop(columns=["Total"])
+        var_items = items.var(axis=0, ddof=1)
+        var_total = df["Total"].var(ddof=1)
+        k = items.shape[1]
+        cronbach_alpha = (k / (k - 1)) * (1 - (var_items.sum() / var_total))
+        st.metric("Cronbach’s Alpha", f"{cronbach_alpha:.4f}")
+        st.info("""
+    Interpretasi Umum:
+    - α ≥ 0.9 : Sangat tinggi  
+    - 0.8–0.9 : Tinggi  
+    - 0.7–0.8 : Cukup  
+    - 0.6–0.7 : Rendah  
+    - < 0.6 : Tidak reliabel
+    """)
+    
+        # --- Daya Pembeda ---
+        st.subheader("⚖️ Daya Pembeda")
+        n = len(df)
+        df_sorted = df.sort_values("Total", ascending=False)
+        group_size = n // 2
+        upper = df_sorted.head(group_size)
+        lower = df_sorted.tail(group_size)
+    
+        daya_pembeda = []
+        for col in df.columns[:-1]:
+            mean_upper = upper[col].mean()
+            mean_lower = lower[col].mean()
+            D = (mean_upper - mean_lower) / df[col].max()  # dinormalisasi ke skor maksimum
+            daya_pembeda.append({"Soal": col, "Daya Pembeda": D})
+        daya_df = pd.DataFrame(daya_pembeda)
+        daya_df["Kategori"] = pd.cut(daya_df["Daya Pembeda"],
+                                 bins=[-1, 0.2, 0.4, 0.6, 0.8, 1],
+                                 labels=["Buruk", "Cukup", "Baik", "Baik Sekali", "Sangat Baik"])
+        st.dataframe(daya_df, use_container_width=True)
+    
+        # --- Indeks Kesukaran ---
+        st.subheader("🎯 Indeks Kesukaran")
+        indeks = []
+        skor_maks = df.drop(columns=["Total"]).max().max()
+        for col in df.columns[:-1]:
+            P = df[col].mean() / skor_maks
+            indeks.append({"Soal": col, "Indeks Kesukaran": P})
+        indeks_df = pd.DataFrame(indeks)
+        indeks_df["Kategori"] = pd.cut(indeks_df["Indeks Kesukaran"],
+                                   bins=[0, 0.3, 0.7, 1],
+                                   labels=["Sukar", "Sedang", "Mudah"])
+        st.dataframe(indeks_df, use_container_width=True)
+    
+        # --- Rekapitulasi Akhir ---
+        st.subheader("📊 Rekapitulasi Evaluasi Soal")
+        rekap = validitas_df.merge(daya_df, on="Soal").merge(indeks_df, on="Soal")
+        st.dataframe(rekap, use_container_width=True)
+    
+        st.success("✅ Analisis selesai! Gunakan hasil ini untuk revisi dan penyempurnaan butir soal.")
+
+    else:
+        st.info("Silakan upload file CSV terlebih dahulu.")
+
+def tampilkan_materi16():
+    st.markdown('''
+    <iframe src="https://martin-bernard26.github.io/statistika/alur1.html" style="width:100%; height:3700px"></iframe>
+    ''',unsafe_allow_html=True)
+def tampilkan_materi17():
+    st.markdown('''
+    <iframe src="https://martin-bernard26.github.io/statistika/testdiag1.html" style="width:100%; height:3700px"></iframe>
+    ''',unsafe_allow_html=True)
+def tampilkan_materi18():
+    st.markdown("Contoh Data normal")
+    banyak = st.text_input("Masukan Banyak Sampel")
+    rata_rata = st.text_input("Rata-rata")
+    std = st.text_input("Standar Deviasi")
+    st.write("Ketika sudah terisi semua tinggal di Enter")
+    if banyak and rata_rata and std:
+        data1 = np.random.normal(float(rata_rata),float(std),int(banyak))
+        data1 = list(int(i) for i in list(np.array(data1)))
+        st.write(str(data1))
+        # Visualisasi
+        fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+        sns.histplot(data1, kde=True, ax=axes[0])
+        axes[0].set_title("Distribusi  Normal")
+        sns.scatterplot(data1,c='black', ax=axes[1])
+        sns.lineplot(data=np.array(list(mean(data1) for _ in range(len(data1)))),c='red', ax=axes[1])
+        axes[1].set_title("Data Normal")
+        # Tata letak rapi
+        plt.tight_layout()
+        st.pyplot(fig)
+    st.markdown('---')
+    st.markdown("Contoh Data tidak normal")
+    banyak1 = st.text_input("Masukan Banyak Sampel2")
+    std1 = st.text_input("Standar Deviasi2")
+    st.write("Ketika sudah terisi semua tinggal di Enter")
+    if banyak1 and std1:
+        data2 = np.random.exponential(float(std1),int(banyak1))
+        data2 = list(int(i) for i in list(np.array(data2)))
+        st.write(str(data2))
+        # Visualisasi
+        fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+        sns.histplot(data2, kde=True, ax=axes[0])
+        axes[0].set_title("Distribusi tidak Normal")
+        sns.scatterplot(data2,c='black', ax=axes[1])
+        sns.lineplot(data=np.array(list(mean(data2) for _ in range(len(data2)))),c='red', ax=axes[1])
+        axes[1].set_title("Data tidak Normal")
+        # Tata letak rapi
+        plt.tight_layout()
+        st.pyplot(fig)
 #================================
 
 if st.session_state.tampilan1:
@@ -2402,6 +4473,26 @@ if st.session_state.tampilan10:
     tampilkan_materi7()
 if st.session_state.tampilan11:
     tampilkan_materi8()
+if st.session_state.tampilan12:
+    tampilkan_materi9()
+if st.session_state.tampilan13:
+    tampilkan_materi10()
+if st.session_state.tampilan14:
+    tampilkan_materi11()
+if st.session_state.tampilan15:
+    tampilkan_materi12()
+if st.session_state.tampilan16:
+    tampilkan_materi13()
+if st.session_state.tampilan17:
+    tampilkan_materi14()
+if st.session_state.tampilan18:
+    tampilkan_materi15()
+if st.session_state.tampilan19:
+    tampilkan_materi16()
+if st.session_state.tampilan20:
+    tampilkan_materi17()
+if st.session_state.tampilan21:
+    tampilkan_materi18()
 #======================================
 if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan1=False
@@ -2415,7 +4506,90 @@ if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
     st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
     st.rerun()
+if st.sidebar.button("Contoh Data Nilai"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = True
+    st.rerun()
+st.sidebar.markdown("Penguasaan Uji 1 Sampel")
+if st.sidebar.button("Test Penguasaan 1"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = True
+    st.session_state.tampilan21 = False
+    st.rerun()
+st.sidebar.markdown("---")
+st.sidebar.markdown("Evaluasi Instrumen Soal")
+if st.sidebar.button("Evaluasi Soal"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = True
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.rerun()
+st.sidebar.markdown("---")
 if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan1=False
     st.session_state.tampilan2=False
@@ -2428,6 +4602,16 @@ if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
     st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
     st.rerun()
 if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan1=True
@@ -2441,6 +4625,16 @@ if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
     st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
     st.rerun()
 if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan1=False
@@ -2454,6 +4648,16 @@ if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
     st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
     st.rerun()
 if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan1=False
@@ -2467,6 +4671,16 @@ if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
     st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
     st.rerun()
 if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan1=False
@@ -2480,6 +4694,16 @@ if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
     st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
     st.rerun()
 if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan1=False
@@ -2493,6 +4717,16 @@ if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
     st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
     st.rerun()
 if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan1=False
@@ -2506,6 +4740,16 @@ if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
     st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
     st.rerun()
 if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan1=False
@@ -2519,7 +4763,43 @@ if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan9 = True
     st.session_state.tampilan10 = False
     st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
     st.rerun()
+st.sidebar.markdown("---")
+st.sidebar.markdown("Flowchart Penelitian")
+if st.sidebar.button("FlowChart"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = True
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.rerun()
+st.sidebar.markdown("---")
 if st.sidebar.button("Uji Normalitas"):
     st.session_state.tampilan1=False
     st.session_state.tampilan2=False
@@ -2532,7 +4812,91 @@ if st.sidebar.button("Uji Normalitas"):
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = True
     st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
     st.rerun()
+if st.sidebar.button("Uji Homogen"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = True
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.rerun()
+st.sidebar.markdown("---")
+st.sidebar.markdown("Data Parametrik")
+if st.sidebar.button("Uji t 1 sampel"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = True
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.rerun()
+st.sidebar.markdown("---")
+st.sidebar.markdown("Data non Parametrik")
+if st.sidebar.button("Uji Wilcoxon 1 sampel"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = True
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.rerun()
+st.sidebar.markdown("---")
 if st.sidebar.button("Angket dan Saran"):
     st.session_state.tampilan1=False
     st.session_state.tampilan2=False
@@ -2545,7 +4909,18 @@ if st.sidebar.button("Angket dan Saran"):
     st.session_state.tampilan9 = False
     st.session_state.tampilan10 = False
     st.session_state.tampilan11 = True
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
     st.rerun()
+
 
 
 
