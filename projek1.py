@@ -4415,7 +4415,7 @@ Aplikasi ini menghitung:
         st.info("Silakan upload file CSV terlebih dahulu.")
 
 def tampilkan_materi16():
-    halaman = st.tabs(['Alur Uji 1 Sampel','Akur Uji 2 Sampel Berpasangan'])
+    halaman = st.tabs(['Alur Uji 1 Sampel','Alur Uji 2 Sampel Berpasangan'])
     with halaman[0]:
         st.markdown('''
         <iframe src="https://martin-bernard26.github.io/statistika/alur1.html" style="width:100%; height:3700px"></iframe>
@@ -5256,3 +5256,4 @@ if st.sidebar.button("Angket dan Saran"):
 
 
     
+
