@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from statistics import mean, median, mode, stdev, multimode
 import matplotlib.pyplot as plt
-from scipy.stats import norm, f, t, wilcoxon, pearsonr
+from scipy.stats import norm, f, t, wilcoxon, pearsonr, ttest_rel
 import requests
 import base64
 import math
@@ -84,6 +84,12 @@ if "tampilan20" not in st.session_state:
 
 if "tampilan21" not in st.session_state:
     st.session_state.tampilan21 = False
+
+if "tampilan22" not in st.session_state:
+    st.session_state.tampilan22 = False
+
+if "tampilan23" not in st.session_state:
+    st.session_state.tampilan23 = False
 
 if "masukan1" not in st.session_state:
     st.session_state.masukan1=""
@@ -2461,6 +2467,8 @@ def tampilkan_materi9():
             st.session_state.tampilan19 = False
             st.session_state.tampilan20 = False
             st.session_state.tampilan21 = False
+            st.session_state.tampilan22 = False
+            st.session_state.tampilan23 = False
             st.rerun()
     with kolom[1]:
         if st.button("Uji F"):
@@ -2485,6 +2493,8 @@ def tampilkan_materi9():
             st.session_state.tampilan19 = False
             st.session_state.tampilan20 = False
             st.session_state.tampilan21 = False
+            st.session_state.tampilan22 = False
+            st.session_state.tampilan23 = False
             st.rerun()
     with kolom[2]:
         if st.button("Contoh Uji Homogen Lainnya"):
@@ -2509,6 +2519,8 @@ def tampilkan_materi9():
             st.session_state.tampilan19 = False
             st.session_state.tampilan20 = False
             st.session_state.tampilan21 = False
+            st.session_state.tampilan22 = False
+            st.session_state.tampilan23 = False
             st.rerun()
     # Custom CSS
     st.markdown("""
@@ -4403,9 +4415,15 @@ Aplikasi ini menghitung:
         st.info("Silakan upload file CSV terlebih dahulu.")
 
 def tampilkan_materi16():
-    st.markdown('''
-    <iframe src="https://martin-bernard26.github.io/statistika/alur1.html" style="width:100%; height:3700px"></iframe>
-    ''',unsafe_allow_html=True)
+    halaman = st.tabs(['Alur Uji 1 Sampel','Akur Uji 2 Sampel Berpasangan'])
+    with halaman[0]:
+        st.markdown('''
+        <iframe src="https://martin-bernard26.github.io/statistika/alur1.html" style="width:100%; height:3700px"></iframe>
+        ''',unsafe_allow_html=True)
+    with halaman[1]:
+        st.markdown('''
+        <iframe src="https://martin-bernard26.github.io/statistika/uji2pasang.html" style="width:100%; height:3700px"></iframe>
+        ''',unsafe_allow_html=True)
 def tampilkan_materi17():
     st.markdown('''
     <iframe src="https://martin-bernard26.github.io/statistika/testdiag1.html" style="width:100%; height:3700px"></iframe>
@@ -4449,6 +4467,229 @@ def tampilkan_materi18():
         # Tata letak rapi
         plt.tight_layout()
         st.pyplot(fig)
+def tampilkan_materi19():
+    st.title("🎯 Simulasi Uji t 2 Sampel Berpasangan")
+    st.markdown("""
+    Aplikasi ini mensimulasikan **Uji t Berpasangan (Paired Sample t-test)**  
+    untuk melihat apakah terdapat perbedaan signifikan antara dua kondisi, misalnya:
+    - Sebelum dan sesudah pelatihan
+    - Nilai pre-test dan post-test
+    """)
+
+    # =========================
+    # Sidebar: Pengaturan Simulasi
+    # =========================
+    st.sidebar.header("⚙️ Pengaturan Simulasi")
+    n = st.sidebar.slider("Jumlah Sampel (n)", 5, 100, 30)
+    mean1 = st.sidebar.slider("Rata-rata Kondisi 1", 0.0, 100.0, 70.0)
+    mean2 = st.sidebar.slider("Rata-rata Kondisi 2", 0.0, 100.0, 75.0)
+    std1 = st.sidebar.slider("Standar Deviasi Kondisi 1", 1.0, 20.0, 10.0)
+    std2 = st.sidebar.slider("Standar Deviasi Kondisi 2", 1.0, 20.0, 10.0)
+    seed = st.sidebar.number_input("Seed (untuk reproduksi)", 0, 9999, 42)
+
+    np.random.seed(seed)
+
+    # =========================
+    # Generate Data
+    # =========================
+    data1 = np.random.normal(mean1, std1, n)
+    data2 = data1 + np.random.normal(mean2 - mean1, std2, n)
+
+    df = pd.DataFrame({
+        "Sebelum": data1,
+        "Sesudah": data2
+    })
+    df["Selisih"] = df["Sesudah"] - df["Sebelum"]
+
+    # =========================
+    # Visualisasi Data
+    # =========================
+    st.subheader("📊 Visualisasi Data")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("**Distribusi Data Sebelum vs Sesudah**")
+        fig1 = px.box(df.melt(var_name="Kondisi", value_name="Nilai"),
+                  x="Kondisi", y="Nilai", color="Kondisi",
+                  title="Perbandingan Boxplot Dua Kondisi")
+        st.plotly_chart(fig1, use_container_width=True)
+
+    with col2:
+        st.markdown("**Distribusi Selisih (Sesudah - Sebelum)**")
+        fig2 = px.histogram(df, x="Selisih", nbins=15, title="Distribusi Selisih Nilai")
+        st.plotly_chart(fig2, use_container_width=True)
+
+    # =========================
+    # Analisis Statistik
+    # =========================
+    st.subheader("🧮 Hasil Uji t Berpasangan")
+    t_stat, p_val = ttest_rel(df["Sebelum"], df["Sesudah"])
+
+    col3, col4 = st.columns(2)
+    with col3:
+        st.metric("Statistik t", f"{t_stat:.4f}")
+    with col4:
+        st.metric("p-value", f"{p_val:.4f}")
+
+    # =========================
+    # Interpretasi
+    # =========================
+    alpha = 0.05
+    st.subheader("🧠 Interpretasi")
+    if p_val < alpha:
+        st.success(f"Hasil uji signifikan (p < {alpha}). Terdapat perbedaan yang bermakna antara kedua kondisi.")
+    else:
+        st.info(f"Tidak signifikan (p ≥ {alpha}). Tidak ada bukti kuat bahwa kedua kondisi berbeda.")
+
+    # =========================
+    # Tabel Data
+    # =========================
+    with st.expander("📋 Lihat Data Simulasi"):
+        st.dataframe(df.style.format("{:.2f}"))
+    with st.expander("Melihat hasil selisih data"):
+        st.write(str([float(i) for i in df['Selisih']]))
+    # =========================
+    # Penjelasan Teori
+    # =========================
+    st.markdown("""
+    ---
+    ### 🧩 Penjelasan Singkat
+    **Uji t berpasangan** digunakan ketika dua set data **berasal dari subjek yang sama** namun dalam dua kondisi berbeda.  
+    Contoh: skor siswa sebelum dan sesudah mengikuti pelatihan.
+
+    **Rumus:**
+    $$
+    t = \\frac{\\bar{d}}{s_d / \\sqrt{n}}
+    $$
+    dengan:
+    - $ \\bar{d} $: rata-rata selisih
+    - $ s_d $: standar deviasi selisih
+    - $ n $: jumlah pasangan data
+
+    **Hipotesis:**
+    - H₀: Tidak ada perbedaan (μd = 0)
+    - H₁: Ada perbedaan (μd ≠ 0)
+    """)
+
+    st.markdown("---")
+    st.caption("Dibuat dengan ❤️ menggunakan Streamlit + SciPy + Plotly")
+
+def tampilkan_materi20():
+    st.title("🧠 Simulasi Uji Wilcoxon 2 Sampel Berpasangan (Non-Parametrik)")
+    st.markdown("""
+    Uji Wilcoxon digunakan ketika **data berpasangan** namun **tidak berdistribusi normal**.  
+    Cocok untuk membandingkan dua kondisi dari subjek yang sama, misalnya:
+    - Sebelum dan sesudah terapi  
+    - Nilai pre-test dan post-test siswa  
+    - Efek dari intervensi tertentu
+    """)
+
+    # =========================
+    # Sidebar: Pengaturan Data
+    # =========================
+    st.sidebar.header("⚙️ Pengaturan Simulasi")
+    n = st.sidebar.slider("Jumlah Sampel (n)", 5, 100, 20)
+    median1 = st.sidebar.slider("Median Kondisi 1", 0.0, 100.0, 60.0)
+    median2 = st.sidebar.slider("Median Kondisi 2", 0.0, 100.0, 65.0)
+    spread1 = st.sidebar.slider("Sebaran Kondisi 1 (variabilitas)", 1.0, 20.0, 8.0)
+    spread2 = st.sidebar.slider("Sebaran Kondisi 2 (variabilitas)", 1.0, 20.0, 8.0)
+    noise = st.sidebar.slider("Tingkat Ketidakteraturan (noise)", 0.0, 10.0, 2.0)
+    seed = st.sidebar.number_input("Seed (untuk reproduksi)", 0, 9999, 42)
+
+    np.random.seed(seed)
+
+    # =========================
+    # Generate Data Non-Normal (menggunakan distribusi eksponensial/lognormal)
+    # =========================
+    # Data dibuat dengan distribusi lognormal agar tidak normal
+    data1 = np.random.lognormal(mean=np.log(median1+1)/10, sigma=spread1/50, size=n) * 10
+    data2 = data1 + np.random.normal(median2 - median1, spread2, n) + np.random.normal(0, noise, n)
+    df = pd.DataFrame({
+        "Kondisi 1 (Sebelum)": data1,
+        "Kondisi 2 (Sesudah)": data2
+    })
+    df["Selisih"] = df["Kondisi 2 (Sesudah)"] - df["Kondisi 1 (Sebelum)"]
+
+    # =========================
+    # Visualisasi Data
+    # =========================
+    st.subheader("📊 Visualisasi Data")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.markdown("**Boxplot Dua Kondisi**")
+        fig1 = px.box(df.melt(var_name="Kondisi", value_name="Nilai"),
+                  x="Kondisi", y="Nilai", color="Kondisi",
+                  title="Perbandingan Nilai Sebelum vs Sesudah")
+        st.plotly_chart(fig1, use_container_width=True)
+
+    with col2:
+        st.markdown("**Distribusi Selisih (Sesudah - Sebelum)**")
+        fig2 = px.histogram(df, x="Selisih", nbins=15, title="Distribusi Selisih Nilai",
+                        color_discrete_sequence=['#00CC96'])
+        st.plotly_chart(fig2, use_container_width=True)
+
+    # =========================
+    # Uji Wilcoxon
+    # =========================
+    st.subheader("🧮 Hasil Uji Wilcoxon Berpasangan")
+
+    try:
+        stat, p_val = wilcoxon(df["Kondisi 1 (Sebelum)"], df["Kondisi 2 (Sesudah)"])
+        col3, col4 = st.columns(2)
+        with col3:
+            st.metric("Statistik U", f"{stat:.4f}")
+        with col4:
+            st.metric("p-value", f"{p_val:.4f}")
+    except ValueError as e:
+        st.error("❌ Terjadi kesalahan: pastikan tidak semua nilai selisih = 0")
+        st.stop()
+
+    # =========================
+    # Interpretasi
+    # =========================
+    alpha = 0.05
+    st.subheader("🧠 Interpretasi")
+    if p_val < alpha:
+        st.success(f"Hasil uji **signifikan** (p < {alpha}). Ada perbedaan bermakna antara dua kondisi.")
+    else:
+        st.info(f"Hasil uji **tidak signifikan** (p ≥ {alpha}). Tidak ada bukti cukup bahwa kedua kondisi berbeda.")
+
+    # =========================
+    # Lihat Data Simulasi
+    # =========================
+    with st.expander("📋 Lihat Data Simulasi"):
+        st.dataframe(df.style.format("{:.2f}"))
+    with st.expander("Melihat hasil selisih data"):
+        st.write(str([float(i) for i in df['Selisih']]))
+    # =========================
+    # Penjelasan Teori
+    # =========================
+    st.markdown("""
+    ---
+    ### 📘 Penjelasan Teori Singkat
+    **Uji Wilcoxon Signed-Rank Test** digunakan untuk:
+    - Data berpasangan (misalnya pengukuran sebelum–sesudah)
+    - Data **tidak normal** (alternatif dari *Paired t-test*)
+
+    **Hipotesis:**
+    - H₀ : Tidak ada perbedaan median antara dua kondisi  
+    - H₁ : Ada perbedaan median antara dua kondisi  
+
+    **Langkah umum:**
+    1. Hitung selisih antara dua kondisi.  
+    2. Abaikan nilai 0, beri tanda + atau – sesuai arah selisih.  
+    3. Rangking selisih berdasarkan nilai absolutnya.  
+    4. Jumlahkan rank untuk nilai positif dan negatif.  
+    5. Statistik U adalah nilai terkecil dari dua jumlah tersebut.  
+
+    Jika p-value < 0.05 → Tolak H₀ → Ada perbedaan yang signifikan.
+    """)
+
+    st.markdown("---")
+    st.caption("Dibuat dengan ❤️ menggunakan Streamlit + SciPy + Plotly")
 #================================
 
 if st.session_state.tampilan1:
@@ -4493,6 +4734,10 @@ if st.session_state.tampilan20:
     tampilkan_materi17()
 if st.session_state.tampilan21:
     tampilkan_materi18()
+if st.session_state.tampilan22:
+    tampilkan_materi19()
+if st.session_state.tampilan23:
+    tampilkan_materi20()
 #======================================
 if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan1=False
@@ -4516,6 +4761,8 @@ if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 if st.sidebar.button("Contoh Data Nilai"):
     st.session_state.tampilan1=False
@@ -4539,6 +4786,8 @@ if st.sidebar.button("Contoh Data Nilai"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = True
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 st.sidebar.markdown("Penguasaan Uji 1 Sampel")
 if st.sidebar.button("Test Penguasaan 1"):
@@ -4563,6 +4812,8 @@ if st.sidebar.button("Test Penguasaan 1"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = True
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Evaluasi Instrumen Soal")
@@ -4588,6 +4839,8 @@ if st.sidebar.button("Evaluasi Soal"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Pengenalan"):
@@ -4612,6 +4865,8 @@ if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan1=True
@@ -4635,6 +4890,8 @@ if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan1=False
@@ -4658,6 +4915,8 @@ if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan1=False
@@ -4681,6 +4940,8 @@ if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan1=False
@@ -4704,6 +4965,8 @@ if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan1=False
@@ -4727,6 +4990,8 @@ if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan1=False
@@ -4750,6 +5015,8 @@ if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan1=False
@@ -4773,6 +5040,8 @@ if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Flowchart Penelitian")
@@ -4798,6 +5067,8 @@ if st.sidebar.button("FlowChart"):
     st.session_state.tampilan19 = True
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Uji Normalitas"):
@@ -4822,6 +5093,8 @@ if st.sidebar.button("Uji Normalitas"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 if st.sidebar.button("Uji Homogen"):
     st.session_state.tampilan1=False
@@ -4845,6 +5118,8 @@ if st.sidebar.button("Uji Homogen"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Data Parametrik")
@@ -4870,6 +5145,33 @@ if st.sidebar.button("Uji t 1 sampel"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
+    st.rerun()
+if st.sidebar.button("Uji t 1 sampel Berpasangan"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = True
+    st.session_state.tampilan23 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Data non Parametrik")
@@ -4895,6 +5197,33 @@ if st.sidebar.button("Uji Wilcoxon 1 sampel"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
+    st.rerun()
+if st.sidebar.button("Uji Wilcoxon 1 sampel Berpasangan"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = True
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Angket dan Saran"):
@@ -4919,6 +5248,8 @@ if st.sidebar.button("Angket dan Saran"):
     st.session_state.tampilan19 = False
     st.session_state.tampilan20 = False
     st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
     st.rerun()
 
 
