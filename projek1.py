@@ -17,6 +17,7 @@ from scipy import stats
 from scipy.stats import shapiro, normaltest, anderson, kstest
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 st.set_page_config(
     page_title="Aplikasi Upload ke Google Drive",
@@ -91,6 +92,15 @@ if "tampilan22" not in st.session_state:
 if "tampilan23" not in st.session_state:
     st.session_state.tampilan23 = False
 
+if "tampilan24" not in st.session_state:
+    st.session_state.tampilan24 = False
+
+if "tampilan25" not in st.session_state:
+    st.session_state.tampilan25 = False
+
+if "tampilan26" not in st.session_state:
+    st.session_state.tampilan26 = False
+    
 if "masukan1" not in st.session_state:
     st.session_state.masukan1=""
     
@@ -2469,6 +2479,9 @@ def tampilkan_materi9():
             st.session_state.tampilan21 = False
             st.session_state.tampilan22 = False
             st.session_state.tampilan23 = False
+            st.session_state.tampilan24 = False
+            st.session_state.tampilan25 = False
+            st.session_state.tampilan26 = False
             st.rerun()
     with kolom[1]:
         if st.button("Uji F"):
@@ -2495,6 +2508,9 @@ def tampilkan_materi9():
             st.session_state.tampilan21 = False
             st.session_state.tampilan22 = False
             st.session_state.tampilan23 = False
+            st.session_state.tampilan24 = False
+            st.session_state.tampilan25 = False
+            st.session_state.tampilan26 = False
             st.rerun()
     with kolom[2]:
         if st.button("Contoh Uji Homogen Lainnya"):
@@ -2521,6 +2537,9 @@ def tampilkan_materi9():
             st.session_state.tampilan21 = False
             st.session_state.tampilan22 = False
             st.session_state.tampilan23 = False
+            st.session_state.tampilan24 = False
+            st.session_state.tampilan25 = False
+            st.session_state.tampilan26 = False
             st.rerun()
     # Custom CSS
     st.markdown("""
@@ -4415,7 +4434,7 @@ Aplikasi ini menghitung:
         st.info("Silakan upload file CSV terlebih dahulu.")
 
 def tampilkan_materi16():
-    halaman = st.tabs(['Alur Uji 1 Sampel','Alur Uji 2 Sampel Berpasangan'])
+    halaman = st.tabs(['Alur Uji 1 Sampel','Alur Uji 2 Sampel Berpasangan','Alur Uji 2 Sampel Independen'])
     with halaman[0]:
         st.markdown('''
         <iframe src="https://martin-bernard26.github.io/statistika/alur1.html" style="width:100%; height:3700px"></iframe>
@@ -4424,6 +4443,11 @@ def tampilkan_materi16():
         st.markdown('''
         <iframe src="https://martin-bernard26.github.io/statistika/uji2pasang.html" style="width:100%; height:3700px"></iframe>
         ''',unsafe_allow_html=True)
+    with halaman[2]:
+        st.markdown('''
+        <iframe src="https://martin-bernard26.github.io/statistika/alur2.html" style="width:100%; height:1000px"></iframe>
+        ''',unsafe_allow_html=True)
+        
 def tampilkan_materi17():
     st.markdown('''
     <iframe src="https://martin-bernard26.github.io/statistika/testdiag1.html" style="width:100%; height:3700px"></iframe>
@@ -4603,8 +4627,9 @@ def tampilkan_materi20():
     # Generate Data Non-Normal (menggunakan distribusi eksponensial/lognormal)
     # =========================
     # Data dibuat dengan distribusi lognormal agar tidak normal
-    data1 = np.random.lognormal(mean=np.log(median1+1)/10, sigma=spread1/50, size=n) * 10
-    data2 = data1 + np.random.normal(median2 - median1, spread2, n) + np.random.normal(0, noise, n)
+    data1 = np.random.lognormal(mean=median1, sigma=spread1, size=n) * 10
+    #data2 = data1 + np.random.normal(median2 - median1, spread2, n) + np.random.normal(0, noise, n)
+    data2 = np.random.lognormal(mean=median2, sigma=spread2, size=n) * 10
     df = pd.DataFrame({
         "Kondisi 1 (Sebelum)": data1,
         "Kondisi 2 (Sesudah)": data2
@@ -4690,6 +4715,2591 @@ def tampilkan_materi20():
 
     st.markdown("---")
     st.caption("Dibuat dengan ❤️ menggunakan Streamlit + SciPy + Plotly")
+
+def tampilkan_materi21():
+    # CSS Styling
+    st.markdown("""
+    <style>
+    .main-header {
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-align: center;
+        color: #2E86AB;
+        margin-bottom: 0.5rem;
+    }
+    .sub-header {
+        font-size: 1.2rem;
+        text-align: center;
+        color: #666;
+        margin-bottom: 2rem;
+    }
+    .result-box {
+        background-color: #E8F4F8;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border-left: 5px solid #2E86AB;
+        margin: 1rem 0;
+        color:black;
+    }
+    .hypothesis-box {
+        background-color: #FFF4E6;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #FF9800;
+        margin: 1rem 0;
+        color:black;
+    }
+    .success-box {
+        background-color: #E8F5E9;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #4CAF50;
+        margin: 1rem 0;
+        color: black;
+    }
+    .warning-box {
+        background-color: #FFEBEE;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #F44336;
+        margin: 1rem 0;
+        color: black;
+    }
+    .metric-card {
+        background-color: #F5F5F5;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        margin: 0.5rem 0;
+        color:black;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Header
+    st.markdown('<div class="main-header">📊 Simulasi Uji T 2 Sampel Independen</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Independent Sample T-Test Simulator</div>', unsafe_allow_html=True)
+
+    # Sidebar
+    st.sidebar.title("⚙️ Pengaturan")
+    mode = st.sidebar.radio(
+    "Pilih Mode:",
+    ["📝 Input Data Manual", "🎲 Generate Data Simulasi", "📁 Upload Data CSV"]
+    )
+
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📖 Tentang Uji T")
+    st.sidebar.info("""
+    **Uji T 2 Sampel Independen** digunakan untuk membandingkan rata-rata dua kelompok yang tidak berhubungan.
+
+    **Asumsi:**
+    - Data berdistribusi normal
+    - Varians kedua kelompok homogen
+    - Sampel independen
+    """)
+
+    # Fungsi untuk menghitung uji t
+    def perform_t_test(data1, data2, alpha, alternative):
+        """Melakukan uji t dan mengembalikan hasil"""
+        n1, n2 = len(data1), len(data2)
+        mean1, mean2 = np.mean(data1), np.mean(data2)
+        std1, std2 = np.std(data1, ddof=1), np.std(data2, ddof=1)
+        var1, var2 = np.var(data1, ddof=1), np.var(data2, ddof=1)
+    
+        # Uji Levene untuk homogenitas varians
+        levene_stat, levene_p = stats.levene(data1, data2)
+    
+        # Uji normalitas
+        shapiro1_stat, shapiro1_p = stats.shapiro(data1)
+        shapiro2_stat, shapiro2_p = stats.shapiro(data2)
+    
+        # Uji t
+        if levene_p > 0.05:  # Varians homogen
+            t_stat, p_value = stats.ttest_ind(data1, data2, alternative=alternative)
+            equal_var = True
+        else:  # Varians tidak homogen (Welch's t-test)
+            t_stat, p_value = stats.ttest_ind(data1, data2, equal_var=False, alternative=alternative)
+            equal_var = False
+    
+        # Derajat kebebasan
+        if equal_var:
+            df = n1 + n2 - 2
+        else:
+            df = ((var1/n1 + var2/n2)**2) / ((var1/n1)**2/(n1-1) + (var2/n2)**2/(n2-1))
+    
+        # Cohen's d (effect size)
+        if equal_var:
+            pooled_std = np.sqrt(((n1-1)*var1 + (n2-1)*var2) / (n1+n2-2))
+        else:
+            pooled_std = np.sqrt((var1 + var2) / 2)
+    
+        cohens_d = (mean1 - mean2) / pooled_std
+    
+        # Confidence interval
+        se = pooled_std * np.sqrt(1/n1 + 1/n2)
+        t_critical = stats.t.ppf(1-alpha/2, df)
+        ci_lower = (mean1 - mean2) - t_critical * se
+        ci_upper = (mean1 - mean2) + t_critical * se
+    
+        return {
+        'n1': n1, 'n2': n2,
+        'mean1': mean1, 'mean2': mean2,
+        'std1': std1, 'std2': std2,
+        'var1': var1, 'var2': var2,
+        't_stat': t_stat,
+        'p_value': p_value,
+        'df': df,
+        'cohens_d': cohens_d,
+        'ci_lower': ci_lower,
+        'ci_upper': ci_upper,
+        'equal_var': equal_var,
+        'levene_stat': levene_stat,
+        'levene_p': levene_p,
+        'shapiro1_stat': shapiro1_stat,
+        'shapiro1_p': shapiro1_p,
+        'shapiro2_stat': shapiro2_stat,
+        'shapiro2_p': shapiro2_p
+        }
+
+    # Main content
+    if mode == "📝 Input Data Manual":
+        st.header("📝 Input Data Manual")
+    
+        col1, col2 = st.columns(2)
+    
+        with col1:
+            st.subheader("Kelompok 1")
+            data1_input = st.text_area(
+            "Masukkan data kelompok 1 (pisahkan dengan koma):",
+            "23, 25, 27, 29, 31, 33, 35, 37, 39, 41",
+            height=100
+            )
+        
+        with col2:
+            st.subheader("Kelompok 2")
+            data2_input = st.text_area(
+            "Masukkan data kelompok 2 (pisahkan dengan koma):",
+            "18, 20, 22, 24, 26, 28, 30, 32, 34, 36",
+                height=100
+            )
+    
+        try:
+            data1 = np.array([float(x.strip()) for x in data1_input.split(',')])
+            data2 = np.array([float(x.strip()) for x in data2_input.split(',')])
+            data_ready = True
+        except:
+            st.error("❌ Format data tidak valid. Gunakan angka yang dipisahkan dengan koma.")
+            data_ready = False
+
+    elif mode == "🎲 Generate Data Simulasi":
+        st.header("🎲 Generate Data Simulasi")
+    
+        col1, col2, col3 = st.columns(3)
+    
+        with col1:
+            n1 = st.number_input("Ukuran sampel kelompok 1:", min_value=3, max_value=1000, value=30)
+            mean1 = st.number_input("Mean kelompok 1:", value=50.0)
+            std1 = st.number_input("Std Dev kelompok 1:", min_value=0.1, value=10.0)
+        
+        with col2:
+            n2 = st.number_input("Ukuran sampel kelompok 2:", min_value=3, max_value=1000, value=30)
+            mean2 = st.number_input("Mean kelompok 2:", value=55.0)
+            std2 = st.number_input("Std Dev kelompok 2:", min_value=0.1, value=10.0)
+    
+        with col3:
+            seed = st.number_input("Random Seed:", min_value=0, value=42)
+            st.markdown("###")
+            if st.button("🎲 Generate Data", use_container_width=True):
+                np.random.seed(seed)
+                st.session_state.data1 = np.random.normal(mean1, std1, n1)
+                st.session_state.data2 = np.random.normal(mean2, std2, n2)
+                st.success("✅ Data berhasil di-generate!")
+    
+        if 'data1' in st.session_state and 'data2' in st.session_state:
+            data1 = st.session_state.data1
+            data2 = st.session_state.data2
+            data_ready = True
+        else:
+            st.info("👆 Klik tombol 'Generate Data' untuk membuat data simulasi")
+            data_ready = False
+
+    else:  # Upload CSV
+        st.header("📁 Upload Data CSV")
+    
+        st.markdown("""
+        **Format CSV yang diharapkan:**
+        - Kolom 1: Nilai data
+        - Kolom 2: Label kelompok (misalnya: 'Kelompok1' dan 'Kelompok2')
+        """)
+    
+        uploaded_file = st.file_uploader("Upload file CSV", type=['csv'])
+    
+        if uploaded_file is not None:
+            try:
+                df = pd.read_csv(uploaded_file)
+                st.write("Preview Data:")
+                st.dataframe(df.head())
+            
+                col1, col2 = st.columns(2)
+                with col1:
+                    value_col = st.selectbox("Pilih kolom nilai:", df.columns)
+                with col2:
+                    group_col = st.selectbox("Pilih kolom kelompok:", df.columns)
+            
+                groups = df[group_col].unique()
+                if len(groups) != 2:
+                    st.error("❌ Data harus memiliki tepat 2 kelompok!")
+                    data_ready = False
+                else:
+                    group1_name = st.selectbox("Pilih kelompok 1:", groups)
+                    group2_name = st.selectbox("Pilih kelompok 2:", [g for g in groups if g != group1_name])
+                
+                    data1 = df[df[group_col] == group1_name][value_col].values
+                    data2 = df[df[group_col] == group2_name][value_col].values
+                    data_ready = True
+            except Exception as e:
+                st.error(f"❌ Error membaca file: {str(e)}")
+                data_ready = False
+        else:
+            data_ready = False
+
+    # Jika data siap, lakukan analisis
+    if data_ready:
+        st.markdown("---")
+        st.header("🔧 Pengaturan Uji Hipotesis")
+    
+        col1, col2, col3 = st.columns(3)
+    
+        with col1:
+            alpha = st.select_slider(
+                "Tingkat signifikansi (α):",
+                options=[0.01, 0.05, 0.10],
+                value=0.05
+            )
+    
+        with col2:
+            alternative = st.selectbox(
+                "Hipotesis alternatif:",
+                ["two-sided", "less", "greater"],
+                format_func=lambda x: {
+                    "two-sided": "Dua sisi (≠)",
+                    "less": "Sisi kiri (<)",
+                    "greater": "Sisi kanan (>)"
+                }[x]
+            )
+    
+        with col3:
+            group1_name = st.text_input("Nama Kelompok 1:", "Kelompok 1")
+            group2_name = st.text_input("Nama Kelompok 2:", "Kelompok 2")
+    
+        # Hipotesis
+        st.markdown("### 📋 Hipotesis")
+        if alternative == "two-sided":
+            h0 = f"H₀: μ₁ = μ₂ (Tidak ada perbedaan rata-rata)"
+            h1 = f"H₁: μ₁ ≠ μ₂ (Ada perbedaan rata-rata)"
+        elif alternative == "less":
+            h0 = f"H₀: μ₁ ≥ μ₂"
+            h1 = f"H₁: μ₁ < μ₂ (Rata-rata kelompok 1 lebih kecil)"
+        else:
+            h0 = f"H₀: μ₁ ≤ μ₂"
+            h1 = f"H₁: μ₁ > μ₂ (Rata-rata kelompok 1 lebih besar)"
+    
+        st.markdown(f'<div class="hypothesis-box"><strong>{h0}</strong><br><strong>{h1}</strong></div>', 
+                unsafe_allow_html=True)
+    
+        # Perform t-test
+        if st.button("🚀 Jalankan Uji T", use_container_width=True, type="primary"):
+            results = perform_t_test(data1, data2, alpha, alternative)
+        
+            st.markdown("---")
+            st.header("📊 Hasil Analisis")
+        
+            # Statistik Deskriptif
+            st.subheader("1️⃣ Statistik Deskriptif")
+        
+            col1, col2, col3, col4 = st.columns(4)
+        
+            with col1:
+                st.markdown(f"""
+                <div class="metric-card">
+                <h4>{group1_name}</h4>
+                <p><strong>n:</strong> {results['n1']}</p>
+                <p><strong>Mean:</strong> {results['mean1']:.4f}</p>
+                <p><strong>Std:</strong> {results['std1']:.4f}</p>
+                </div>
+                """, unsafe_allow_html=True)
+        
+            with col2:
+                st.markdown(f"""
+            <div class="metric-card">
+                <h4>{group2_name}</h4>
+                <p><strong>n:</strong> {results['n2']}</p>
+                <p><strong>Mean:</strong> {results['mean2']:.4f}</p>
+                <p><strong>Std:</strong> {results['std2']:.4f}</p>
+            </div>
+                """, unsafe_allow_html=True)
+        
+            with col3:
+                st.markdown(f"""
+            <div class="metric-card">
+                <h4>Perbedaan</h4>
+                <p><strong>Δ Mean:</strong> {results['mean1']-results['mean2']:.4f}</p>
+                <p><strong>Cohen's d:</strong> {results['cohens_d']:.4f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+            with col4:
+                effect_size = abs(results['cohens_d'])
+                if effect_size < 0.2:
+                    effect_label = "Sangat Kecil"
+                elif effect_size < 0.5:
+                    effect_label = "Kecil"
+                elif effect_size < 0.8:
+                    effect_label = "Sedang"
+                else:
+                    effect_label = "Besar"
+            
+                st.markdown(f"""
+            <div class="metric-card">
+                <h4>Effect Size</h4>
+                <p><strong>{effect_label}</strong></p>
+                <p>|d| = {effect_size:.4f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+            # Uji Asumsi
+            st.subheader("2️⃣ Uji Asumsi")
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                st.markdown("**Uji Normalitas (Shapiro-Wilk)**")
+                if results['shapiro1_p'] > 0.05 and results['shapiro2_p'] > 0.05:
+                    st.markdown(f"""
+                <div class="success-box">
+                ✅ Data berdistribusi normal<br>
+                {group1_name}: p = {results['shapiro1_p']:.4f}<br>
+                {group2_name}: p = {results['shapiro2_p']:.4f}
+                </div>
+                """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                <div class="warning-box">
+                ⚠️ Data tidak berdistribusi normal<br>
+                {group1_name}: p = {results['shapiro1_p']:.4f}<br>
+                {group2_name}: p = {results['shapiro2_p']:.4f}<br>
+                Pertimbangkan uji non-parametrik
+                </div>
+                """, unsafe_allow_html=True)
+        
+            with col2:
+                st.markdown("**Uji Homogenitas Varians (Levene)**")
+                if results['levene_p'] > 0.05:
+                    st.markdown(f"""
+                <div class="success-box">
+                ✅ Varians homogen<br>
+                Levene statistic = {results['levene_stat']:.4f}<br>
+                p-value = {results['levene_p']:.4f}
+                </div>
+                """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                <div class="warning-box">
+                ⚠️ Varians tidak homogen<br>
+                Menggunakan Welch's t-test<br>
+                Levene statistic = {results['levene_stat']:.4f}<br>
+                p-value = {results['levene_p']:.4f}
+                </div>
+                """, unsafe_allow_html=True)
+        
+            # Hasil Uji T
+            st.subheader("3️⃣ Hasil Uji T")
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                st.markdown(f"""
+            <div class="result-box">
+            <h4>Statistik Uji</h4>
+            <p><strong>t-statistic:</strong> {results['t_stat']:.4f}</p>
+            <p><strong>Degrees of freedom:</strong> {results['df']:.2f}</p>
+            <p><strong>p-value:</strong> {results['p_value']:.4f}</p>
+            <p><strong>α:</strong> {alpha}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+            with col2:
+                ci_level = int((1-alpha)*100)
+                st.markdown(f"""
+            <div class="result-box">
+            <h4>Confidence Interval ({ci_level}%)</h4>
+            <p><strong>Lower bound:</strong> {results['ci_lower']:.4f}</p>
+            <p><strong>Upper bound:</strong> {results['ci_upper']:.4f}</p>
+            <p><strong>Selisih mean:</strong> {results['mean1']-results['mean2']:.4f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+            # Kesimpulan
+            st.subheader("4️⃣ Kesimpulan")
+        
+            if results['p_value'] < alpha:
+                conclusion = f"""
+            <div class="warning-box">
+            <h4>🔴 Tolak H₀</h4>
+            <p>Dengan tingkat signifikansi α = {alpha}, terdapat cukup bukti untuk menolak hipotesis nol.</p>
+            <p><strong>Kesimpulan:</strong> Terdapat perbedaan yang signifikan antara rata-rata {group1_name} dan {group2_name}.</p>
+            <p>p-value ({results['p_value']:.4f}) < α ({alpha})</p>
+            </div>
+            """
+            else:
+                conclusion = f"""
+            <div class="success-box">
+            <h4>🟢 Gagal Tolak H₀</h4>
+            <p>Dengan tingkat signifikansi α = {alpha}, tidak terdapat cukup bukti untuk menolak hipotesis nol.</p>
+            <p><strong>Kesimpulan:</strong> Tidak terdapat perbedaan yang signifikan antara rata-rata {group1_name} dan {group2_name}.</p>
+            <p>p-value ({results['p_value']:.4f}) ≥ α ({alpha})</p>
+            </div>
+            """
+        
+            st.markdown(conclusion, unsafe_allow_html=True)
+        
+            # Visualisasi
+            st.markdown("---")
+            st.header("📈 Visualisasi Data")
+        
+            # Create subplots
+            fig = make_subplots(
+            rows=2, cols=2,
+            subplot_titles=('Distribusi Data', 'Box Plot', 'Histogram', 'Q-Q Plot'),
+            specs=[[{'type': 'box'}, {'type': 'box'}],
+                   [{'type': 'histogram'}, {'type': 'scatter'}]]
+            )
+        
+            # Box plot
+            fig.add_trace(
+                go.Box(y=data1, name=group1_name, marker_color='lightblue'),
+                row=1, col=1
+            )
+            fig.add_trace(
+            go.Box(y=data2, name=group2_name, marker_color='lightcoral'),
+            row=1, col=2
+            )
+        
+            # Histogram
+            fig.add_trace(
+            go.Histogram(x=data1, name=group1_name, opacity=0.7, marker_color='lightblue'),
+            row=2, col=1
+            )
+            fig.add_trace(
+            go.Histogram(x=data2, name=group2_name, opacity=0.7, marker_color='lightcoral'),
+            row=2, col=1
+            )
+        
+            # Q-Q Plot
+            qq1 = stats.probplot(data1, dist="norm")
+            qq2 = stats.probplot(data2, dist="norm")
+        
+            fig.add_trace(
+                go.Scatter(x=qq1[0][0], y=qq1[0][1], mode='markers', 
+                      name=f'{group1_name} Q-Q', marker_color='lightblue'),
+                row=2, col=2
+            )
+            fig.add_trace(
+            go.Scatter(x=qq2[0][0], y=qq2[0][1], mode='markers', 
+                      name=f'{group2_name} Q-Q', marker_color='lightcoral'),
+            row=2, col=2
+            )
+        
+            # Add reference line for Q-Q plot
+            fig.add_trace(
+            go.Scatter(x=qq1[0][0], y=qq1[1][1] + qq1[1][0]*qq1[0][0], 
+                      mode='lines', name='Reference Line', 
+                      line=dict(color='red', dash='dash')),
+            row=2, col=2
+            )
+        
+            fig.update_layout(height=800, showlegend=True, title_text="Visualisasi Lengkap")
+            st.plotly_chart(fig, use_container_width=True)
+        
+            # Violin plot dengan matplotlib
+            st.subheader("Violin Plot Perbandingan")
+            fig_violin, ax = plt.subplots(figsize=(10, 6))
+        
+            data_combined = pd.DataFrame({
+            'Nilai': np.concatenate([data1, data2]),
+            'Kelompok': [group1_name]*len(data1) + [group2_name]*len(data2)
+            })
+        
+            sns.violinplot(data=data_combined, x='Kelompok', y='Nilai', ax=ax, palette=['lightblue', 'lightcoral'])
+            sns.swarmplot(data=data_combined, x='Kelompok', y='Nilai', ax=ax, color='black', alpha=0.5, size=3)
+        
+            ax.set_title('Violin Plot Perbandingan Data', fontsize=14, fontweight='bold')
+            ax.set_ylabel('Nilai', fontsize=12)
+            ax.set_xlabel('Kelompok', fontsize=12)
+            ax.grid(True, alpha=0.3)
+        
+            st.pyplot(fig_violin)
+        
+            # Tabel data
+            st.markdown("---")
+            st.subheader("📋 Tabel Data")
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                st.markdown(f"**{group1_name}**")
+                df1 = pd.DataFrame({
+                'Index': range(1, len(data1)+1),
+                'Nilai': data1
+                })
+                st.dataframe(df1, height=300)
+        
+            with col2:
+                st.markdown(f"**{group2_name}**")
+                df2 = pd.DataFrame({
+                'Index': range(1, len(data2)+1),
+                'Nilai': data2
+                })
+                st.dataframe(df2, height=300)
+
+    # Footer
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📚 Interpretasi Effect Size (Cohen's d)")
+    st.sidebar.markdown("""
+    - |d| < 0.2: Sangat kecil
+    - 0.2 ≤ |d| < 0.5: Kecil
+    - 0.5 ≤ |d| < 0.8: Sedang
+    - |d| ≥ 0.8: Besar
+    """)
+
+    st.sidebar.markdown("### ℹ️ Informasi")
+    st.sidebar.info("Aplikasi ini menggunakan scipy.stats untuk perhitungan statistik dan visualisasi interaktif dengan plotly.")
+
+def tampilkan_materi22():
+    # CSS Styling
+    st.markdown("""
+    <style>
+    .main-header {
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-align: center;
+        color: #6A1B9A;
+        margin-bottom: 0.5rem;
+    }
+    .sub-header {
+        font-size: 1.2rem;
+        text-align: center;
+        color: #666;
+        margin-bottom: 2rem;
+    }
+    .result-box {
+        background-color: #F3E5F5;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border-left: 5px solid #6A1B9A;
+        margin: 1rem 0;
+        color:black;
+    }
+    .hypothesis-box {
+        background-color: #FFF9C4;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #FBC02D;
+        margin: 1rem 0;
+        color: black;
+    }
+    .success-box {
+        background-color: #E8F5E9;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #4CAF50;
+        margin: 1rem 0;
+        color: black;
+    }
+    .warning-box {
+        background-color: #FFEBEE;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #F44336;
+        margin: 1rem 0;
+    }
+    .info-box {
+        background-color: #E3F2FD;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #2196F3;
+        margin: 1rem 0;
+        color: black;
+    }
+    .metric-card {
+        background-color: #FAFAFA;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        margin: 0.5rem 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        color: black;
+    }
+    .rank-table {
+        font-size: 0.9rem;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+    # Header
+    st.markdown('<div class="main-header">📊 Simulasi Uji U Mann-Whitney</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Mann-Whitney U Test for Two Independent Samples (Non-Parametric)</div>', unsafe_allow_html=True)
+
+    # Sidebar
+    st.sidebar.title("⚙️ Pengaturan")
+    mode = st.sidebar.radio(
+    "Pilih Mode:",
+    ["📝 Input Data Manual", "🎲 Generate Data Simulasi", "📁 Upload Data CSV"]
+    )
+
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📖 Tentang Uji Mann-Whitney")
+    st.sidebar.info("""
+**Uji U Mann-Whitney** (atau Wilcoxon Rank-Sum Test) adalah uji non-parametrik untuk membandingkan dua kelompok independen.
+
+**Kapan digunakan:**
+- Data tidak berdistribusi normal
+- Data ordinal atau interval
+- Sampel kecil
+- Alternatif dari uji t independen
+
+**Asumsi:**
+- Sampel independen
+- Data minimal skala ordinal
+- Distribusi bentuk serupa (untuk inferensi median)
+""")
+
+    # Fungsi untuk menghitung rank dan statistik
+    def calculate_ranks(data1, data2):
+        """Menghitung ranking untuk Mann-Whitney U test"""
+        # Gabungkan data dan beri label
+        combined = np.concatenate([data1, data2])
+        labels = np.array([1]*len(data1) + [2]*len(data2))
+    
+        # Urutkan dan hitung rank
+        sorted_indices = np.argsort(combined)
+        sorted_data = combined[sorted_indices]
+        sorted_labels = labels[sorted_indices]
+    
+        # Hitung rank dengan menangani ties
+        ranks = stats.rankdata(combined, method='average')
+    
+        # Pisahkan rank berdasarkan kelompok
+        ranks_sorted = ranks[sorted_indices]
+    
+        # Buat dataframe untuk ditampilkan
+        rank_df = pd.DataFrame({
+        'Nilai': sorted_data,
+        'Kelompok': ['Kelompok 1' if l == 1 else 'Kelompok 2' for l in sorted_labels],
+        'Rank': ranks_sorted
+        })
+    
+        # Rank untuk masing-masing kelompok
+        ranks_group1 = ranks[:len(data1)]
+        ranks_group2 = ranks[len(data1):]
+    
+        return ranks, ranks_group1, ranks_group2, rank_df
+
+    # Fungsi untuk melakukan uji Mann-Whitney
+    def perform_mann_whitney(data1, data2, alpha, alternative):
+        """Melakukan uji Mann-Whitney dan mengembalikan hasil"""
+        n1, n2 = len(data1), len(data2)
+    
+        # Statistik deskriptif
+        mean1, mean2 = np.mean(data1), np.mean(data2)
+        median1, median2 = np.median(data1), np.median(data2)
+        std1, std2 = np.std(data1, ddof=1), np.std(data2, ddof=1)
+        q1_1, q3_1 = np.percentile(data1, [25, 75])
+        q1_2, q3_2 = np.percentile(data2, [25, 75])
+        iqr1, iqr2 = q3_1 - q1_1, q3_2 - q1_2
+        min1, max1 = np.min(data1), np.max(data1)
+        min2, max2 = np.min(data2), np.max(data2)
+    
+        # Hitung ranks
+        ranks, ranks_group1, ranks_group2, rank_df = calculate_ranks(data1, data2)
+    
+        # Sum of ranks
+        sum_ranks1 = np.sum(ranks_group1)
+        sum_ranks2 = np.sum(ranks_group2)
+        mean_rank1 = np.mean(ranks_group1)
+        mean_rank2 = np.mean(ranks_group2)
+    
+        # Mann-Whitney U test
+        u_stat, p_value = stats.mannwhitneyu(data1, data2, alternative=alternative)
+    
+        # Hitung U untuk kelompok lainnya
+        u_stat2 = n1 * n2 - u_stat
+    
+        # Hitung z-score untuk sampel besar
+        mean_u = n1 * n2 / 2
+    
+        # Koreksi untuk ties
+        ties = {}
+        for val in np.concatenate([data1, data2]):
+            ties[val] = ties.get(val, 0) + 1
+    
+        tie_correction = 0
+        n_total = n1 + n2
+        for count in ties.values():
+            if count > 1:
+                tie_correction += (count**3 - count)
+    
+        std_u = np.sqrt((n1 * n2 * (n_total + 1) / 12) - (n1 * n2 * tie_correction / (12 * n_total * (n_total - 1))))
+    
+        if std_u > 0:
+            z_score = (u_stat - mean_u) / std_u
+        else:
+            z_score = 0
+    
+        # Effect size (r = Z / sqrt(N))
+        r_effect = abs(z_score) / np.sqrt(n1 + n2)
+    
+        # Common Language Effect Size (probability)
+        cles = u_stat / (n1 * n2)
+    
+        # Rank-biserial correlation
+        rank_biserial = 1 - (2*u_stat) / (n1 * n2)
+    
+        return {
+        'n1': n1, 'n2': n2,
+        'mean1': mean1, 'mean2': mean2,
+        'median1': median1, 'median2': median2,
+        'std1': std1, 'std2': std2,
+        'q1_1': q1_1, 'q3_1': q3_1,
+        'q1_2': q1_2, 'q3_2': q3_2,
+        'iqr1': iqr1, 'iqr2': iqr2,
+        'min1': min1, 'max1': max1,
+        'min2': min2, 'max2': max2,
+        'u_stat': u_stat,
+        'u_stat2': u_stat2,
+        'p_value': p_value,
+        'z_score': z_score,
+        'r_effect': r_effect,
+        'cles': cles,
+        'rank_biserial': rank_biserial,
+        'sum_ranks1': sum_ranks1,
+        'sum_ranks2': sum_ranks2,
+        'mean_rank1': mean_rank1,
+        'mean_rank2': mean_rank2,
+        'rank_df': rank_df,
+        'ranks_group1': ranks_group1,
+        'ranks_group2': ranks_group2
+        }
+
+    # Main content
+    if mode == "📝 Input Data Manual":
+        st.header("📝 Input Data Manual")
+    
+        col1, col2 = st.columns(2)
+    
+        with col1:
+            st.subheader("Kelompok 1")
+            data1_input = st.text_area(
+            "Masukkan data kelompok 1 (pisahkan dengan koma):",
+            "12, 15, 18, 20, 22, 25, 28, 30, 32, 35",
+            height=100
+            )
+        
+        with col2:
+            st.subheader("Kelompok 2")
+            data2_input = st.text_area(
+            "Masukkan data kelompok 2 (pisahkan dengan koma):",
+            "10, 13, 16, 19, 21, 24, 27, 29, 31, 33",
+            height=100
+            )
+    
+        try:
+            data1 = np.array([float(x.strip()) for x in data1_input.split(',')])
+            data2 = np.array([float(x.strip()) for x in data2_input.split(',')])
+            data_ready = True
+        except:
+            st.error("❌ Format data tidak valid. Gunakan angka yang dipisahkan dengan koma.")
+            data_ready = False
+
+    elif mode == "🎲 Generate Data Simulasi":
+        st.header("🎲 Generate Data Simulasi")
+    
+        st.markdown("""
+    <div class="info-box">
+    💡 <strong>Tips:</strong> Untuk data non-normal, gunakan distribusi seperti exponential, uniform, atau poisson.
+    </div>
+    """, unsafe_allow_html=True)
+    
+        col1, col2, col3 = st.columns(3)
+    
+        with col1:
+            n1 = st.number_input("Ukuran sampel kelompok 1:", min_value=3, max_value=1000, value=20)
+            dist1 = st.selectbox("Distribusi kelompok 1:", 
+                            ["Normal", "Exponential", "Uniform", "Poisson", "Skewed Normal"])
+        
+            if dist1 == "Normal":
+                mean1 = st.number_input("Mean K1:", value=50.0, key="mean1")
+                std1 = st.number_input("Std Dev K1:", min_value=0.1, value=10.0, key="std1")
+            elif dist1 == "Exponential":
+                scale1 = st.number_input("Scale K1:", min_value=0.1, value=5.0, key="scale1")
+            elif dist1 == "Uniform":
+                low1 = st.number_input("Min K1:", value=0.0, key="low1")
+                high1 = st.number_input("Max K1:", value=100.0, key="high1")
+            elif dist1 == "Poisson":
+                lam1 = st.number_input("Lambda K1:", min_value=0.1, value=10.0, key="lam1")
+            else:  # Skewed Normal
+                loc1 = st.number_input("Location K1:", value=50.0, key="loc1")
+                scale1_skew = st.number_input("Scale K1:", min_value=0.1, value=10.0, key="scale1_skew")
+                skew1 = st.number_input("Skewness K1:", value=5.0, key="skew1")
+        
+        with col2:
+            n2 = st.number_input("Ukuran sampel kelompok 2:", min_value=3, max_value=1000, value=20)
+            dist2 = st.selectbox("Distribusi kelompok 2:", 
+                            ["Normal", "Exponential", "Uniform", "Poisson", "Skewed Normal"])
+        
+            if dist2 == "Normal":
+                mean2 = st.number_input("Mean K2:", value=55.0, key="mean2")
+                std2 = st.number_input("Std Dev K2:", min_value=0.1, value=10.0, key="std2")
+            elif dist2 == "Exponential":
+                scale2 = st.number_input("Scale K2:", min_value=0.1, value=7.0, key="scale2")
+            elif dist2 == "Uniform":
+                low2 = st.number_input("Min K2:", value=10.0, key="low2")
+                high2 = st.number_input("Max K2:", value=110.0, key="high2")
+            elif dist2 == "Poisson":
+                lam2 = st.number_input("Lambda K2:", min_value=0.1, value=15.0, key="lam2")
+            else:  # Skewed Normal
+                loc2 = st.number_input("Location K2:", value=55.0, key="loc2")
+                scale2_skew = st.number_input("Scale K2:", min_value=0.1, value=10.0, key="scale2_skew")
+                skew2 = st.number_input("Skewness K2:", value=5.0, key="skew2")
+    
+        with col3:
+            seed = st.number_input("Random Seed:", min_value=0, value=42)
+            st.markdown("###")
+            if st.button("🎲 Generate Data", use_container_width=True):
+                np.random.seed(seed)
+            
+                # Generate data1
+                if dist1 == "Normal":
+                    st.session_state.data1 = np.random.normal(mean1, std1, n1)
+                elif dist1 == "Exponential":
+                    st.session_state.data1 = np.random.exponential(scale1, n1)
+                elif dist1 == "Uniform":
+                    st.session_state.data1 = np.random.uniform(low1, high1, n1)
+                elif dist1 == "Poisson":
+                    st.session_state.data1 = np.random.poisson(lam1, n1).astype(float)
+                else:  # Skewed Normal
+                    st.session_state.data1 = stats.skewnorm.rvs(skew1, loc=loc1, scale=scale1_skew, size=n1)
+            
+                # Generate data2
+                if dist2 == "Normal":
+                    st.session_state.data2 = np.random.normal(mean2, std2, n2)
+                elif dist2 == "Exponential":
+                    st.session_state.data2 = np.random.exponential(scale2, n2)
+                elif dist2 == "Uniform":
+                    st.session_state.data2 = np.random.uniform(low2, high2, n2)
+                elif dist2 == "Poisson":
+                    st.session_state.data2 = np.random.poisson(lam2, n2).astype(float)
+                else:  # Skewed Normal
+                    st.session_state.data2 = stats.skewnorm.rvs(skew2, loc=loc2, scale=scale2_skew, size=n2)
+            
+                st.success("✅ Data berhasil di-generate!")
+    
+        if 'data1' in st.session_state and 'data2' in st.session_state:
+            data1 = st.session_state.data1
+            data2 = st.session_state.data2
+            data_ready = True
+        else:
+            st.info("👆 Klik tombol 'Generate Data' untuk membuat data simulasi")
+            data_ready = False
+
+    else:  # Upload CSV
+        st.header("📁 Upload Data CSV")
+    
+        st.markdown("""
+    **Format CSV yang diharapkan:**
+    - Kolom 1: Nilai data
+    - Kolom 2: Label kelompok (misalnya: 'Kelompok1' dan 'Kelompok2')
+    """)
+    
+        uploaded_file = st.file_uploader("Upload file CSV", type=['csv'])
+    
+        if uploaded_file is not None:
+            try:
+                df = pd.read_csv(uploaded_file)
+                st.write("Preview Data:")
+                st.dataframe(df.head())
+            
+                col1, col2 = st.columns(2)
+                with col1:
+                    value_col = st.selectbox("Pilih kolom nilai:", df.columns)
+                with col2:
+                    group_col = st.selectbox("Pilih kolom kelompok:", df.columns)
+            
+                groups = df[group_col].unique()
+                if len(groups) != 2:
+                    st.error("❌ Data harus memiliki tepat 2 kelompok!")
+                    data_ready = False
+                else:
+                    group1_name = st.selectbox("Pilih kelompok 1:", groups)
+                    group2_name = st.selectbox("Pilih kelompok 2:", [g for g in groups if g != group1_name])
+                
+                    data1 = df[df[group_col] == group1_name][value_col].values
+                    data2 = df[df[group_col] == group2_name][value_col].values
+                    data_ready = True
+            except Exception as e:
+                st.error(f"❌ Error membaca file: {str(e)}")
+                data_ready = False
+        else:
+            data_ready = False
+
+    # Jika data siap, lakukan analisis
+    if data_ready:
+        st.markdown("---")
+        st.header("🔧 Pengaturan Uji Hipotesis")
+    
+        col1, col2, col3 = st.columns(3)
+    
+        with col1:
+            alpha = st.select_slider(
+                "Tingkat signifikansi (α):",
+                options=[0.01, 0.05, 0.10],
+                value=0.05
+            )
+    
+        with col2:
+            alternative = st.selectbox(
+                "Hipotesis alternatif:",
+                ["two-sided", "less", "greater"],
+                format_func=lambda x: {
+                    "two-sided": "Dua sisi (≠)",
+                    "less": "Sisi kiri (<)",
+                    "greater": "Sisi kanan (>)"
+                }[x]
+            )
+    
+    with col3:
+        group1_name = st.text_input("Nama Kelompok 1:", "Kelompok 1")
+        group2_name = st.text_input("Nama Kelompok 2:", "Kelompok 2")
+    
+    # Hipotesis
+    st.markdown("### 📋 Hipotesis")
+    if alternative == "two-sided":
+        h0 = f"H₀: Distribusi {group1_name} = Distribusi {group2_name}"
+        h1 = f"H₁: Distribusi {group1_name} ≠ Distribusi {group2_name}"
+    elif alternative == "less":
+        h0 = f"H₀: Distribusi {group1_name} ≥ Distribusi {group2_name}"
+        h1 = f"H₁: Distribusi {group1_name} < Distribusi {group2_name}"
+    else:
+        h0 = f"H₀: Distribusi {group1_name} ≤ Distribusi {group2_name}"
+        h1 = f"H₁: Distribusi {group1_name} > Distribusi {group2_name}"
+    
+    st.markdown(f'<div class="hypothesis-box"><strong>{h0}</strong><br><strong>{h1}</strong></div>', 
+                unsafe_allow_html=True)
+    
+    # Perform Mann-Whitney test
+    if st.button("🚀 Jalankan Uji Mann-Whitney", use_container_width=True, type="primary"):
+        results = perform_mann_whitney(data1, data2, alpha, alternative)
+        
+        st.markdown("---")
+        st.header("📊 Hasil Analisis")
+        
+        # Statistik Deskriptif
+        st.subheader("1️⃣ Statistik Deskriptif")
+        
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.markdown(f"""
+                <div class="metric-card">
+                <h4>{group1_name}</h4>
+                <p><strong>n:</strong> {results['n1']}</p>
+                <p><strong>Median:</strong> {results['median1']:.2f}</p>
+                <p><strong>Mean:</strong> {results['mean1']:.2f}</p>
+                <p><strong>IQR:</strong> {results['iqr1']:.2f}</p>
+            </div>
+               """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown(f"""
+            <div class="metric-card">
+                <h4>{group2_name}</h4>
+                <p><strong>n:</strong> {results['n2']}</p>
+                <p><strong>Median:</strong> {results['median2']:.2f}</p>
+                <p><strong>Mean:</strong> {results['mean2']:.2f}</p>
+                <p><strong>IQR:</strong> {results['iqr2']:.2f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col3:
+            st.markdown(f"""
+            <div class="metric-card">
+                <h4>Ranking</h4>
+                <p><strong>Mean Rank K1:</strong> {results['mean_rank1']:.2f}</p>
+                <p><strong>Mean Rank K2:</strong> {results['mean_rank2']:.2f}</p>
+                <p><strong>Sum Ranks K1:</strong> {results['sum_ranks1']:.0f}</p>
+                <p><strong>Sum Ranks K2:</strong> {results['sum_ranks2']:.0f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col4:
+            r_effect = abs(results['r_effect'])
+            if r_effect < 0.1:
+                effect_label = "Sangat Kecil"
+            elif r_effect < 0.3:
+                effect_label = "Kecil"
+            elif r_effect < 0.5:
+                effect_label = "Sedang"
+            else:
+                effect_label = "Besar"
+            
+            st.markdown(f"""
+            <div class="metric-card">
+                <h4>Effect Size</h4>
+                <p><strong>{effect_label}</strong></p>
+                <p>r = {r_effect:.4f}</p>
+                <p><strong>CLES:</strong> {results['cles']:.4f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Hasil Uji Mann-Whitney
+        st.subheader("2️⃣ Hasil Uji Mann-Whitney")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown(f"""
+            <div class="result-box">
+            <h4>Statistik Uji</h4>
+            <p><strong>U-statistic (K1):</strong> {results['u_stat']:.4f}</p>
+            <p><strong>U-statistic (K2):</strong> {results['u_stat2']:.4f}</p>
+            <p><strong>Z-score:</strong> {results['z_score']:.4f}</p>
+            <p><strong>p-value:</strong> {results['p_value']:.6f}</p>
+            <p><strong>α:</strong> {alpha}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown(f"""
+            <div class="result-box">
+            <h4>Effect Size Metrics</h4>
+            <p><strong>r (effect size):</strong> {results['r_effect']:.4f}</p>
+            <p><strong>Rank-biserial correlation:</strong> {results['rank_biserial']:.4f}</p>
+            <p><strong>CLES (probability):</strong> {results['cles']:.4f}</p>
+            <p><em>CLES: Probabilitas nilai dari K1 > K2</em></p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Kesimpulan
+        st.subheader("3️⃣ Kesimpulan")
+        
+        if results['p_value'] < alpha:
+            conclusion = f"""
+            <div class="warning-box">
+            <h4>🔴 Tolak H₀</h4>
+            <p>Dengan tingkat signifikansi α = {alpha}, terdapat cukup bukti untuk menolak hipotesis nol.</p>
+            <p><strong>Kesimpulan:</strong> Terdapat perbedaan yang signifikan antara distribusi {group1_name} dan {group2_name}.</p>
+            <p>p-value ({results['p_value']:.6f}) < α ({alpha})</p>
+            <p><strong>Interpretasi:</strong> Median kelompok berbeda secara signifikan (Median K1 = {results['median1']:.2f}, Median K2 = {results['median2']:.2f})</p>
+            </div>
+            """
+        else:
+            conclusion = f"""
+            <div class="success-box">
+            <h4>🟢 Gagal Tolak H₀</h4>
+            <p>Dengan tingkat signifikansi α = {alpha}, tidak terdapat cukup bukti untuk menolak hipotesis nol.</p>
+            <p><strong>Kesimpulan:</strong> Tidak terdapat perbedaan yang signifikan antara distribusi {group1_name} dan {group2_name}.</p>
+            <p>p-value ({results['p_value']:.6f}) ≥ α ({alpha})</p>
+            <p><strong>Interpretasi:</strong> Median kelompok tidak berbeda secara signifikan (Median K1 = {results['median1']:.2f}, Median K2 = {results['median2']:.2f})</p>
+            </div>
+            """
+        
+        st.markdown(conclusion, unsafe_allow_html=True)
+        
+        # Tabel Ranking
+        st.subheader("4️⃣ Tabel Ranking Data")
+        
+        st.markdown("""
+        <div class="info-box">
+        💡 Tabel ini menunjukkan ranking gabungan dari kedua kelompok. Ranking digunakan untuk menghitung statistik U Mann-Whitney.
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Tampilkan tabel dengan styling
+        st.dataframe(
+        results['rank_df'].style.background_gradient(subset=['Rank'], cmap='YlOrRd'),
+        height=400
+        )
+        
+        # Statistik ranking per kelompok
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric(f"Total Rank {group1_name}", f"{results['sum_ranks1']:.0f}")
+            st.metric(f"Mean Rank {group1_name}", f"{results['mean_rank1']:.2f}")
+        with col2:
+            st.metric(f"Total Rank {group2_name}", f"{results['sum_ranks2']:.0f}")
+            st.metric(f"Mean Rank {group2_name}", f"{results['mean_rank2']:.2f}")
+        
+        # Visualisasi
+        st.markdown("---")
+        st.header("📈 Visualisasi Data")
+        
+        # Create comprehensive plots
+        fig = make_subplots(
+        rows=2, cols=2,
+        subplot_titles=('Box Plot Perbandingan', 'Distribusi Ranking', 
+                          'Histogram Distribusi', 'Cumulative Distribution'),
+        specs=[[{'type': 'box'}, {'type': 'box'}],
+                [{'type': 'histogram'}, {'type': 'scatter'}]]
+        )
+        
+        # Box plot
+        fig.add_trace(
+        go.Box(y=data1, name=group1_name, marker_color='mediumpurple', boxmean='sd'),
+        row=1, col=1
+        )
+        fig.add_trace(
+        go.Box(y=data2, name=group2_name, marker_color='lightcoral', boxmean='sd'),
+        row=1, col=1
+        )
+        
+        # Box plot ranking
+        fig.add_trace(
+        go.Box(y=results['ranks_group1'], name=f'Rank {group1_name}', 
+                marker_color='mediumpurple', boxmean='sd'),
+        row=1, col=2
+        )
+        fig.add_trace(
+        go.Box(y=results['ranks_group2'], name=f'Rank {group2_name}', 
+                marker_color='lightcoral', boxmean='sd'),
+        row=1, col=2
+        )
+        
+        # Histogram
+        fig.add_trace(
+        go.Histogram(x=data1, name=group1_name, opacity=0.7, 
+                    marker_color='mediumpurple', nbinsx=20),
+        row=2, col=1
+        )
+        fig.add_trace(
+        go.Histogram(x=data2, name=group2_name, opacity=0.7, 
+                    marker_color='lightcoral', nbinsx=20),
+        row=2, col=1
+        )
+        
+        # Cumulative distribution
+        data1_sorted = np.sort(data1)
+        data2_sorted = np.sort(data2)
+        cum1 = np.arange(1, len(data1_sorted) + 1) / len(data1_sorted)
+        cum2 = np.arange(1, len(data2_sorted) + 1) / len(data2_sorted)
+        
+        fig.add_trace(
+            go.Scatter(x=data1_sorted, y=cum1, mode='lines', 
+                  name=f'CDF {group1_name}', line=dict(color='mediumpurple', width=3)),
+            row=2, col=2
+        )
+        fig.add_trace(
+        go.Scatter(x=data2_sorted, y=cum2, mode='lines', 
+                name=f'CDF {group2_name}', line=dict(color='lightcoral', width=3)),
+        row=2, col=2
+        )
+        
+        fig.update_layout(height=800, showlegend=True, 
+                         title_text="Visualisasi Lengkap Mann-Whitney U Test")
+        fig.update_xaxes(title_text="Nilai", row=2, col=1)
+        fig.update_xaxes(title_text="Nilai", row=2, col=2)
+        fig.update_yaxes(title_text="Cumulative Probability", row=2, col=2)
+        
+        st.plotly_chart(fig, use_container_width=True)
+        
+        # Violin plot dengan matplotlib
+        st.subheader("Violin Plot Perbandingan")
+        fig_violin, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+        
+        # Violin plot untuk data asli
+        data_combined = pd.DataFrame({
+        'Nilai': np.concatenate([data1, data2]),
+        'Kelompok': [group1_name]*len(data1) + [group2_name]*len(data2)
+        })
+        
+        sns.violinplot(data=data_combined, x='Kelompok', y='Nilai', ax=ax1, 
+                    palette=['mediumpurple', 'lightcoral'])
+        sns.swarmplot(data=data_combined, x='Kelompok', y='Nilai', ax=ax1, 
+                    color='black', alpha=0.4, size=3)
+        ax1.set_title('Violin Plot - Data Asli', fontsize=14, fontweight='bold')
+        ax1.set_ylabel('Nilai', fontsize=12)
+        ax1.set_xlabel('Kelompok', fontsize=12)
+        ax1.grid(True, alpha=0.3, axis='y')
+        
+        # Add median lines
+        ax1.hlines(results['median1'], -0.4, 0.4, colors='red', linestyles='--', 
+                  linewidth=2, label=f'Median: {results["median1"]:.2f}')
+        ax1.hlines(results['median2'], 0.6, 1.4, colors='red', linestyles='--', 
+                  linewidth=2, label=f'Median: {results["median2"]:.2f}')
+        ax1.legend()
+        
+        # Violin plot untuk ranking
+        rank_combined = pd.DataFrame({
+            'Rank': np.concatenate([results['ranks_group1'], results['ranks_group2']]),
+            'Kelompok': [group1_name]*len(results['ranks_group1']) + [group2_name]*len(results['ranks_group2'])
+        })
+        
+        sns.violinplot(data=rank_combined, x='Kelompok', y='Rank', ax=ax2, 
+                      palette=['mediumpurple', 'lightcoral'])
+        sns.swarmplot(data=rank_combined, x='Kelompok', y='Rank', ax=ax2, 
+                     color='black', alpha=0.4, size=3)
+        ax2.set_title('Violin Plot - Ranking', fontsize=14, fontweight='bold')
+        ax2.set_ylabel('Rank', fontsize=12)
+        ax2.set_xlabel('Kelompok', fontsize=12)
+        ax2.grid(True, alpha=0.3, axis='y')
+        
+        # Add mean rank lines
+        ax2.hlines(results['mean_rank1'], -0.4, 0.4, colors='red', linestyles='--', 
+                  linewidth=2, label=f'Mean Rank: {results["mean_rank1"]:.2f}')
+        ax2.hlines(results['mean_rank2'], 0.6, 1.4, colors='red', linestyles='--', 
+                  linewidth=2, label=f'Mean Rank: {results["mean_rank2"]:.2f}')
+        ax2.legend()
+        
+        plt.tight_layout()
+        st.pyplot(fig_violin)
+        
+        # Distribusi ranking dengan histogram
+        st.subheader("Distribusi Ranking")
+        fig_rank, ax_rank = plt.subplots(figsize=(12, 6))
+        
+        ax_rank.hist(results['ranks_group1'], bins=15, alpha=0.6, 
+                    label=group1_name, color='mediumpurple', edgecolor='black')
+        ax_rank.hist(results['ranks_group2'], bins=15, alpha=0.6, 
+                    label=group2_name, color='lightcoral', edgecolor='black')
+        
+        ax_rank.axvline(results['mean_rank1'], color='purple', linestyle='--', 
+                       linewidth=2, label=f'Mean Rank {group1_name}: {results["mean_rank1"]:.2f}')
+        ax_rank.axvline(results['mean_rank2'], color='red', linestyle='--', 
+                       linewidth=2, label=f'Mean Rank {group2_name}: {results["mean_rank2"]:.2f}')
+        
+        ax_rank.set_xlabel('Rank', fontsize=12)
+        ax_rank.set_ylabel('Frekuensi', fontsize=12)
+        ax_rank.set_title('Distribusi Ranking Kedua Kelompok', fontsize=14, fontweight='bold')
+        ax_rank.legend()
+        ax_rank.grid(True, alpha=0.3)
+        
+        st.pyplot(fig_rank)
+        
+        # Tabel data
+        st.markdown("---")
+        st.subheader("📋 Tabel Data Lengkap")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown(f"**{group1_name}**")
+            df1 = pd.DataFrame({
+                'Index': range(1, len(data1)+1),
+                'Nilai': data1,
+                'Rank': results['ranks_group1']
+                })
+            st.dataframe(df1, height=300)
+            
+            # Download button
+            csv1 = df1.to_csv(index=False)
+            st.download_button(
+            label=f"📥 Download Data {group1_name}",
+            data=csv1,
+            file_name=f"{group1_name.replace(' ', '_')}.csv",
+            mime="text/csv"
+            )
+        
+        with col2:
+            st.markdown(f"**{group2_name}**")
+            df2 = pd.DataFrame({
+            'Inex': range(1, len(data2)+1),
+            'Nilai': data2,
+            'Rank': results['ranks_group2']
+            })
+            st.dataframe(df2, height=300)
+            
+            # Download button
+            csv2 = df2.to_csv(index=False)
+            st.download_button(
+            label=f"📥 Download Data {group2_name}",
+            data=csv2,
+            file_name=f"{group2_name.replace(' ', '_')}.csv",
+            mime="text/csv"
+            )
+            
+        # Ringkasan statistik detail
+        st.markdown("---")
+        st.subheader("📊 Ringkasan Statistik Detail")
+        
+        summary_df = pd.DataFrame({
+                'Statistik': ['N', 'Mean', 'Median', 'Std Dev', 'Min', 'Q1', 'Q3', 'Max', 'IQR', 'Mean Rank', 'Sum Rank'],
+                group1_name: [
+                results['n1'],
+                f"{results['mean1']:.4f}",
+                f"{results['median1']:.4f}",
+                f"{results['std1']:.4f}",
+                f"{results['min1']:.4f}",
+                f"{results['q1_1']:.4f}",
+                f"{results['q3_1']:.4f}",
+                f"{results['max1']:.4f}",
+                f"{results['iqr1']:.4f}",
+                f"{results['mean_rank1']:.4f}",
+                f"{results['sum_ranks1']:.0f}"
+            ],
+                group2_name: [
+                results['n2'],
+                f"{results['mean2']:.4f}",
+                f"{results['median2']:.4f}",
+                f"{results['std2']:.4f}",
+                f"{results['min2']:.4f}",
+                f"{results['q1_2']:.4f}",
+                f"{results['q3_2']:.4f}",
+                f"{results['max2']:.4f}",
+                f"{results['iqr2']:.4f}",
+                f"{results['mean_rank2']:.4f}",
+                f"{results['sum_ranks2']:.0f}"
+                ]
+        })
+        
+        st.dataframe(summary_df, use_container_width=True)
+        
+        # Interpretasi Effect Size
+        st.markdown("---")
+        st.subheader("🎯 Interpretasi Effect Size")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("""
+            <div class="info-box">
+            <h4>📏 Koefisien Korelasi (r)</h4>
+            <p><strong>Nilai:</strong> {:.4f}</p>
+            <p><strong>Interpretasi:</strong></p>
+            <ul>
+                <li>r < 0.1: Sangat kecil (negligible)</li>
+                <li>0.1 ≤ r < 0.3: Kecil (small)</li>
+                <li>0.3 ≤ r < 0.5: Sedang (medium)</li>
+                <li>r ≥ 0.5: Besar (large)</li>
+            </ul>
+            <p><em>Effect size Anda: <strong>{}</strong></em></p>
+            </div>
+            """.format(abs(results['r_effect']), 
+                      "Sangat Kecil" if abs(results['r_effect']) < 0.1 else
+                      "Kecil" if abs(results['r_effect']) < 0.3 else
+                      "Sedang" if abs(results['r_effect']) < 0.5 else "Besar"),
+            unsafe_allow_html=True)
+        
+        with col2:
+            st.markdown("""
+            <div class="info-box">
+            <h4>🎲 Common Language Effect Size (CLES)</h4>
+            <p><strong>Nilai:</strong> {:.4f} ({:.1f}%)</p>
+            <p><strong>Interpretasi:</strong></p>
+            <p>Probabilitas bahwa nilai yang dipilih secara acak dari {} akan lebih besar dari nilai yang dipilih secara acak dari {}.</p>
+            <p><em>Dengan kata lain, jika Anda memilih satu nilai dari {}, ada peluang {:.1f}% bahwa nilai tersebut akan lebih tinggi dari nilai acak dari {}.</em></p>
+            </div>
+            """.format(results['cles'], results['cles']*100, 
+                      group1_name, group2_name,
+                      group1_name, results['cles']*100, group2_name),
+            unsafe_allow_html=True)
+        
+        # Laporan Lengkap
+        st.markdown("---")
+        st.subheader("📝 Laporan Hasil Analisis")
+        
+        report = f"""
+        ### Laporan Uji U Mann-Whitney
+        
+        **Tanggal Analisis:** {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')}
+        
+        #### 1. Deskripsi Data
+        - **{group1_name}**: n = {results['n1']}, Median = {results['median1']:.4f}, IQR = {results['iqr1']:.4f}
+        - **{group2_name}**: n = {results['n2']}, Median = {results['median2']:.4f}, IQR = {results['iqr2']:.4f}
+        
+        #### 2. Hipotesis
+        - **H₀**: {h0}
+        - **H₁**: {h1}
+        
+        #### 3. Hasil Uji Statistik
+        - **Statistik U ({group1_name})**: {results['u_stat']:.4f}
+        - **Statistik U ({group2_name})**: {results['u_stat2']:.4f}
+        - **Z-score**: {results['z_score']:.4f}
+        - **p-value**: {results['p_value']:.6f}
+        - **Tingkat signifikansi (α)**: {alpha}
+        
+        #### 4. Effect Size
+        - **Koefisien korelasi (r)**: {abs(results['r_effect']):.4f} ({
+            "Sangat Kecil" if abs(results['r_effect']) < 0.1 else
+            "Kecil" if abs(results['r_effect']) < 0.3 else
+            "Sedang" if abs(results['r_effect']) < 0.5 else "Besar"
+        })
+        - **Rank-biserial correlation**: {results['rank_biserial']:.4f}
+        - **CLES**: {results['cles']:.4f} ({results['cles']*100:.1f}%)
+        
+        #### 5. Kesimpulan
+        {"**Tolak H₀**" if results['p_value'] < alpha else "**Gagal Tolak H₀**"}
+        
+        Dengan tingkat signifikansi α = {alpha}, {"terdapat" if results['p_value'] < alpha else "tidak terdapat"} 
+        perbedaan yang signifikan antara distribusi {group1_name} dan {group2_name} 
+        (U = {results['u_stat']:.4f}, p = {results['p_value']:.6f}).
+        
+        #### 6. Interpretasi
+        {"Median kelompok " + group1_name + f" ({results['median1']:.2f}) " + 
+         ("lebih besar" if results['median1'] > results['median2'] else "lebih kecil") + 
+         " dibandingkan median kelompok " + group2_name + f" ({results['median2']:.2f}), " +
+         ("dan perbedaan ini signifikan secara statistik." if results['p_value'] < alpha else 
+          "namun perbedaan ini tidak signifikan secara statistik.")}
+        
+        Mean rank {group1_name} = {results['mean_rank1']:.2f}, sedangkan mean rank {group2_name} = {results['mean_rank2']:.2f}.
+        
+        ---
+        *Catatan: Uji Mann-Whitney adalah uji non-parametrik yang cocok digunakan ketika asumsi normalitas tidak terpenuhi 
+        atau untuk data ordinal.*
+        """
+        
+        st.markdown(report)
+        
+        # Download report
+        st.download_button(
+        label="📥 Download Laporan (Markdown)",
+        data=report,
+        file_name="mann_whitney_report.md",
+        mime="text/markdown"
+        )
+    # Footer
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📚 Interpretasi Effect Size")
+    st.sidebar.markdown("""
+**Koefisien r:**
+- r < 0.1: Sangat kecil
+- 0.1 ≤ r < 0.3: Kecil
+- 0.3 ≤ r < 0.5: Sedang
+- r ≥ 0.5: Besar
+
+**CLES:**
+- 0.50: Tidak ada perbedaan
+- 0.56: Kecil
+- 0.64: Sedang
+- 0.71: Besar
+""")
+
+    st.sidebar.markdown("### ⚡ Kelebihan Mann-Whitney")
+    st.sidebar.success("""
+✅ Tidak perlu asumsi normalitas
+✅ Robust terhadap outlier
+✅ Cocok untuk data ordinal
+✅ Cocok untuk sampel kecil
+""")
+
+    st.sidebar.markdown("### ℹ️ Informasi")
+    st.sidebar.info("Aplikasi ini menggunakan scipy.stats untuk perhitungan Mann-Whitney U test yang akurat dan terpercaya.")
+
+def tampilkan_materi23():
+    # CSS Styling
+    st.markdown("""
+    <style>
+    .main-header {
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-align: center;
+        color: #D32F2F;
+        margin-bottom: 0.5rem;
+    }
+    .sub-header {
+        font-size: 1.2rem;
+        text-align: center;
+        color: #666;
+        margin-bottom: 2rem;
+    }
+    .result-box {
+        background-color: #FFEBEE;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border-left: 5px solid #D32F2F;
+        margin: 1rem 0;
+        color: black;
+    }
+    .hypothesis-box {
+        background-color: #FFF3E0;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #FF9800;
+        margin: 1rem 0;
+        color: black;
+    }
+    .success-box {
+        background-color: #E8F5E9;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #4CAF50;
+        margin: 1rem 0;
+        color: black;
+    }
+    .warning-box {
+        background-color: #FFF9C4;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #FBC02D;
+        margin: 1rem 0;
+        color: black;
+    }
+    .info-box {
+        background-color: #E3F2FD;
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid #2196F3;
+        margin: 1rem 0;
+        color: black;
+    }
+    .metric-card {
+        background-color: #FAFAFA;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        margin: 0.5rem 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        color: black;
+    }
+    .comparison-card {
+        background-color: #F5F5F5;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 0.5rem 0;
+        color: black;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Header
+    st.markdown('<div class="main-header">📊 Simulasi Uji Welch\'s T-Test</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Welch\'s T-Test for Two Independent Samples with Unequal Variances</div>', unsafe_allow_html=True)
+
+    # Sidebar
+    st.sidebar.title("⚙️ Pengaturan")
+    mode = st.sidebar.radio(
+    "Pilih Mode:",
+    ["📝 Input Data Manual", "🎲 Generate Data Simulasi", "📁 Upload Data CSV"]
+    )
+
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📖 Tentang Welch's T-Test")
+    st.sidebar.info("""
+**Welch's T-Test** adalah modifikasi dari Student's t-test yang lebih robust ketika dua sampel memiliki varians yang tidak sama (heterogeneous variances).
+
+**Kapan digunakan:**
+- Varians kedua kelompok tidak sama
+- Ukuran sampel berbeda
+- Data berdistribusi normal atau mendekati normal
+- Alternatif yang lebih aman dari t-test klasik
+
+**Keunggulan:**
+- Tidak perlu asumsi varians homogen
+- Lebih akurat untuk varians berbeda
+- Menggunakan Welch-Satterthwaite equation untuk df
+""")
+
+    # Fungsi untuk menghitung Welch's t-test
+    def perform_welch_test(data1, data2, alpha, alternative):
+        """Melakukan Welch's t-test dan mengembalikan hasil"""
+        n1, n2 = len(data1), len(data2)
+        mean1, mean2 = np.mean(data1), np.mean(data2)
+        std1, std2 = np.std(data1, ddof=1), np.std(data2, ddof=1)
+        var1, var2 = np.var(data1, ddof=1), np.var(data2, ddof=1)
+        se1, se2 = std1/np.sqrt(n1), std2/np.sqrt(n2)
+    
+        # Statistik deskriptif tambahan
+        median1, median2 = np.median(data1), np.median(data2)
+        q1_1, q3_1 = np.percentile(data1, [25, 75])
+        q1_2, q3_2 = np.percentile(data2, [25, 75])
+        min1, max1 = np.min(data1), np.max(data1)
+        min2, max2 = np.min(data2), np.max(data2)
+    
+        # Uji normalitas (Shapiro-Wilk)
+        shapiro1_stat, shapiro1_p = stats.shapiro(data1)
+        shapiro2_stat, shapiro2_p = stats.shapiro(data2)
+    
+        # Uji Levene untuk homogenitas varians
+        levene_stat, levene_p = stats.levene(data1, data2)
+    
+        # Welch's t-test
+        t_stat, p_value = stats.ttest_ind(data1, data2, equal_var=False, alternative=alternative)
+    
+        # Welch-Satterthwaite degrees of freedom
+        df = ((var1/n1 + var2/n2)**2) / ((var1/n1)**2/(n1-1) + (var2/n2)**2/(n2-1))
+    
+        # Standard error of difference
+        se_diff = np.sqrt(var1/n1 + var2/n2)
+    
+        # Confidence interval
+        if alternative == 'two-sided':
+            t_critical = stats.t.ppf(1-alpha/2, df)
+            ci_lower = (mean1 - mean2) - t_critical * se_diff
+            ci_upper = (mean1 - mean2) + t_critical * se_diff
+        elif alternative == 'less':
+            t_critical = stats.t.ppf(1-alpha, df)
+            ci_lower = -np.inf
+            ci_upper = (mean1 - mean2) + t_critical * se_diff
+        else:  # greater
+            t_critical = stats.t.ppf(1-alpha, df)
+            ci_lower = (mean1 - mean2) - t_critical * se_diff
+            ci_upper = np.inf
+    
+        # Effect size (Cohen's d dengan pooled std untuk varians berbeda)
+        cohens_d = (mean1 - mean2) / np.sqrt((var1 + var2) / 2)
+    
+        # Glass's delta (menggunakan std kelompok kontrol)
+        glass_delta1 = (mean1 - mean2) / std2
+        glass_delta2 = (mean1 - mean2) / std1
+    
+        # Hedge's g (koreksi untuk sampel kecil)
+        hedge_correction = 1 - (3 / (4 * (n1 + n2) - 9))
+        hedges_g = cohens_d * hedge_correction
+    
+        # Perbandingan dengan Student's t-test (equal variance)
+        t_stat_student, p_value_student = stats.ttest_ind(data1, data2, equal_var=True, alternative=alternative)
+        df_student = n1 + n2 - 2
+    
+        return {
+        'n1': n1, 'n2': n2,
+        'mean1': mean1, 'mean2': mean2,
+        'median1': median1, 'median2': median2,
+        'std1': std1, 'std2': std2,
+        'var1': var1, 'var2': var2,
+        'se1': se1, 'se2': se2,
+        'q1_1': q1_1, 'q3_1': q3_1,
+        'q1_2': q1_2, 'q3_2': q3_2,
+        'min1': min1, 'max1': max1,
+        'min2': min2, 'max2': max2,
+        't_stat': t_stat,
+        'p_value': p_value,
+        'df': df,
+        'se_diff': se_diff,
+        'cohens_d': cohens_d,
+        'hedges_g': hedges_g,
+        'glass_delta1': glass_delta1,
+        'glass_delta2': glass_delta2,
+        'ci_lower': ci_lower,
+        'ci_upper': ci_upper,
+        't_critical': t_critical,
+        'levene_stat': levene_stat,
+        'levene_p': levene_p,
+        'shapiro1_stat': shapiro1_stat,
+        'shapiro1_p': shapiro1_p,
+        'shapiro2_stat': shapiro2_stat,
+        'shapiro2_p': shapiro2_p,
+        't_stat_student': t_stat_student,
+        'p_value_student': p_value_student,
+        'df_student': df_student
+        }
+
+    # Main content
+    if mode == "📝 Input Data Manual":
+        st.header("📝 Input Data Manual")
+    
+        col1, col2 = st.columns(2)
+    
+        with col1:
+            st.subheader("Kelompok 1")
+            data1_input = st.text_area(
+            "Masukkan data kelompok 1 (pisahkan dengan koma):",
+            "45, 52, 48, 55, 53, 50, 49, 51, 54, 47",
+            height=100
+            )
+        
+        with col2:
+            st.subheader("Kelompok 2")
+            data2_input = st.text_area(
+            "Masukkan data kelompok 2 (pisahkan dengan koma):",
+            "62, 68, 71, 65, 70, 64, 69, 67, 72, 66, 63, 74, 75, 68, 70",
+            height=100
+            )
+    
+        try:
+            data1 = np.array([float(x.strip()) for x in data1_input.split(',')])
+            data2 = np.array([float(x.strip()) for x in data2_input.split(',')])
+            data_ready = True
+        except:
+            st.error("❌ Format data tidak valid. Gunakan angka yang dipisahkan dengan koma.")
+            data_ready = False
+
+    elif mode == "🎲 Generate Data Simulasi":
+        st.header("🎲 Generate Data Simulasi")
+    
+        st.markdown("""
+    <div class="info-box">
+    💡 <strong>Tips:</strong> Coba buat dua kelompok dengan varians yang sangat berbeda untuk melihat keunggulan Welch's t-test!
+    </div>
+    """, unsafe_allow_html=True)
+    
+        col1, col2, col3 = st.columns(3)
+    
+        with col1:
+            st.markdown("#### Kelompok 1")
+            n1 = st.number_input("Ukuran sampel K1:", min_value=3, max_value=1000, value=30, key="n1")
+            mean1 = st.number_input("Mean K1:", value=50.0, key="mean1")
+            std1 = st.number_input("Std Dev K1:", min_value=0.1, value=5.0, key="std1")
+        
+        with col2:
+            st.markdown("#### Kelompok 2")
+            n2 = st.number_input("Ukuran sampel K2:", min_value=3, max_value=1000, value=40, key="n2")
+            mean2 = st.number_input("Mean K2:", value=55.0, key="mean2")
+            std2 = st.number_input("Std Dev K2:", min_value=0.1, value=15.0, key="std2")
+    
+        with col3:
+            st.markdown("#### Pengaturan")
+            seed = st.number_input("Random Seed:", min_value=0, value=42)
+        
+            # Visualisasi rasio varians
+            variance_ratio = std1**2 / std2**2
+            st.metric("Rasio Varians", f"{variance_ratio:.3f}")
+        
+            if variance_ratio < 0.5 or variance_ratio > 2:
+                st.warning("⚠️ Varians sangat berbeda - Welch's t-test direkomendasikan!")
+            else:
+                st.info("ℹ️ Varians relatif mirip")
+        
+            st.markdown("###")
+            if st.button("🎲 Generate Data", use_container_width=True):
+                np.random.seed(seed)
+                st.session_state.data1 = np.random.normal(mean1, std1, n1)
+                st.session_state.data2 = np.random.normal(mean2, std2, n2)
+                st.success("✅ Data berhasil di-generate!")
+    
+        if 'data1' in st.session_state and 'data2' in st.session_state:
+            data1 = st.session_state.data1
+            data2 = st.session_state.data2
+            data_ready = True
+        else:
+            st.info("👆 Klik tombol 'Generate Data' untuk membuat data simulasi")
+            data_ready = False
+
+    else:  # Upload CSV
+        st.header("📁 Upload Data CSV")
+    
+        st.markdown("""
+    **Format CSV yang diharapkan:**
+    - Kolom 1: Nilai data
+    - Kolom 2: Label kelompok (misalnya: 'Kelompok1' dan 'Kelompok2')
+    """)
+    
+        uploaded_file = st.file_uploader("Upload file CSV", type=['csv'])
+    
+        if uploaded_file is not None:
+            try:
+                df = pd.read_csv(uploaded_file)
+                st.write("Preview Data:")
+                st.dataframe(df.head())
+            
+                col1, col2 = st.columns(2)
+                with col1:
+                    value_col = st.selectbox("Pilih kolom nilai:", df.columns)
+                with col2:
+                    group_col = st.selectbox("Pilih kolom kelompok:", df.columns)
+            
+                groups = df[group_col].unique()
+                if len(groups) != 2:
+                    st.error("❌ Data harus memiliki tepat 2 kelompok!")
+                    data_ready = False
+                else:
+                    group1_name = st.selectbox("Pilih kelompok 1:", groups)
+                    group2_name = st.selectbox("Pilih kelompok 2:", [g for g in groups if g != group1_name])
+                
+                    data1 = df[df[group_col] == group1_name][value_col].values
+                    data2 = df[df[group_col] == group2_name][value_col].values
+                    data_ready = True
+            except Exception as e:
+                st.error(f"❌ Error membaca file: {str(e)}")
+                data_ready = False
+        else:
+            data_ready = False
+
+    # Jika data siap, lakukan analisis
+    if data_ready:
+        st.markdown("---")
+        st.header("🔧 Pengaturan Uji Hipotesis")
+    
+        col1, col2, col3 = st.columns(3)
+    
+        with col1:
+            alpha = st.select_slider(
+            "Tingkat signifikansi (α):",
+            options=[0.01, 0.05, 0.10],
+            value=0.05
+            )
+    
+        with col2:
+            alternative = st.selectbox(
+            "Hipotesis alternatif:",
+            ["two-sided", "less", "greater"],
+            format_func=lambda x: {
+                "two-sided": "Dua sisi (≠)",
+                "less": "Sisi kiri (<)",
+                "greater": "Sisi kanan (>)"
+            }[x]
+            )
+    
+        with col3:
+            group1_name = st.text_input("Nama Kelompok 1:", "Kelompok 1")
+            group2_name = st.text_input("Nama Kelompok 2:", "Kelompok 2")
+    
+        # Hipotesis
+        st.markdown("### 📋 Hipotesis")
+        if alternative == "two-sided":
+            h0 = f"H₀: μ₁ = μ₂ (Tidak ada perbedaan rata-rata)"
+            h1 = f"H₁: μ₁ ≠ μ₂ (Ada perbedaan rata-rata)"
+        elif alternative == "less":
+            h0 = f"H₀: μ₁ ≥ μ₂"
+            h1 = f"H₁: μ₁ < μ₂ (Rata-rata kelompok 1 lebih kecil)"
+        else:
+            h0 = f"H₀: μ₁ ≤ μ₂"
+            h1 = f"H₁: μ₁ > μ₂ (Rata-rata kelompok 1 lebih besar)"
+    
+        st.markdown(f'<div class="hypothesis-box"><strong>{h0}</strong><br><strong>{h1}</strong></div>', 
+                unsafe_allow_html=True)
+    
+        # Perform Welch's t-test
+        if st.button("🚀 Jalankan Uji Welch's T-Test", use_container_width=True, type="primary"):
+            results = perform_welch_test(data1, data2, alpha, alternative)
+        
+            st.markdown("---")
+            st.header("📊 Hasil Analisis")
+        
+            # Statistik Deskriptif
+            st.subheader("1️⃣ Statistik Deskriptif")
+        
+            col1, col2, col3, col4 = st.columns(4)
+        
+            with col1:
+                st.markdown(f"""
+            <div class="metric-card">
+                <h4>{group1_name}</h4>
+                <p><strong>n:</strong> {results['n1']}</p>
+                <p><strong>Mean:</strong> {results['mean1']:.4f}</p>
+                <p><strong>Std:</strong> {results['std1']:.4f}</p>
+                <p><strong>Var:</strong> {results['var1']:.4f}</p>
+                <p><strong>SE:</strong> {results['se1']:.4f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+            with col2:
+                st.markdown(f"""
+            <div class="metric-card">
+                <h4>{group2_name}</h4>
+                <p><strong>n:</strong> {results['n2']}</p>
+                <p><strong>Mean:</strong> {results['mean2']:.4f}</p>
+                <p><strong>Std:</strong> {results['std2']:.4f}</p>
+                <p><strong>Var:</strong> {results['var2']:.4f}</p>
+                <p><strong>SE:</strong> {results['se2']:.4f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+            with col3:
+                variance_ratio = results['var1'] / results['var2']
+                st.markdown(f"""
+            <div class="metric-card">
+                <h4>Perbandingan</h4>
+                <p><strong>Δ Mean:</strong> {results['mean1']-results['mean2']:.4f}</p>
+                <p><strong>SE Diff:</strong> {results['se_diff']:.4f}</p>
+                <p><strong>Var Ratio:</strong> {variance_ratio:.4f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+            with col4:
+                effect_size = abs(results['cohens_d'])
+                if effect_size < 0.2:
+                    effect_label = "Sangat Kecil"
+                elif effect_size < 0.5:
+                    effect_label = "Kecil"
+                elif effect_size < 0.8:
+                    effect_label = "Sedang"
+                else:
+                    effect_label = "Besar"
+            
+                st.markdown(f"""
+            <div class="metric-card">
+                <h4>Effect Size</h4>
+                <p><strong>{effect_label}</strong></p>
+                <p>Cohen's d = {effect_size:.4f}</p>
+                <p>Hedge's g = {abs(results['hedges_g']):.4f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+            # Uji Asumsi
+            st.subheader("2️⃣ Uji Asumsi")
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                st.markdown("**Uji Normalitas (Shapiro-Wilk)**")
+                if results['shapiro1_p'] > 0.05 and results['shapiro2_p'] > 0.05:
+                    st.markdown(f"""
+                <div class="success-box">
+                ✅ Data berdistribusi normal<br>
+                {group1_name}: W = {results['shapiro1_stat']:.4f}, p = {results['shapiro1_p']:.4f}<br>
+                {group2_name}: W = {results['shapiro2_stat']:.4f}, p = {results['shapiro2_p']:.4f}
+                </div>
+                """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                <div class="warning-box">
+                ⚠️ Data tidak berdistribusi normal<br>
+                {group1_name}: W = {results['shapiro1_stat']:.4f}, p = {results['shapiro1_p']:.4f}<br>
+                {group2_name}: W = {results['shapiro2_stat']:.4f}, p = {results['shapiro2_p']:.4f}<br>
+                Pertimbangkan transformasi atau uji non-parametrik
+                </div>
+                """, unsafe_allow_html=True)
+        
+            with col2:
+                st.markdown("**Uji Homogenitas Varians (Levene)**")
+                variance_ratio = results['var1'] / results['var2']
+                if results['levene_p'] > 0.05:
+                    st.markdown(f"""
+                <div class="success-box">
+                ✅ Varians homogen<br>
+                Levene statistic = {results['levene_stat']:.4f}<br>
+                p-value = {results['levene_p']:.4f}<br>
+                Variance ratio = {variance_ratio:.4f}
+                </div>
+                """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                <div class="info-box">
+                ℹ️ Varians tidak homogen<br>
+                Welch's t-test adalah pilihan yang TEPAT!<br>
+                Levene statistic = {results['levene_stat']:.4f}<br>
+                p-value = {results['levene_p']:.4f}<br>
+                Variance ratio = {variance_ratio:.4f}
+                </div>
+                """, unsafe_allow_html=True)
+        
+            # Hasil Uji Welch's T-Test
+            st.subheader("3️⃣ Hasil Uji Welch's T-Test")
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                st.markdown(f"""
+            <div class="result-box">
+            <h4>Welch's T-Test Statistics</h4>
+            <p><strong>t-statistic:</strong> {results['t_stat']:.4f}</p>
+            <p><strong>Welch-Satterthwaite df:</strong> {results['df']:.2f}</p>
+            <p><strong>p-value:</strong> {results['p_value']:.6f}</p>
+            <p><strong>α:</strong> {alpha}</p>
+            <p><strong>t-critical:</strong> ±{results['t_critical']:.4f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+            with col2:
+                ci_level = int((1-alpha)*100)
+                ci_text = f"{results['ci_lower']:.4f} to {results['ci_upper']:.4f}"
+                if results['ci_lower'] == -np.inf:
+                    ci_text = f"(-∞, {results['ci_upper']:.4f}]"
+                elif results['ci_upper'] == np.inf:
+                    ci_text = f"[{results['ci_lower']:.4f}, +∞)"
+            
+                st.markdown(f"""
+            <div class="result-box">
+            <h4>Confidence Interval ({ci_level}%)</h4>
+            <p><strong>CI for (μ₁ - μ₂):</strong></p>
+            <p>{ci_text}</p>
+            <p><strong>Point estimate:</strong> {results['mean1']-results['mean2']:.4f}</p>
+            <p><strong>Standard error:</strong> {results['se_diff']:.4f}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+            # Perbandingan dengan Student's t-test
+            st.subheader("4️⃣ Perbandingan: Welch's vs Student's T-Test")
+        
+            comparison_df = pd.DataFrame({
+            'Metode': ["Welch's T-Test", "Student's T-Test"],
+            'T-Statistic': [f"{results['t_stat']:.4f}", f"{results['t_stat_student']:.4f}"],
+            'Degrees of Freedom': [f"{results['df']:.2f}", f"{results['df_student']:.0f}"],
+            'P-Value': [f"{results['p_value']:.6f}", f"{results['p_value_student']:.6f}"],
+            'Keputusan (α=0.05)': [
+                "Tolak H₀" if results['p_value'] < 0.05 else "Gagal Tolak H₀",
+                "Tolak H₀" if results['p_value_student'] < 0.05 else "Gagal Tolak H₀"
+            ]
+            })
+        
+            st.dataframe(comparison_df, use_container_width=True)
+        
+            # Analisis perbedaan
+            diff_p = abs(results['p_value'] - results['p_value_student'])
+            if diff_p > 0.01:
+                st.markdown(f"""
+            <div class="warning-box">
+            ⚠️ <strong>Perbedaan Signifikan!</strong><br>
+            Terdapat perbedaan p-value sebesar {diff_p:.6f} antara kedua metode.<br>
+            Welch's t-test lebih tepat karena varians tidak homogen.
+            </div>
+            """, unsafe_allow_html=True)
+            else:
+                st.markdown("""
+            <div class="info-box">
+            ℹ️ Hasil kedua metode relatif sama, namun Welch's t-test tetap lebih robust.
+            </div>
+            """, unsafe_allow_html=True)
+        
+            # Kesimpulan
+            st.subheader("5️⃣ Kesimpulan")
+        
+            if results['p_value'] < alpha:
+                conclusion = f"""
+            <div class="warning-box">
+            <h4>🔴 Tolak H₀</h4>
+            <p>Dengan tingkat signifikansi α = {alpha}, terdapat cukup bukti untuk menolak hipotesis nol.</p>
+            <p><strong>Kesimpulan:</strong> Terdapat perbedaan yang signifikan antara rata-rata {group1_name} dan {group2_name}.</p>
+            <p>p-value ({results['p_value']:.6f}) < α ({alpha})</p>
+            <p><strong>Interpretasi:</strong> Mean {group1_name} ({results['mean1']:.2f}) {"lebih besar" if results['mean1'] > results['mean2'] else "lebih kecil"} dari mean {group2_name} ({results['mean2']:.2f}) secara signifikan.</p>
+            <p><strong>Effect size:</strong> {effect_label} (Cohen's d = {abs(results['cohens_d']):.4f})</p>
+            </div>
+            """
+            else:
+                conclusion = f"""
+            <div class="success-box">
+            <h4>🟢 Gagal Tolak H₀</h4>
+            <p>Dengan tingkat signifikansi α = {alpha}, tidak terdapat cukup bukti untuk menolak hipotesis nol.</p>
+            <p><strong>Kesimpulan:</strong> Tidak terdapat perbedaan yang signifikan antara rata-rata {group1_name} dan {group2_name}.</p>
+            <p>p-value ({results['p_value']:.6f}) ≥ α ({alpha})</p>
+            <p><strong>Interpretasi:</strong> Mean {group1_name} ({results['mean1']:.2f}) tidak berbeda secara signifikan dari mean {group2_name} ({results['mean2']:.2f}).</p>
+            </div>
+            """
+        
+            st.markdown(conclusion, unsafe_allow_html=True)
+        
+            # Visualisasi
+            st.markdown("---")
+            st.header("📈 Visualisasi Data")
+        
+            # Create comprehensive plots
+            fig = make_subplots(
+            rows=2, cols=2,
+            subplot_titles=('Box Plot Perbandingan', 'Distribusi Data', 
+                          'Q-Q Plot Normalitas', 'Confidence Interval'),
+            specs=[[{'type': 'box'}, {'type': 'histogram'}],
+                   [{'type': 'scatter'}, {'type': 'scatter'}]]
+            )
+        
+            # Box plot
+            fig.add_trace(
+            go.Box(y=data1, name=group1_name, marker_color='#EF5350', boxmean='sd'),
+            row=1, col=1
+            )
+            fig.add_trace(
+            go.Box(y=data2, name=group2_name, marker_color='#42A5F5', boxmean='sd'),
+            row=1, col=1
+            )
+        
+            # Histogram
+            fig.add_trace(
+            go.Histogram(x=data1, name=group1_name, opacity=0.7, 
+                        marker_color='#EF5350', nbinsx=20),
+            row=1, col=2
+            )
+            fig.add_trace(
+            go.Histogram(x=data2, name=group2_name, opacity=0.7, 
+                        marker_color='#42A5F5', nbinsx=20),
+            row=1, col=2
+            )
+        
+            # Q-Q Plot
+            qq1 = stats.probplot(data1, dist="norm")
+            qq2 = stats.probplot(data2, dist="norm")
+        
+            fig.add_trace(
+            go.Scatter(x=qq1[0][0], y=qq1[0][1], mode='markers', 
+                      name=f'{group1_name} Q-Q', marker=dict(color='#EF5350', size=6)),
+            row=2, col=1
+            )
+            fig.add_trace(
+            go.Scatter(x=qq2[0][0], y=qq2[0][1], mode='markers', 
+                      name=f'{group2_name} Q-Q', marker=dict(color='#42A5F5', size=6)),
+            row=2, col=1
+            )
+        
+            # Reference line for Q-Q plot
+            fig.add_trace(
+            go.Scatter(x=qq1[0][0], y=qq1[1][1] + qq1[1][0]*qq1[0][0], 
+                      mode='lines', name='Reference Line', 
+                      line=dict(color='black', dash='dash')),
+            row=2, col=1
+            )
+        
+            # Confidence Interval visualization
+            means = [results['mean1'], results['mean2']]
+            errors = [results['se1'] * results['t_critical'], 
+                 results['se2'] * results['t_critical']]
+        
+            fig.add_trace(
+                go.Scatter(
+                x=[group1_name, group2_name],
+                y=means,
+                error_y=dict(type='data', array=errors, visible=True),
+                mode='markers',
+                marker=dict(size=12, color=['#EF5350', '#42A5F5']),
+                name='Mean ± CI'
+                ),
+                row=2, col=2
+            )
+        
+            fig.update_layout(height=800, showlegend=True, 
+                         title_text="Visualisasi Lengkap Welch's T-Test")
+            fig.update_xaxes(title_text="Theoretical Quantiles", row=2, col=1)
+            fig.update_yaxes(title_text="Sample Quantiles", row=2, col=1)
+        
+            st.plotly_chart(fig, use_container_width=True)
+        
+            # Violin plot dengan matplotlib
+            st.subheader("Violin Plot & Distribution Comparison")
+            fig_violin, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(14, 10))
+        
+            # Violin plot untuk data asli
+            data_combined = pd.DataFrame({
+            'Nilai': np.concatenate([data1, data2]),
+            'Kelompok': [group1_name]*len(data1) + [group2_name]*len(data2)
+            })
+        
+            sns.violinplot(data=data_combined, x='Kelompok', y='Nilai', ax=ax1, 
+                      palette=['#EF5350', '#42A5F5'])
+            sns.swarmplot(data=data_combined, x='Kelompok', y='Nilai', ax=ax1, 
+                     color='black', alpha=0.4, size=3)
+            ax1.set_title('Violin Plot - Data Distribution', fontsize=13, fontweight='bold')
+            ax1.set_ylabel('Nilai', fontsize=11)
+            ax1.set_xlabel('Kelompok', fontsize=11)
+            ax1.grid(True, alpha=0.3, axis='y')
+        
+            # Add mean and median lines
+            ax1.hlines(results['mean1'], -0.4, 0.4, colors='red', linestyles='--', 
+                  linewidth=2, label=f'Mean: {results["mean1"]:.2f}')
+            ax1.hlines(results['median1'], -0.4, 0.4, colors='green', linestyles=':', 
+                  linewidth=2, label=f'Median: {results["median1"]:.2f}')
+            ax1.hlines(results['mean2'], 0.6, 1.4, colors='red', linestyles='--', 
+                  linewidth=2)
+            ax1.hlines(results['median2'], 0.6, 1.4, colors='green', linestyles=':', 
+                  linewidth=2)
+            ax1.legend(loc='best')
+        
+            # Density plot
+            data1_kde = stats.gaussian_kde(data1)
+            data2_kde = stats.gaussian_kde(data2)
+            x_range = np.linspace(min(data1.min(), data2.min()), 
+                             max(data1.max(), data2.max()), 200)
+        
+            ax2.fill_between(x_range, data1_kde(x_range), alpha=0.5, color='#EF5350', label=group1_name)
+            ax2.fill_between(x_range, data2_kde(x_range), alpha=0.5, color='#42A5F5', label=group2_name)
+            ax2.axvline(results['mean1'], color='#EF5350', linestyle='--', linewidth=2)
+            ax2.axvline(results['mean2'], color='#42A5F5', linestyle='--', linewidth=2)
+            ax2.set_title('Kernel Density Estimation', fontsize=13, fontweight='bold')
+            ax2.set_xlabel('Nilai', fontsize=11)
+            ax2.set_ylabel('Density', fontsize=11)
+            ax2.legend()
+            ax2.grid(True, alpha=0.3)
+        
+            # Strip plot dengan error bars
+            ax3.errorbar([1], [results['mean1']], yerr=results['se1']*results['t_critical'],
+                    fmt='o', markersize=10, color='#EF5350', capsize=10, capthick=2,
+                    label=f'{group1_name} (Mean ± CI)')
+            ax3.errorbar([2], [results['mean2']], yerr=results['se2']*results['t_critical'],
+                    fmt='o', markersize=10, color='#42A5F5', capsize=10, capthick=2,
+                    label=f'{group2_name} (Mean ± CI)')
+        
+            # Add data points
+            ax3.scatter([1]*len(data1), data1, alpha=0.3, color='#EF5350', s=20)
+            ax3.scatter([2]*len(data2), data2, alpha=0.3, color='#42A5F5', s=20)
+        
+            ax3.set_xlim(0.5, 2.5)
+            ax3.set_xticks([1, 2])
+            ax3.set_xticklabels([group1_name, group2_name])
+            ax3.set_ylabel('Nilai', fontsize=11)
+            ax3.set_title('Mean Comparison with Confidence Intervals', fontsize=13, fontweight='bold')
+            ax3.legend()
+            ax3.grid(True, alpha=0.3, axis='y')
+        
+            # Variance comparison
+            variance_data = pd.DataFrame({
+            'Kelompok': [group1_name, group2_name],
+            'Variance': [results['var1'], results['var2']],
+            'Std Dev': [results['std1'], results['std2']]
+            })
+        
+            x_pos = np.arange(len(variance_data))
+            ax4.bar(x_pos - 0.2, variance_data['Variance'], 0.4, 
+               label='Variance', color='#FF7043', alpha=0.7)
+            ax4.bar(x_pos + 0.2, variance_data['Std Dev'], 0.4, 
+               label='Std Dev', color='#66BB6A', alpha=0.7)
+        
+            ax4.set_xticks(x_pos)
+            ax4.set_xticklabels(variance_data['Kelompok'])
+            ax4.set_ylabel('Value', fontsize=11)
+            ax4.set_title('Variance & Standard Deviation Comparison', fontsize=13, fontweight='bold')
+            ax4.legend()
+            ax4.grid(True, alpha=0.3, axis='y')
+        
+            # Add variance ratio annotation
+            var_ratio = results['var1'] / results['var2']
+            ax4.text(0.5, max(results['var1'], results['var2']) * 0.9,
+                f'Variance Ratio: {var_ratio:.3f}',
+                ha='center', fontsize=10, 
+                bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+        
+            plt.tight_layout()
+            st.pyplot(fig_violin)
+        
+            # T-distribution visualization
+            st.subheader("T-Distribution & Critical Values")
+        
+            fig_t, ax_t = plt.subplots(figsize=(12, 6))
+        
+            # Generate t-distribution
+            x = np.linspace(-5, 5, 1000)
+            y = stats.t.pdf(x, results['df'])
+        
+            ax_t.plot(x, y, 'b-', linewidth=2, label=f't-distribution (df={results["df"]:.2f})')
+            ax_t.fill_between(x, y, where=(x <= -results['t_critical']), 
+                          alpha=0.3, color='red', label=f'Rejection region (α/2)')
+            ax_t.fill_between(x, y, where=(x >= results['t_critical']), 
+                          alpha=0.3, color='red')
+        
+            # Mark critical values
+            ax_t.axvline(-results['t_critical'], color='red', linestyle='--', 
+                    linewidth=2, label=f't-critical = ±{results["t_critical"]:.4f}')
+            ax_t.axvline(results['t_critical'], color='red', linestyle='--', linewidth=2)
+        
+            # Mark observed t-statistic
+            ax_t.axvline(results['t_stat'], color='green', linestyle='-', 
+                    linewidth=3, label=f't-observed = {results["t_stat"]:.4f}')
+        
+            ax_t.set_xlabel('t-value', fontsize=12)
+            ax_t.set_ylabel('Probability Density', fontsize=12)
+            ax_t.set_title(f"T-Distribution with Welch-Satterthwaite df={results['df']:.2f}", 
+                      fontsize=14, fontweight='bold')
+            ax_t.legend(fontsize=10)
+            ax_t.grid(True, alpha=0.3)
+            
+            # Add p-value annotation
+            if abs(results['t_stat']) > results['t_critical']:
+                color_box = 'lightcoral'
+                decision = 'TOLAK H₀'
+            else:
+                color_box = 'lightgreen'
+                decision = 'GAGAL TOLAK H₀'
+        
+            ax_t.text(0, max(y)*0.8, 
+                 f'p-value = {results["p_value"]:.6f}\n{decision}',
+                 ha='center', fontsize=12, fontweight='bold',
+                 bbox=dict(boxstyle='round', facecolor=color_box, alpha=0.8))
+        
+            st.pyplot(fig_t)
+        
+            # Effect size visualization
+            st.subheader("Effect Size Comparison")
+        
+            fig_effect, ax_effect = plt.subplots(figsize=(10, 6))
+        
+            effect_sizes = {
+            "Cohen's d": abs(results['cohens_d']),
+            "Hedge's g": abs(results['hedges_g']),
+            "Glass's Δ₁": abs(results['glass_delta1']),
+            "Glass's Δ₂": abs(results['glass_delta2'])
+            }
+        
+            colors_map = {
+            "Cohen's d": '#EF5350',
+            "Hedge's g": '#AB47BC',
+            "Glass's Δ₁": '#42A5F5',
+            "Glass's Δ₂": '#66BB6A'
+            }
+        
+            bars = ax_effect.barh(list(effect_sizes.keys()), list(effect_sizes.values()),
+                             color=[colors_map[k] for k in effect_sizes.keys()], alpha=0.7)
+        
+            # Add effect size interpretation lines
+            ax_effect.axvline(0.2, color='gray', linestyle='--', alpha=0.5, label='Small (0.2)')
+            ax_effect.axvline(0.5, color='gray', linestyle='--', alpha=0.5, label='Medium (0.5)')
+            ax_effect.axvline(0.8, color='gray', linestyle='--', alpha=0.5, label='Large (0.8)')
+        
+            # Add value labels
+            for i, (key, value) in enumerate(effect_sizes.items()):
+                ax_effect.text(value + 0.02, i, f'{value:.4f}', 
+                          va='center', fontsize=10, fontweight='bold')
+        
+            ax_effect.set_xlabel('Effect Size Value', fontsize=12)
+            ax_effect.set_title('Effect Size Metrics Comparison', fontsize=14, fontweight='bold')
+            ax_effect.legend(loc='lower right')
+            ax_effect.grid(True, alpha=0.3, axis='x')
+        
+            st.pyplot(fig_effect)
+        
+            # Tabel data
+            st.markdown("---")
+            st.subheader("📋 Tabel Data Lengkap")
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                st.markdown(f"**{group1_name}**")
+                df1 = pd.DataFrame({
+                'Index': range(1, len(data1)+1),
+                'Nilai': data1
+                })
+                df1['Z-Score'] = (df1['Nilai'] - results['mean1']) / results['std1']
+                st.dataframe(df1, height=300)
+            
+                # Summary statistics
+                st.markdown(f"""
+            **Statistik:**
+            - Mean: {results['mean1']:.4f}
+            - Median: {results['median1']:.4f}
+            - Std Dev: {results['std1']:.4f}
+            - Variance: {results['var1']:.4f}
+            - Min: {results['min1']:.4f}
+            - Max: {results['max1']:.4f}
+            """)
+            
+                # Download button
+                csv1 = df1.to_csv(index=False)
+                st.download_button(
+                label=f"📥 Download Data {group1_name}",
+                data=csv1,
+                file_name=f"{group1_name.replace(' ', '_')}.csv",
+                mime="text/csv"
+                )
+        
+            with col2:
+                st.markdown(f"**{group2_name}**")
+                df2 = pd.DataFrame({
+                'Index': range(1, len(data2)+1),
+                'Nilai': data2
+            })
+                df2['Z-Score'] = (df2['Nilai'] - results['mean2']) / results['std2']
+                st.dataframe(df2, height=300)
+            
+                # Summary statistics
+                st.markdown(f"""
+            **Statistik:**
+            - Mean: {results['mean2']:.4f}
+            - Median: {results['median2']:.4f}
+            - Std Dev: {results['std2']:.4f}
+            - Variance: {results['var2']:.4f}
+            - Min: {results['min2']:.4f}
+            - Max: {results['max2']:.4f}
+            """)
+            
+                # Download button
+                csv2 = df2.to_csv(index=False)
+                st.download_button(
+                label=f"📥 Download Data {group2_name}",
+                data=csv2,
+                file_name=f"{group2_name.replace(' ', '_')}.csv",
+                mime="text/csv"
+                )
+        
+            # Ringkasan statistik detail
+            st.markdown("---")
+            st.subheader("📊 Ringkasan Statistik Detail")
+        
+            summary_df = pd.DataFrame({
+            'Statistik': ['N', 'Mean', 'Median', 'Std Dev', 'Variance', 'SE', 
+                         'Min', 'Q1', 'Q3', 'Max', 'Range', 'IQR'],
+                group1_name: [
+                results['n1'],
+                f"{results['mean1']:.4f}",
+                f"{results['median1']:.4f}",
+                f"{results['std1']:.4f}",
+                f"{results['var1']:.4f}",
+                f"{results['se1']:.4f}",
+                f"{results['min1']:.4f}",
+                f"{results['q1_1']:.4f}",
+                f"{results['q3_1']:.4f}",
+                f"{results['max1']:.4f}",
+                f"{results['max1'] - results['min1']:.4f}",
+                f"{results['q3_1'] - results['q1_1']:.4f}"
+                ],
+                group2_name: [
+                results['n2'],
+                f"{results['mean2']:.4f}",
+                f"{results['median2']:.4f}",
+                f"{results['std2']:.4f}",
+                f"{results['var2']:.4f}",
+                f"{results['se2']:.4f}",
+                f"{results['min2']:.4f}",
+                f"{results['q1_2']:.4f}",
+                f"{results['q3_2']:.4f}",
+                f"{results['max2']:.4f}",
+                f"{results['max2'] - results['min2']:.4f}",
+                f"{results['q3_2'] - results['q1_2']:.4f}"
+                ]
+            })
+        
+            st.dataframe(summary_df, use_container_width=True)
+        
+            # Interpretasi Effect Size
+            st.markdown("---")
+            st.subheader("🎯 Interpretasi Effect Size")
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                st.markdown(f"""
+            <div class="info-box">
+            <h4>📏 Cohen's d</h4>
+            <p><strong>Nilai:</strong> {abs(results['cohens_d']):.4f}</p>
+            <p><strong>Interpretasi:</strong></p>
+            <ul>
+                <li>|d| < 0.2: Sangat kecil (negligible)</li>
+                <li>0.2 ≤ |d| < 0.5: Kecil (small)</li>
+                <li>0.5 ≤ |d| < 0.8: Sedang (medium)</li>
+                <li>|d| ≥ 0.8: Besar (large)</li>
+            </ul>
+            <p><em>Effect size Anda: <strong>{effect_label}</strong></em></p>
+            <p>Menggunakan pooled standard deviation untuk varians berbeda.</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+            with col2:
+                st.markdown(f"""
+            <div class="info-box">
+            <h4>📐 Hedge's g</h4>
+            <p><strong>Nilai:</strong> {abs(results['hedges_g']):.4f}</p>
+            <p><strong>Interpretasi:</strong></p>
+            <p>Hedge's g adalah koreksi bias dari Cohen's d untuk sampel kecil (n < 20).</p>
+            <p>Nilai ini lebih akurat untuk sampel kecil dan menggunakan correction factor:</p>
+            <p><em>g = d × (1 - 3/(4N - 9))</em></p>
+            <p>Interpretasi sama dengan Cohen's d.</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+            # Laporan Lengkap
+            st.markdown("---")
+            st.subheader("📝 Laporan Hasil Analisis")
+        
+            ci_text = f"[{results['ci_lower']:.4f}, {results['ci_upper']:.4f}]"
+            if results['ci_lower'] == -np.inf:
+                ci_text = f"(-∞, {results['ci_upper']:.4f}]"
+            elif results['ci_upper'] == np.inf:
+                ci_text = f"[{results['ci_lower']:.4f}, +∞)"
+        
+            report = f"""
+        ### Laporan Uji Welch's T-Test
+        
+        **Tanggal Analisis:** {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')}
+        
+        #### 1. Deskripsi Data
+        - **{group1_name}**: n = {results['n1']}, Mean = {results['mean1']:.4f}, SD = {results['std1']:.4f}, Var = {results['var1']:.4f}
+        - **{group2_name}**: n = {results['n2']}, Mean = {results['mean2']:.4f}, SD = {results['std2']:.4f}, Var = {results['var2']:.4f}
+        - **Variance Ratio**: {results['var1'] / results['var2']:.4f}
+        
+        #### 2. Hipotesis
+        - **H₀**: {h0}
+        - **H₁**: {h1}
+        
+        #### 3. Uji Asumsi
+        
+        **Normalitas (Shapiro-Wilk Test):**
+        - {group1_name}: W = {results['shapiro1_stat']:.4f}, p = {results['shapiro1_p']:.4f} {"(Normal ✓)" if results['shapiro1_p'] > 0.05 else "(Tidak Normal ✗)"}
+        - {group2_name}: W = {results['shapiro2_stat']:.4f}, p = {results['shapiro2_p']:.4f} {"(Normal ✓)" if results['shapiro2_p'] > 0.05 else "(Tidak Normal ✗)"}
+        
+        **Homogenitas Varians (Levene Test):**
+        - Levene Statistic = {results['levene_stat']:.4f}, p = {results['levene_p']:.4f}
+        - Kesimpulan: Varians {"homogen" if results['levene_p'] > 0.05 else "TIDAK homogen - Welch's t-test TEPAT digunakan!"}
+        
+        #### 4. Hasil Uji Welch's T-Test
+        - **T-statistic (Welch)**: {results['t_stat']:.4f}
+        - **Degrees of Freedom (Welch-Satterthwaite)**: {results['df']:.2f}
+        - **p-value**: {results['p_value']:.6f}
+        - **Tingkat signifikansi (α)**: {alpha}
+        - **T-critical**: ±{results['t_critical']:.4f}
+        - **Confidence Interval ({int((1-alpha)*100)}%)**: {ci_text}
+        
+        #### 5. Perbandingan dengan Student's T-Test
+        - **Student's t-statistic**: {results['t_stat_student']:.4f}
+        - **Student's df**: {results['df_student']:.0f}
+        - **Student's p-value**: {results['p_value_student']:.6f}
+        - **Perbedaan p-value**: {abs(results['p_value'] - results['p_value_student']):.6f}
+        
+        #### 6. Effect Size
+        - **Cohen's d**: {abs(results['cohens_d']):.4f} ({effect_label})
+        - **Hedge's g**: {abs(results['hedges_g']):.4f}
+        - **Glass's Delta (menggunakan SD K1)**: {abs(results['glass_delta2']):.4f}
+        - **Glass's Delta (menggunakan SD K2)**: {abs(results['glass_delta1']):.4f}
+        
+        #### 7. Kesimpulan
+        {"**TOLAK H₀**" if results['p_value'] < alpha else "**GAGAL TOLAK H₀**"}
+        
+        Dengan tingkat signifikansi α = {alpha}, {"terdapat" if results['p_value'] < alpha else "tidak terdapat"} 
+        perbedaan yang signifikan antara rata-rata {group1_name} dan {group2_name} 
+        (Welch's t({results['df']:.2f}) = {results['t_stat']:.4f}, p = {results['p_value']:.6f}).
+        
+        #### 8. Interpretasi Praktis
+        Mean {group1_name} ({results['mean1']:.2f}) {"lebih besar" if results['mean1'] > results['mean2'] else "lebih kecil"} 
+        dari mean {group2_name} ({results['mean2']:.2f}) dengan selisih {abs(results['mean1'] - results['mean2']):.2f} unit.
+        
+        {"Perbedaan ini signifikan secara statistik" if results['p_value'] < alpha else "Perbedaan ini tidak signifikan secara statistik"} 
+        dengan effect size {effect_label.lower()} (Cohen's d = {abs(results['cohens_d']):.4f}).
+        
+        {f"Confidence interval {int((1-alpha)*100)}% untuk perbedaan mean adalah {ci_text}, " +
+         ("yang tidak mencakup 0, mengonfirmasi perbedaan signifikan." if (results['ci_lower'] > 0 or results['ci_upper'] < 0) and results['p_value'] < alpha 
+          else "yang mencakup 0, mengindikasikan perbedaan tidak signifikan.")}
+        
+        #### 9. Rekomendasi
+        {"Karena varians kedua kelompok tidak homogen" if results['levene_p'] < 0.05 else "Meskipun varians homogen"}, 
+        Welch's t-test memberikan hasil yang lebih robust dan direkomendasikan untuk analisis ini.
+        
+        ---
+        *Catatan: Welch's t-test menggunakan Welch-Satterthwaite equation untuk menghitung degrees of freedom yang 
+        disesuaikan dengan perbedaan varians, sehingga lebih akurat ketika asumsi homogenitas varians tidak terpenuhi.*
+        """
+        
+            st.markdown(report)
+        
+            # Download report
+            st.download_button(
+            label="📥 Download Laporan (Markdown)",
+            data=report,
+            file_name="welch_t_test_report.md",
+            mime="text/markdown"
+            )
+
+    # Footer
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📚 Interpretasi Effect Size")
+    st.sidebar.markdown("""
+**Cohen's d / Hedge's g:**
+- |d| < 0.2: Sangat kecil
+- 0.2 ≤ |d| < 0.5: Kecil
+- 0.5 ≤ |d| < 0.8: Sedang
+- |d| ≥ 0.8: Besar
+
+**Variance Ratio:**
+- 0.5 < ratio < 2: Relatif sama
+- ratio < 0.5 atau > 2: Sangat berbeda
+  → Gunakan Welch's t-test!
+""")
+
+    st.sidebar.markdown("### ⚡ Keunggulan Welch's T-Test")
+    st.sidebar.success("""
+✅ Tidak perlu varians homogen
+✅ Robust untuk varians berbeda
+✅ Akurat untuk n berbeda
+✅ Lebih aman dari Student's t-test
+✅ Menggunakan adjusted df
+""")
+
+    st.sidebar.markdown("### 🆚 Welch vs Student")
+    st.sidebar.info("""
+**Gunakan Welch's t-test jika:**
+- Varians tidak sama (Levene p < 0.05)
+- Ukuran sampel berbeda
+- Tidak yakin tentang homogenitas
+- Ingin hasil lebih robust
+
+**Student's t-test hanya jika:**
+- Varians benar-benar homogen
+- Sampel seimbang
+- Asumsi terpenuhi sempurna
+""")
+
+    st.sidebar.markdown("### ℹ️ Informasi")
+    st.sidebar.info("Aplikasi ini menggunakan scipy.stats untuk Welch's t-test yang akurat dengan Welch-Satterthwaite degrees of freedom.")
 #================================
 
 if st.session_state.tampilan1:
@@ -4738,6 +7348,12 @@ if st.session_state.tampilan22:
     tampilkan_materi19()
 if st.session_state.tampilan23:
     tampilkan_materi20()
+if st.session_state.tampilan24:
+    tampilkan_materi21()
+if st.session_state.tampilan25:
+    tampilkan_materi22()
+if st.session_state.tampilan26:
+    tampilkan_materi23()
 #======================================
 if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan1=False
@@ -4763,6 +7379,9 @@ if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 if st.sidebar.button("Contoh Data Nilai"):
     st.session_state.tampilan1=False
@@ -4788,6 +7407,9 @@ if st.sidebar.button("Contoh Data Nilai"):
     st.session_state.tampilan21 = True
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 st.sidebar.markdown("Penguasaan Uji 1 Sampel")
 if st.sidebar.button("Test Penguasaan 1"):
@@ -4814,6 +7436,9 @@ if st.sidebar.button("Test Penguasaan 1"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Evaluasi Instrumen Soal")
@@ -4841,6 +7466,9 @@ if st.sidebar.button("Evaluasi Soal"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Pengenalan"):
@@ -4867,6 +7495,9 @@ if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan1=True
@@ -4892,6 +7523,9 @@ if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan1=False
@@ -4917,6 +7551,9 @@ if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan1=False
@@ -4942,6 +7579,9 @@ if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan1=False
@@ -4967,6 +7607,9 @@ if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan1=False
@@ -4992,6 +7635,9 @@ if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan1=False
@@ -5017,6 +7663,9 @@ if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan1=False
@@ -5042,6 +7691,9 @@ if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Flowchart Penelitian")
@@ -5069,6 +7721,9 @@ if st.sidebar.button("FlowChart"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Uji Normalitas"):
@@ -5095,6 +7750,9 @@ if st.sidebar.button("Uji Normalitas"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 if st.sidebar.button("Uji Homogen"):
     st.session_state.tampilan1=False
@@ -5120,6 +7778,9 @@ if st.sidebar.button("Uji Homogen"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Data Parametrik")
@@ -5147,6 +7808,9 @@ if st.sidebar.button("Uji t 1 sampel"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 if st.sidebar.button("Uji t 1 sampel Berpasangan"):
     st.session_state.tampilan1=False
@@ -5172,6 +7836,65 @@ if st.sidebar.button("Uji t 1 sampel Berpasangan"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = True
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
+    st.rerun()
+if st.sidebar.button("Uji t' 2 sampel Independent"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = True
+    st.rerun()
+if st.sidebar.button("Uji t 2 sampel Independent"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = True
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Data non Parametrik")
@@ -5199,6 +7922,9 @@ if st.sidebar.button("Uji Wilcoxon 1 sampel"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 if st.sidebar.button("Uji Wilcoxon 1 sampel Berpasangan"):
     st.session_state.tampilan1=False
@@ -5224,6 +7950,37 @@ if st.sidebar.button("Uji Wilcoxon 1 sampel Berpasangan"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = True
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
+    st.rerun()
+if st.sidebar.button("Uji U Mann-Whitney 2 sampel Independen"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = True
+    st.session_state.tampilan26 = False
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Angket dan Saran"):
@@ -5250,10 +8007,12 @@ if st.sidebar.button("Angket dan Saran"):
     st.session_state.tampilan21 = False
     st.session_state.tampilan22 = False
     st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
     st.rerun()
 
 
 
 
     
-
