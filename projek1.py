@@ -100,6 +100,9 @@ if "tampilan25" not in st.session_state:
 
 if "tampilan26" not in st.session_state:
     st.session_state.tampilan26 = False
+
+if "tampilan27" not in st.session_state:
+    st.session_state.tampilan27 = False
     
 if "masukan1" not in st.session_state:
     st.session_state.masukan1=""
@@ -2482,6 +2485,7 @@ def tampilkan_materi9():
             st.session_state.tampilan24 = False
             st.session_state.tampilan25 = False
             st.session_state.tampilan26 = False
+            st.session_state.tampilan27 = False
             st.rerun()
     with kolom[1]:
         if st.button("Uji F"):
@@ -2511,6 +2515,7 @@ def tampilkan_materi9():
             st.session_state.tampilan24 = False
             st.session_state.tampilan25 = False
             st.session_state.tampilan26 = False
+            st.session_state.tampilan27 = False
             st.rerun()
     with kolom[2]:
         if st.button("Contoh Uji Homogen Lainnya"):
@@ -2540,6 +2545,7 @@ def tampilkan_materi9():
             st.session_state.tampilan24 = False
             st.session_state.tampilan25 = False
             st.session_state.tampilan26 = False
+            st.session_state.tampilan27 = False
             st.rerun()
     # Custom CSS
     st.markdown("""
@@ -7300,6 +7306,360 @@ def tampilkan_materi23():
 
     st.sidebar.markdown("### ℹ️ Informasi")
     st.sidebar.info("Aplikasi ini menggunakan scipy.stats untuk Welch's t-test yang akurat dengan Welch-Satterthwaite degrees of freedom.")
+
+def tampilkan_materi24():
+    # Judul aplikasi
+    st.title("📊 ANOVA 1 Jalur (One-Way ANOVA)")
+    st.markdown("### Pembelajaran dan Simulasi Interaktif")
+
+    # Sidebar untuk navigasi
+    menu = st.sidebar.radio(
+        "Pilih Menu:",
+        ["📚 Materi", "🧮 Simulasi Manual", "📈 Simulasi Data"]
+    )
+
+    # ============ MENU MATERI ============
+    if menu == "📚 Materi":
+        st.header("📚 Materi ANOVA 1 Jalur")
+    
+        tab1, tab2, tab3, tab4 = st.tabs(["Pengertian", "Asumsi", "Hipotesis", "Rumus"])
+    
+        with tab1:
+            st.subheader("Apa itu ANOVA 1 Jalur?")
+            st.markdown("""
+        **ANOVA (Analysis of Variance) 1 Jalur** adalah uji statistik parametrik yang digunakan untuk 
+        membandingkan rata-rata dari **tiga kelompok atau lebih** untuk mengetahui apakah terdapat 
+        perbedaan yang signifikan di antara kelompok-kelompok tersebut.
+        
+        **Contoh Kasus:**
+        - Membandingkan efektivitas 3 metode pembelajaran yang berbeda
+        - Membandingkan produktivitas karyawan dari 4 divisi berbeda
+        - Membandingkan hasil panen dari 5 jenis pupuk berbeda
+        
+        **Mengapa disebut "1 Jalur"?**
+        Karena hanya ada **satu variabel independen (faktor)** yang memiliki beberapa level/kategori.
+        """)
+    
+        with tab2:
+            st.subheader("Asumsi ANOVA 1 Jalur")
+            st.markdown("""
+        Sebelum melakukan ANOVA, data harus memenuhi asumsi berikut:
+        
+        1. **Independensi**: Observasi dalam setiap kelompok harus independen
+        2. **Normalitas**: Data dalam setiap kelompok berdistribusi normal
+        3. **Homogenitas Varians**: Varians antar kelompok harus homogen (sama)
+        
+        **Uji Asumsi:**
+        - **Normalitas**: Uji Shapiro-Wilk atau Kolmogorov-Smirnov
+        - **Homogenitas**: Uji Levene atau Bartlett
+        """)
+    
+        with tab3:
+            st.subheader("Hipotesis ANOVA")
+            st.markdown("""
+        **H₀ (Hipotesis Nol):**
+        
+        Tidak ada perbedaan rata-rata yang signifikan antar semua kelompok
+        
+        μ₁ = μ₂ = μ₃ = ... = μₖ
+        
+        **H₁ (Hipotesis Alternatif):**
+        
+        Minimal ada satu kelompok yang rata-ratanya berbeda signifikan
+        
+        **Keputusan:**
+        - Jika **p-value < α** (biasanya 0.05), maka **Tolak H₀**
+        - Jika **p-value ≥ α**, maka **Gagal Tolak H₀**
+        """)
+    
+        with tab4:
+            st.subheader("Rumus ANOVA 1 Jalur")
+            st.markdown("""
+        **1. Total Sum of Squares (SST)**
+        
+        SST = Σ(Xᵢⱼ - X̄)²
+        
+        **2. Between-Group Sum of Squares (SSB)**
+        
+        SSB = Σnⱼ(X̄ⱼ - X̄)²
+        
+        **3. Within-Group Sum of Squares (SSW)**
+        
+        SSW = SST - SSB
+        
+        **4. F-Statistik**
+        
+        F = (SSB / dfB) / (SSW / dfW)
+        
+        Dimana:
+        - dfB = k - 1 (derajat bebas between)
+        - dfW = N - k (derajat bebas within)
+        - k = jumlah kelompok
+        - N = total observasi
+        """)
+        
+            st.info("💡 **Tips**: F-statistik yang besar menunjukkan variasi antar kelompok lebih besar dibanding variasi dalam kelompok")
+
+    # ============ MENU SIMULASI MANUAL ============
+    elif menu == "🧮 Simulasi Manual":
+        st.header("🧮 Simulasi Manual - Input Data Sendiri")
+    
+        st.markdown("Masukkan data untuk setiap kelompok (pisahkan dengan koma)")
+    
+        col1, col2 = st.columns(2)
+    
+        with col1:
+            num_groups = st.number_input("Jumlah Kelompok", min_value=2, max_value=10, value=3)
+            alpha = st.number_input("Tingkat Signifikansi (α)", min_value=0.01, max_value=0.10, value=0.05, step=0.01)
+    
+        # Input data untuk setiap kelompok
+        groups_data = {}
+        group_names = []
+    
+        st.markdown("---")
+        st.subheader("Input Data Kelompok")
+    
+        cols = st.columns(min(3, num_groups))
+    
+        for i in range(num_groups):
+            with cols[i % 3]:
+                group_name = st.text_input(f"Nama Kelompok {i+1}", value=f"Kelompok {i+1}", key=f"name_{i}")
+                group_names.append(group_name)
+            
+                data_input = st.text_area(
+                    f"Data {group_name}",
+                    value="10, 12, 11, 13, 12" if i == 0 else f"{15+i*5}, {16+i*5}, {14+i*5}, {17+i*5}, {15+i*5}",
+                    key=f"data_{i}",
+                    height=100
+                )
+            
+                try:
+                    data = [float(x.strip()) for x in data_input.split(",") if x.strip()]
+                    groups_data[group_name] = data
+                except:
+                    st.error(f"Format data tidak valid untuk {group_name}")
+    
+        if st.button("🔍 Analisis ANOVA", type="primary"):
+            if len(groups_data) >= 2 and all(len(v) >= 2 for v in groups_data.values()):
+                # Persiapan data
+                all_data = []
+                group_labels = []
+                for name, data in groups_data.items():
+                    all_data.extend(data)
+                    group_labels.extend([name] * len(data))
+            
+                df = pd.DataFrame({'Nilai': all_data, 'Kelompok': group_labels})
+            
+                # ANOVA
+                groups = [groups_data[name] for name in group_names]
+                f_stat, p_value = stats.f_oneway(*groups)
+            
+                # Hasil
+                st.markdown("---")
+                st.subheader("📊 Hasil Analisis")
+            
+                col1, col2, col3 = st.columns(3)
+                col1.metric("F-Statistik", f"{f_stat:.4f}")
+                col2.metric("P-Value", f"{p_value:.4f}")
+                col3.metric("Keputusan", "Tolak H₀" if p_value < alpha else "Gagal Tolak H₀")
+            
+                # Interpretasi
+                st.markdown("### 📝 Interpretasi")
+                if p_value < alpha:
+                    st.success(f"""
+                    ✅ **Kesimpulan**: Dengan tingkat signifikansi {alpha}, terdapat perbedaan rata-rata 
+                    yang signifikan antar kelompok (p-value = {p_value:.4f} < {alpha}).
+                    """)
+                else:
+                    st.info(f"""
+                ℹ️ **Kesimpulan**: Dengan tingkat signifikansi {alpha}, tidak terdapat perbedaan rata-rata 
+                yang signifikan antar kelompok (p-value = {p_value:.4f} ≥ {alpha}).
+                    """)
+            
+                # Statistik Deskriptif
+                st.markdown("### 📈 Statistik Deskriptif")
+                desc_stats = df.groupby('Kelompok')['Nilai'].agg(['count', 'mean', 'std', 'min', 'max']).round(3)
+                desc_stats.columns = ['N', 'Mean', 'Std Dev', 'Min', 'Max']
+                st.dataframe(desc_stats, use_container_width=True)
+            
+                # Visualisasi
+                col1, col2 = st.columns(2)
+            
+                with col1:
+                    # Box plot
+                    fig_box = px.box(df, x='Kelompok', y='Nilai', title='Box Plot per Kelompok',
+                                color='Kelompok', points='all')
+                    fig_box.update_layout(showlegend=False)
+                    st.plotly_chart(fig_box, use_container_width=True)
+            
+                with col2:
+                    # Bar plot mean
+                    mean_data = df.groupby('Kelompok')['Nilai'].mean().reset_index()
+                    fig_bar = px.bar(mean_data, x='Kelompok', y='Nilai', title='Rata-rata per Kelompok',
+                                color='Kelompok')
+                    fig_bar.update_layout(showlegend=False)
+                    st.plotly_chart(fig_bar, use_container_width=True)
+            
+                # Tabel ANOVA
+                st.markdown("### 📋 Tabel ANOVA")
+                k = len(groups)
+                N = sum(len(g) for g in groups)
+                grand_mean = np.mean(all_data)
+            
+                # SSB
+                ssb = sum(len(g) * (np.mean(g) - grand_mean)**2 for g in groups)
+                # SSW
+                ssw = sum(sum((x - np.mean(g))**2 for x in g) for g in groups)
+                # SST
+                sst = ssb + ssw
+            
+                dfb = k - 1
+                dfw = N - k
+                dft = N - 1
+            
+                msb = ssb / dfb
+                msw = ssw / dfw
+            
+                anova_table = pd.DataFrame({
+                'Sumber Variasi': ['Between Groups', 'Within Groups', 'Total'],
+                'SS': [f"{ssb:.4f}", f"{ssw:.4f}", f"{sst:.4f}"],
+                'df': [dfb, dfw, dft],
+                'MS': [f"{msb:.4f}", f"{msw:.4f}", "-"],
+                'F': [f"{f_stat:.4f}", "-", "-"],
+                'P-value': [f"{p_value:.4f}", "-", "-"]
+                })
+                st.dataframe(anova_table, use_container_width=True, hide_index=True)
+            
+            else:
+                st.error("⚠️ Setiap kelompok harus memiliki minimal 2 data!")
+
+    # ============ MENU SIMULASI DATA ============
+    else:
+        st.header("📈 Simulasi Data - Generate Data Random")
+    
+        st.markdown("Generate data random untuk simulasi ANOVA")
+    
+        col1, col2, col3 = st.columns(3)
+    
+        with col1:
+            num_groups_sim = st.slider("Jumlah Kelompok", 2, 6, 3)
+            samples_per_group = st.slider("Sampel per Kelompok", 10, 100, 30)
+    
+        with col2:
+            mean_start = st.number_input("Mean Awal", value=50.0, step=1.0)
+            mean_diff = st.number_input("Perbedaan Mean antar Kelompok", value=5.0, step=1.0)
+    
+        with col3:
+            std_dev = st.number_input("Standar Deviasi", value=10.0, step=1.0)
+            alpha_sim = st.selectbox("Tingkat Signifikansi (α)", [0.01, 0.05, 0.10], index=1)
+    
+        if st.button("🎲 Generate & Analisis", type="primary"):
+            # Generate data
+            np.random.seed(42)
+            groups_sim = []
+            group_names_sim = []
+        
+            all_data_sim = []
+            all_labels_sim = []
+        
+            for i in range(num_groups_sim):
+                mean = mean_start + (i * mean_diff)
+                data = np.random.normal(mean, std_dev, samples_per_group)
+                groups_sim.append(data)
+                group_name = f"Kelompok {i+1}"
+                group_names_sim.append(group_name)
+                all_data_sim.extend(data)
+                all_labels_sim.extend([group_name] * samples_per_group)
+        
+            df_sim = pd.DataFrame({'Nilai': all_data_sim, 'Kelompok': all_labels_sim})
+        
+            # ANOVA
+            f_stat_sim, p_value_sim = stats.f_oneway(*groups_sim)
+        
+            # Hasil
+            st.markdown("---")
+            st.subheader("📊 Hasil Simulasi")
+        
+            col1, col2, col3 = st.columns(3)
+            col1.metric("F-Statistik", f"{f_stat_sim:.4f}")
+            col2.metric("P-Value", f"{p_value_sim:.6f}")
+            col3.metric("Keputusan", "Tolak H₀" if p_value_sim < alpha_sim else "Gagal Tolak H₀")
+        
+            # Interpretasi
+            st.markdown("### 📝 Interpretasi")
+            if p_value_sim < alpha_sim:
+                st.success(f"""
+            ✅ **Kesimpulan**: Dengan tingkat signifikansi {alpha_sim}, terdapat perbedaan rata-rata 
+            yang signifikan antar kelompok (p-value = {p_value_sim:.6f} < {alpha_sim}).
+            
+            Artinya, minimal ada satu kelompok yang memiliki rata-rata berbeda secara signifikan.
+            """)
+            else:
+                st.info(f"""
+            ℹ️ **Kesimpulan**: Dengan tingkat signifikansi {alpha_sim}, tidak terdapat perbedaan rata-rata 
+            yang signifikan antar kelompok (p-value = {p_value_sim:.6f} ≥ {alpha_sim}).
+            
+            Artinya, semua kelompok memiliki rata-rata yang tidak berbeda secara statistik.
+            """)
+        
+            # Statistik Deskriptif
+            st.markdown("### 📈 Statistik Deskriptif")
+            desc_stats_sim = df_sim.groupby('Kelompok')['Nilai'].agg(['count', 'mean', 'std', 'min', 'max']).round(3)
+            desc_stats_sim.columns = ['N', 'Mean', 'Std Dev', 'Min', 'Max']
+            st.dataframe(desc_stats_sim, use_container_width=True)
+        
+            # Visualisasi
+            tab1, tab2, tab3 = st.tabs(["📦 Box Plot", "📊 Bar Chart", "📈 Violin Plot"])
+        
+            with tab1:
+                fig_box_sim = px.box(df_sim, x='Kelompok', y='Nilai', 
+                                title='Distribusi Data per Kelompok',
+                                color='Kelompok', points='all')
+                fig_box_sim.update_layout(showlegend=False, height=500)
+                st.plotly_chart(fig_box_sim, use_container_width=True)
+        
+            with tab2:
+                mean_data_sim = df_sim.groupby('Kelompok')['Nilai'].mean().reset_index()
+                std_data_sim = df_sim.groupby('Kelompok')['Nilai'].std().reset_index()
+                mean_data_sim['std'] = std_data_sim['Nilai']
+            
+                fig_bar_sim = go.Figure()
+                fig_bar_sim.add_trace(go.Bar(
+                    x=mean_data_sim['Kelompok'],
+                    y=mean_data_sim['Nilai'],
+                    error_y=dict(type='data', array=mean_data_sim['std']),
+                    marker_color='lightblue'
+                ))
+                fig_bar_sim.update_layout(title='Rata-rata ± Std Dev per Kelompok',
+                                     xaxis_title='Kelompok',
+                                     yaxis_title='Nilai',
+                                     height=500)
+                st.plotly_chart(fig_bar_sim, use_container_width=True)
+        
+            with tab3:
+                fig_violin = px.violin(df_sim, x='Kelompok', y='Nilai', 
+                                  title='Violin Plot per Kelompok',
+                                  color='Kelompok', box=True, points='all')
+                fig_violin.update_layout(showlegend=False, height=500)
+                st.plotly_chart(fig_violin, use_container_width=True)
+        
+            # Download data
+            st.markdown("### 💾 Download Data")
+            csv = df_sim.to_csv(index=False)
+            st.download_button(
+                label="📥 Download Data CSV",
+                data=csv,
+                file_name="data_anova_simulasi.csv",
+                mime="text/csv"
+            )
+
+    # Footer
+    st.markdown("---")
+    st.markdown("""
+    <div style='text-align: center; color: gray;'>
+        <p>📚 Aplikasi Pembelajaran ANOVA 1 Jalur | Dibuat dengan Streamlit</p>
+    </div>
+    """, unsafe_allow_html=True)
 #================================
 
 if st.session_state.tampilan1:
@@ -7354,6 +7714,8 @@ if st.session_state.tampilan25:
     tampilkan_materi22()
 if st.session_state.tampilan26:
     tampilkan_materi23()
+if st.session_state.tampilan27:
+    tampilkan_materi24()
 #======================================
 if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan1=False
@@ -7382,6 +7744,7 @@ if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Contoh Data Nilai"):
     st.session_state.tampilan1=False
@@ -7410,6 +7773,7 @@ if st.sidebar.button("Contoh Data Nilai"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 st.sidebar.markdown("Penguasaan Uji 1 Sampel")
 if st.sidebar.button("Test Penguasaan 1"):
@@ -7439,6 +7803,7 @@ if st.sidebar.button("Test Penguasaan 1"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Evaluasi Instrumen Soal")
@@ -7469,6 +7834,7 @@ if st.sidebar.button("Evaluasi Soal"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Pengenalan"):
@@ -7498,6 +7864,7 @@ if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan1=True
@@ -7526,6 +7893,7 @@ if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan1=False
@@ -7554,6 +7922,7 @@ if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan1=False
@@ -7582,6 +7951,7 @@ if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan1=False
@@ -7610,6 +7980,7 @@ if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan1=False
@@ -7638,6 +8009,7 @@ if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan1=False
@@ -7666,6 +8038,7 @@ if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan1=False
@@ -7694,6 +8067,7 @@ if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Flowchart Penelitian")
@@ -7724,6 +8098,7 @@ if st.sidebar.button("FlowChart"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Uji Normalitas"):
@@ -7753,6 +8128,7 @@ if st.sidebar.button("Uji Normalitas"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Uji Homogen"):
     st.session_state.tampilan1=False
@@ -7781,6 +8157,7 @@ if st.sidebar.button("Uji Homogen"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Data Parametrik")
@@ -7811,6 +8188,7 @@ if st.sidebar.button("Uji t 1 sampel"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Uji t 1 sampel Berpasangan"):
     st.session_state.tampilan1=False
@@ -7839,6 +8217,7 @@ if st.sidebar.button("Uji t 1 sampel Berpasangan"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Uji t' 2 sampel Independent"):
     st.session_state.tampilan1=False
@@ -7867,6 +8246,7 @@ if st.sidebar.button("Uji t' 2 sampel Independent"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = True
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Uji t 2 sampel Independent"):
     st.session_state.tampilan1=False
@@ -7895,6 +8275,36 @@ if st.sidebar.button("Uji t 2 sampel Independent"):
     st.session_state.tampilan24 = True
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
+    st.rerun()
+if st.sidebar.button("Uji Anova 1 Jalur"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = True
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Data non Parametrik")
@@ -7925,6 +8335,7 @@ if st.sidebar.button("Uji Wilcoxon 1 sampel"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Uji Wilcoxon 1 sampel Berpasangan"):
     st.session_state.tampilan1=False
@@ -7953,6 +8364,7 @@ if st.sidebar.button("Uji Wilcoxon 1 sampel Berpasangan"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 if st.sidebar.button("Uji U Mann-Whitney 2 sampel Independen"):
     st.session_state.tampilan1=False
@@ -7981,6 +8393,7 @@ if st.sidebar.button("Uji U Mann-Whitney 2 sampel Independen"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = True
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Angket dan Saran"):
@@ -8010,6 +8423,7 @@ if st.sidebar.button("Angket dan Saran"):
     st.session_state.tampilan24 = False
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
     st.rerun()
 
 
