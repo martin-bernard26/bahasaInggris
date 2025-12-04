@@ -18,6 +18,11 @@ from scipy.stats import shapiro, normaltest, anderson, kstest
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from scipy.stats import f_oneway
+from itertools import combinations
+import warnings
+
+warnings.filterwarnings('ignore')
 
 st.set_page_config(
     page_title="Aplikasi Upload ke Google Drive",
@@ -103,6 +108,15 @@ if "tampilan26" not in st.session_state:
 
 if "tampilan27" not in st.session_state:
     st.session_state.tampilan27 = False
+
+if "tampilan28" not in st.session_state:
+    st.session_state.tampilan28 = False
+
+if "tampilan29" not in st.session_state:
+    st.session_state.tampilan29 = False
+
+if "tampilan30" not in st.session_state:
+    st.session_state.tampilan30 = False
     
 if "masukan1" not in st.session_state:
     st.session_state.masukan1=""
@@ -2486,6 +2500,9 @@ def tampilkan_materi9():
             st.session_state.tampilan25 = False
             st.session_state.tampilan26 = False
             st.session_state.tampilan27 = False
+            st.session_state.tampilan28 = False
+            st.session_state.tampilan29 = False
+            st.session_state.tampilan30 = False
             st.rerun()
     with kolom[1]:
         if st.button("Uji F"):
@@ -2516,6 +2533,9 @@ def tampilkan_materi9():
             st.session_state.tampilan25 = False
             st.session_state.tampilan26 = False
             st.session_state.tampilan27 = False
+            st.session_state.tampilan28 = False
+            st.session_state.tampilan29 = False
+            st.session_state.tampilan30 = False
             st.rerun()
     with kolom[2]:
         if st.button("Contoh Uji Homogen Lainnya"):
@@ -2546,6 +2566,9 @@ def tampilkan_materi9():
             st.session_state.tampilan25 = False
             st.session_state.tampilan26 = False
             st.session_state.tampilan27 = False
+            st.session_state.tampilan28 = False
+            st.session_state.tampilan29 = False
+            st.session_state.tampilan30 = False
             st.rerun()
     # Custom CSS
     st.markdown("""
@@ -4440,7 +4463,7 @@ Aplikasi ini menghitung:
         st.info("Silakan upload file CSV terlebih dahulu.")
 
 def tampilkan_materi16():
-    halaman = st.tabs(['Alur Uji 1 Sampel','Alur Uji 2 Sampel Berpasangan','Alur Uji 2 Sampel Independen'])
+    halaman = st.tabs(['Alur Uji 1 Sampel','Alur Uji 2 Sampel Berpasangan','Alur Uji 2 Sampel Independen', 'Alur Uji > 2 Sampel Independen'])
     with halaman[0]:
         st.markdown('''
         <iframe src="https://martin-bernard26.github.io/statistika/alur1.html" style="width:100%; height:3700px"></iframe>
@@ -4452,6 +4475,10 @@ def tampilkan_materi16():
     with halaman[2]:
         st.markdown('''
         <iframe src="https://martin-bernard26.github.io/statistika/alur2.html" style="width:100%; height:1000px"></iframe>
+        ''',unsafe_allow_html=True)
+    with halaman[3]:
+        st.markdown('''
+        <iframe src="https://martin-bernard26.github.io/statistika/alur3.html" style="width:100%; height:1000px"></iframe>
         ''',unsafe_allow_html=True)
         
 def tampilkan_materi17():
@@ -7660,6 +7687,2914 @@ def tampilkan_materi24():
         <p>📚 Aplikasi Pembelajaran ANOVA 1 Jalur | Dibuat dengan Streamlit</p>
     </div>
     """, unsafe_allow_html=True)
+
+def tampilkan_materi25():
+    # Judul aplikasi
+    st.title("📊 Uji Kruskal-Wallis")
+    st.markdown("### Uji Non-Parametrik untuk Lebih dari 2 Sampel Independen")
+
+    # Sidebar untuk navigasi
+    menu = st.sidebar.radio(
+    "Pilih Menu:",
+    ["📚 Materi", "🧮 Simulasi Manual", "📈 Simulasi Data", "🔬 Uji Asumsi"]
+    )
+
+    # ============ MENU MATERI ============
+    if menu == "📚 Materi":
+        st.header("📚 Materi Uji Kruskal-Wallis")
+    
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["Pengertian", "Kapan Digunakan", "Asumsi", "Hipotesis", "Rumus"])
+    
+        with tab1:
+            st.subheader("Apa itu Uji Kruskal-Wallis?")
+            st.markdown("""
+        **Uji Kruskal-Wallis** adalah uji statistik **non-parametrik** yang digunakan untuk 
+        membandingkan **tiga kelompok atau lebih** yang independen ketika data **tidak memenuhi 
+        asumsi normalitas**.
+        
+        **Karakteristik:**
+        - 🔹 Alternatif non-parametrik untuk ANOVA 1 jalur
+        - 🔹 Tidak memerlukan asumsi normalitas data
+        - 🔹 Menggunakan **ranking/peringkat** data, bukan nilai asli
+        - 🔹 Lebih robust terhadap outliers
+        
+        **Contoh Kasus:**
+        - Membandingkan kepuasan pelanggan dari 3 cabang toko (data ordinal/tidak normal)
+        - Membandingkan skor nyeri pasien dengan 4 jenis obat yang berbeda
+        - Membandingkan produktivitas dari 5 shift kerja dengan data yang skewed
+        """)
+        
+            st.info("💡 **Catatan**: Jika data berdistribusi normal, lebih baik gunakan ANOVA karena lebih powerful")
+    
+        with tab2:
+            st.subheader("Kapan Menggunakan Uji Kruskal-Wallis?")
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                st.markdown("""
+            ### ✅ Gunakan Kruskal-Wallis Jika:
+            
+            1. **Data tidak berdistribusi normal**
+               - Hasil uji normalitas menunjukkan p < 0.05
+               
+            2. **Data ordinal (skala likert)**
+               - Sangat tidak setuju - Sangat setuju
+               - Rendah - Sedang - Tinggi
+               
+            3. **Ada outliers ekstrem**
+               - Data memiliki nilai ekstrem yang berpengaruh
+               
+            4. **Sampel kecil (n < 30 per kelompok)**
+               - Dan tidak dapat diasumsikan normal
+               
+            5. **Varians tidak homogen**
+               - Meskipun Kruskal-Wallis tidak terlalu sensitif
+            """)
+        
+            with col2:
+                st.markdown("""
+            ### ❌ Gunakan ANOVA Jika:
+            
+            1. **Data berdistribusi normal**
+               - Uji Shapiro-Wilk p > 0.05
+               
+            2. **Data numerik kontinu**
+               - Pengukuran yang presisi
+               
+            3. **Varians homogen**
+               - Uji Levene p > 0.05
+               
+            4. **Sampel besar (n ≥ 30)**
+               - Central Limit Theorem berlaku
+               
+            5. **Ingin lebih powerful**
+               - ANOVA lebih sensitif jika asumsi terpenuhi
+            """)
+        
+            st.warning("⚠️ **Penting**: Selalu lakukan uji normalitas terlebih dahulu sebelum memilih uji statistik!")
+    
+        with tab3:
+            st.subheader("Asumsi Uji Kruskal-Wallis")
+            st.markdown("""
+        Uji Kruskal-Wallis memiliki asumsi yang lebih longgar dibanding ANOVA:
+        
+        ### 1️⃣ Independensi Observasi
+        - Setiap observasi harus independen satu sama lain
+        - Tidak ada subjek yang muncul di lebih dari satu kelompok
+        
+        ### 2️⃣ Variabel Dependen
+        - Minimal skala ordinal atau interval/rasio
+        - Dapat berupa:
+          - Data ordinal (ranking, likert scale)
+          - Data numerik yang tidak normal
+        
+        ### 3️⃣ Bentuk Distribusi
+        - **TIDAK memerlukan normalitas** ✅
+        - Idealnya bentuk distribusi antar kelompok serupa (tetapi tidak wajib)
+        - Jika bentuk distribusi berbeda, interpretasi berubah dari median ke distribusi umum
+        
+        ### 4️⃣ Jumlah Kelompok
+        - Minimal 3 kelompok independen
+        - Dapat digunakan untuk 2 kelompok (sama dengan Mann-Whitney U)
+        """)
+        
+            st.success("✨ **Keunggulan**: Tidak perlu asumsi normalitas dan homogenitas varians!")
+    
+        with tab4:
+            st.subheader("Hipotesis Uji Kruskal-Wallis")
+        
+            st.markdown("""
+        ### Hipotesis
+        
+        **H₀ (Hipotesis Nol):**
+        
+        Tidak ada perbedaan distribusi/median yang signifikan antar semua kelompok
+        
+        *Distribusi₁ = Distribusi₂ = Distribusi₃ = ... = Distribuiₖ*
+        
+        atau dalam konteks median:
+        
+        *Median₁ = Median₂ = Median₃ = ... = Medianₖ*
+        
+        **H₁ (Hipotesis Alternatif):**
+        
+        Minimal ada satu kelompok yang distribusi/mediannya berbeda signifikan
+        
+        ### Kriteria Pengambilan Keputusan
+        
+        - **Jika p-value < α** (biasanya 0.05) → **Tolak H₀**
+          - Ada perbedaan signifikan antar kelompok
+          
+        - **Jika p-value ≥ α** → **Gagal Tolak H₀**
+          - Tidak ada perbedaan signifikan antar kelompok
+        
+        ### Post-hoc Test
+        
+        Jika hasil signifikan (Tolak H₀), lakukan **post-hoc test** untuk mengetahui 
+        kelompok mana yang berbeda:
+        - Dunn's Test
+        - Mann-Whitney U dengan koreksi Bonferroni
+        """)
+    
+        with tab5:
+            st.subheader("Rumus Uji Kruskal-Wallis")
+        
+            st.markdown("""
+        ### Statistik H (Kruskal-Wallis)
+        
+        $$H = \\frac{12}{N(N+1)} \\sum_{i=1}^{k} \\frac{R_i^2}{n_i} - 3(N+1)$$
+        
+        **Keterangan:**
+        - **H** = Statistik Kruskal-Wallis
+        - **N** = Total jumlah observasi (semua kelompok)
+        - **k** = Jumlah kelompok
+        - **Rᵢ** = Jumlah ranking untuk kelompok ke-i
+        - **nᵢ** = Jumlah observasi dalam kelompok ke-i
+        
+        ### Langkah Perhitungan:
+        
+        **1. Gabungkan semua data** dari semua kelompok
+        
+        **2. Beri ranking** pada seluruh data (dari terkecil ke terbesar)
+           - Jika ada data yang sama (ties), gunakan rata-rata ranking
+        
+        **3. Jumlahkan ranking** untuk setiap kelompok (Rᵢ)
+        
+        **4. Hitung statistik H** menggunakan rumus di atas
+        
+        **5. Bandingkan dengan distribusi Chi-Square**
+           - df = k - 1
+           - Atau gunakan p-value langsung
+        
+        ### Contoh Sederhana:
+        
+        | Kelompok A | Kelompok B | Kelompok C |
+        |------------|------------|------------|
+        | 5 (rank 2) | 8 (rank 5) | 12 (rank 8)|
+        | 4 (rank 1) | 10 (rank 7)| 15 (rank 9)|
+        | 6 (rank 3) | 9 (rank 6) | 16 (rank 10)|
+        | 7 (rank 4) | - | - |
+        
+        R₁ = 2+1+3+4 = 10, R₂ = 5+7+6 = 18, R₃ = 8+9+10 = 27
+        """)
+        
+            st.info("💡 **Tips**: Semakin besar nilai H, semakin besar perbedaan antar kelompok")
+
+    # ============ MENU SIMULASI MANUAL ============
+    elif menu == "🧮 Simulasi Manual":
+        st.header("🧮 Simulasi Manual - Input Data Sendiri")
+    
+        st.markdown("Masukkan data untuk setiap kelompok (pisahkan dengan koma)")
+    
+        col1, col2 = st.columns(2)
+    
+        with col1:
+            num_groups = st.number_input("Jumlah Kelompok", min_value=2, max_value=10, value=3)
+            alpha = st.number_input("Tingkat Signifikansi (α)", min_value=0.01, max_value=0.10, value=0.05, step=0.01)
+    
+        with col2:
+            show_ranking = st.checkbox("Tampilkan Tabel Ranking", value=True)
+            show_posthoc = st.checkbox("Tampilkan Post-hoc Test (jika signifikan)", value=True)
+    
+        # Input data untuk setiap kelompok
+        groups_data = {}
+        group_names = []
+    
+        st.markdown("---")
+        st.subheader("Input Data Kelompok")
+    
+        cols = st.columns(min(3, num_groups))
+    
+        example_data = [
+        "23, 28, 25, 30, 27",
+        "35, 40, 38, 42, 36",
+        "45, 50, 48, 52, 46"
+        ]
+    
+        for i in range(num_groups):
+            with cols[i % 3]:
+                group_name = st.text_input(f"Nama Kelompok {i+1}", value=f"Kelompok {i+1}", key=f"name_{i}")
+                group_names.append(group_name)
+            
+                data_input = st.text_area(
+                f"Data {group_name}",
+                value=example_data[i] if i < len(example_data) else "10, 15, 12, 18, 14",
+                key=f"data_{i}",
+                height=100,
+                help="Masukkan angka dipisah koma. Contoh: 10, 12, 15, 18"
+                )
+            
+                try:
+                    data = [float(x.strip()) for x in data_input.split(",") if x.strip()]
+                    groups_data[group_name] = data
+                    st.caption(f"✅ {len(data)} data valid")
+                except:
+                    st.error(f"❌ Format data tidak valid")
+                    groups_data[group_name] = []
+    
+        if st.button("🔍 Analisis Kruskal-Wallis", type="primary"):
+            if len(groups_data) >= 2 and all(len(v) >= 2 for v in groups_data.values()):
+                # Persiapan data
+                all_data = []
+                group_labels = []
+                for name, data in groups_data.items():
+                    all_data.extend(data)
+                    group_labels.extend([name] * len(data))
+            
+                df = pd.DataFrame({'Nilai': all_data, 'Kelompok': group_labels})
+            
+                # Uji Kruskal-Wallis
+                groups = [groups_data[name] for name in group_names]
+                h_stat, p_value = stats.kruskal(*groups)
+            
+                # Uji Normalitas per kelompok
+                normality_results = {}
+                for name, data in groups_data.items():
+                    if len(data) >= 3:
+                        _, p_norm = stats.shapiro(data)
+                        normality_results[name] = p_norm
+            
+                # Hasil Utama
+                st.markdown("---")
+                st.subheader("📊 Hasil Uji Kruskal-Wallis")
+            
+                col1, col2, col3, col4 = st.columns(4)
+                col1.metric("H-Statistik", f"{h_stat:.4f}")
+                col2.metric("P-Value", f"{p_value:.6f}")
+                col3.metric("df", f"{len(groups) - 1}")
+                col4.metric("Keputusan", "Tolak H₀" if p_value < alpha else "Gagal Tolak H₀")
+            
+                # Interpretasi
+                st.markdown("### 📝 Interpretasi")
+                if p_value < alpha:
+                    st.success(f"""
+                ✅ **Kesimpulan**: Dengan tingkat signifikansi {alpha}, terdapat perbedaan distribusi/median 
+                yang **signifikan** antar kelompok.
+                
+                - H-statistik = {h_stat:.4f}
+                - P-value = {p_value:.6f} < {alpha}
+                - **Tolak H₀**
+                
+                Artinya: Minimal ada satu kelompok yang memiliki distribusi/median berbeda secara signifikan.
+                """)
+                
+                    if show_posthoc:
+                        st.info("💡 **Rekomendasi**: Lakukan post-hoc test (Dunn's test) untuk mengetahui kelompok mana yang berbeda.")
+                else:
+                    st.info(f"""
+                ℹ️ **Kesimpulan**: Dengan tingkat signifikansi {alpha}, **tidak** terdapat perbedaan 
+                distribusi/median yang signifikan antar kelompok.
+                
+                - H-statistik = {h_stat:.4f}
+                - P-value = {p_value:.6f} ≥ {alpha}
+                - **Gagal Tolak H₀**
+                
+                Artinya: Semua kelompok memiliki distribusi/median yang tidak berbeda secara statistik.
+                """)
+            
+                # Uji Normalitas
+                st.markdown("### 🔬 Uji Normalitas (Shapiro-Wilk)")
+                st.caption("Untuk memvalidasi pemilihan uji non-parametrik")
+            
+                norm_df = pd.DataFrame({
+                'Kelompok': list(normality_results.keys()),
+                'P-Value': [f"{p:.4f}" for p in normality_results.values()],
+                'Status': ['❌ Tidak Normal (p < 0.05)' if p < 0.05 else '✅ Normal (p ≥ 0.05)' 
+                          for p in normality_results.values()]
+                })
+                st.dataframe(norm_df, use_container_width=True, hide_index=True)
+            
+                not_normal_count = sum(1 for p in normality_results.values() if p < 0.05)
+                if not_normal_count > 0:
+                    st.success(f"✅ Pilihan Kruskal-Wallis sudah tepat! {not_normal_count} dari {len(normality_results)} kelompok tidak berdistribusi normal.")
+                else:
+                    st.warning("⚠️ Semua kelompok berdistribusi normal. Pertimbangkan menggunakan ANOVA untuk analisis yang lebih powerful.")
+            
+                # Statistik Deskriptif
+                st.markdown("### 📈 Statistik Deskriptif")
+                desc_stats = df.groupby('Kelompok')['Nilai'].agg([
+                ('N', 'count'),
+                ('Mean', 'mean'),
+                ('Median', 'median'),
+                ('Std Dev', 'std'),
+                ('Min', 'min'),
+                ('Max', 'max')
+                ]).round(3)
+                st.dataframe(desc_stats, use_container_width=True)
+            
+                # Tabel Ranking
+                if show_ranking:
+                    st.markdown("### 🔢 Tabel Ranking")
+                    df_rank = df.copy()
+                    df_rank['Rank'] = stats.rankdata(df_rank['Nilai'])
+                    df_rank = df_rank.sort_values('Rank')
+                
+                    st.dataframe(df_rank, use_container_width=True, hide_index=True)
+                
+                    # Jumlah ranking per kelompok
+                    rank_sum = df_rank.groupby('Kelompok')['Rank'].agg(['sum', 'mean']).round(2)
+                    rank_sum.columns = ['Jumlah Rank', 'Rata-rata Rank']
+                    st.markdown("#### Ringkasan Ranking per Kelompok")
+                    st.dataframe(rank_sum, use_container_width=True)
+            
+                # Visualisasi
+                st.markdown("### 📊 Visualisasi Data")
+            
+                tab1, tab2, tab3 = st.tabs(["📦 Box Plot", "📊 Violin Plot", "📈 Histogram"])
+            
+                with tab1:
+                    fig_box = px.box(df, x='Kelompok', y='Nilai', 
+                                title='Box Plot - Distribusi Data per Kelompok',
+                                color='Kelompok', points='all')
+                    fig_box.add_hline(y=df['Nilai'].median(), line_dash="dash", 
+                                 line_color="red", annotation_text="Median Keseluruhan")
+                    fig_box.update_layout(showlegend=False, height=500)
+                    st.plotly_chart(fig_box, use_container_width=True)
+            
+                with tab2:
+                    fig_violin = px.violin(df, x='Kelompok', y='Nilai', 
+                                      title='Violin Plot - Distribusi Data per Kelompok',
+                                      color='Kelompok', box=True, points='all')
+                    fig_violin.update_layout(showlegend=False, height=500)
+                    st.plotly_chart(fig_violin, use_container_width=True)
+            
+                with tab3:
+                    fig_hist = px.histogram(df, x='Nilai', color='Kelompok', 
+                                       title='Histogram - Distribusi Frekuensi',
+                                       marginal='box', barmode='overlay', opacity=0.7)
+                    fig_hist.update_layout(height=500)
+                    st.plotly_chart(fig_hist, use_container_width=True)
+            
+                # Perbandingan Median
+                st.markdown("### 📊 Perbandingan Median Kelompok")
+                median_data = df.groupby('Kelompok')['Nilai'].median().reset_index()
+                median_data.columns = ['Kelompok', 'Median']
+            
+                fig_median = px.bar(median_data, x='Kelompok', y='Median', 
+                               title='Perbandingan Median antar Kelompok',
+                               color='Kelompok', text='Median')
+                fig_median.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+                fig_median.update_layout(showlegend=False, height=400)
+                st.plotly_chart(fig_median, use_container_width=True)
+            
+            else:
+                st.error("⚠️ Setiap kelompok harus memiliki minimal 2 data!")
+
+    # ============ MENU SIMULASI DATA ============
+    elif menu == "📈 Simulasi Data":
+        st.header("📈 Simulasi Data - Generate Data Non-Normal")
+    
+        st.markdown("Generate data dengan distribusi non-normal untuk simulasi Uji Kruskal-Wallis")
+    
+        col1, col2, col3 = st.columns(3)
+    
+        with col1:
+            num_groups_sim = st.slider("Jumlah Kelompok", 2, 6, 3)
+            samples_per_group = st.slider("Sampel per Kelompok", 10, 100, 30)
+            distribution_type = st.selectbox(
+            "Tipe Distribusi",
+            ["Exponential (Skewed)", "Uniform", "Poisson", "Chi-Square"]
+            )
+    
+        with col2:
+            scale_start = st.number_input("Skala Awal", value=10.0, step=1.0)
+            scale_diff = st.number_input("Perbedaan Skala antar Kelompok", value=5.0, step=1.0)
+            alpha_sim = st.selectbox("Tingkat Signifikansi (α)", [0.01, 0.05, 0.10], index=1)
+    
+        with col3:
+            add_outliers = st.checkbox("Tambahkan Outliers", value=False)
+            if add_outliers:
+                outlier_count = st.slider("Jumlah Outliers per Kelompok", 1, 5, 2)
+            seed_value = st.number_input("Random Seed", value=42, step=1)
+    
+        if st.button("🎲 Generate & Analisis", type="primary"):
+            np.random.seed(seed_value)
+        
+            # Generate data
+            groups_sim = []
+            group_names_sim = []
+            all_data_sim = []
+            all_labels_sim = []
+        
+            for i in range(num_groups_sim):
+                scale = scale_start + (i * scale_diff)
+            
+                # Generate berdasarkan distribusi
+                if distribution_type == "Exponential (Skewed)":
+                    data = np.random.exponential(scale, samples_per_group)
+                elif distribution_type == "Uniform":
+                    data = np.random.uniform(scale, scale + 20, samples_per_group)
+                elif distribution_type == "Poisson":
+                    data = np.random.poisson(scale, samples_per_group).astype(float)
+                else:  # Chi-Square
+                    data = np.random.chisquare(5, samples_per_group) * scale / 5
+            
+                # Tambahkan outliers jika diminta
+                if add_outliers:
+                    outliers = np.random.uniform(scale * 3, scale * 4, outlier_count)
+                    data = np.concatenate([data, outliers])
+            
+                groups_sim.append(data)
+                group_name = f"Kelompok {i+1}"
+                group_names_sim.append(group_name)
+                all_data_sim.extend(data)
+                all_labels_sim.extend([group_name] * len(data))
+        
+            df_sim = pd.DataFrame({'Nilai': all_data_sim, 'Kelompok': all_labels_sim})
+        
+            # Uji Kruskal-Wallis
+            h_stat_sim, p_value_sim = stats.kruskal(*groups_sim)
+        
+            # Uji Normalitas
+            normality_sim = {}
+            for i, data in enumerate(groups_sim):
+                if len(data) >= 3:
+                    _, p_norm = stats.shapiro(data)
+                    normality_sim[group_names_sim[i]] = p_norm
+        
+            # Hasil
+            st.markdown("---")
+            st.subheader("📊 Hasil Simulasi Kruskal-Wallis")
+        
+            col1, col2, col3, col4 = st.columns(4)
+            col1.metric("H-Statistik", f"{h_stat_sim:.4f}")
+            col2.metric("P-Value", f"{p_value_sim:.6f}")
+            col3.metric("df", f"{num_groups_sim - 1}")
+            col4.metric("Keputusan", "Tolak H₀" if p_value_sim < alpha_sim else "Gagal Tolak H₀")
+        
+            # Interpretasi
+            st.markdown("### 📝 Interpretasi")
+            if p_value_sim < alpha_sim:
+                st.success(f"""
+            ✅ **Kesimpulan**: Dengan tingkat signifikansi {alpha_sim}, terdapat perbedaan distribusi/median 
+            yang **signifikan** antar kelompok (p-value = {p_value_sim:.6f} < {alpha_sim}).
+            
+            Artinya: Minimal ada satu kelompok yang memiliki distribusi/median berbeda secara signifikan.
+            """)
+            else:
+                st.info(f"""
+            ℹ️ **Kesimpulan**: Dengan tingkat signifikansi {alpha_sim}, **tidak** terdapat perbedaan 
+            distribusi/median yang signifikan antar kelompok (p-value = {p_value_sim:.6f} ≥ {alpha_sim}).
+            """)
+        
+            # Hasil Uji Normalitas
+            st.markdown("### 🔬 Hasil Uji Normalitas (Shapiro-Wilk)")
+            norm_df_sim = pd.DataFrame({
+            'Kelompok': list(normality_sim.keys()),
+            'P-Value': [f"{p:.4f}" for p in normality_sim.values()],
+            'Status': ['❌ Tidak Normal' if p < 0.05 else '✅ Normal' 
+                      for p in normality_sim.values()],
+            'Keterangan': ['Data tidak berdistribusi normal' if p < 0.05 else 'Data berdistribusi normal' 
+                          for p in normality_sim.values()]
+            })
+            st.dataframe(norm_df_sim, use_container_width=True, hide_index=True)
+        
+            not_normal = sum(1 for p in normality_sim.values() if p < 0.05)
+            st.info(f"📊 **Ringkasan**: {not_normal} dari {len(normality_sim)} kelompok tidak berdistribusi normal → Kruskal-Wallis adalah pilihan yang tepat!")
+        
+            # Statistik Deskriptif
+            st.markdown("### 📈 Statistik Deskriptif")
+            desc_stats_sim = df_sim.groupby('Kelompok')['Nilai'].agg([
+            ('N', 'count'),
+            ('Mean', 'mean'),
+            ('Median', 'median'),
+            ('Std Dev', 'std'),
+            ('Min', 'min'),
+            ('Max', 'max'),
+            ('Skewness', lambda x: stats.skew(x))
+            ]).round(3)
+            st.dataframe(desc_stats_sim, use_container_width=True)
+        
+            # Visualisasi
+            st.markdown("### 📊 Visualisasi Data")
+        
+            tab1, tab2, tab3, tab4 = st.tabs(["📦 Box Plot", "📊 Violin Plot", "📈 Distribusi", "🔢 Q-Q Plot"])
+        
+            with tab1:
+                fig_box = px.box(df_sim, x='Kelompok', y='Nilai', 
+                            title=f'Box Plot - Distribusi {distribution_type}',
+                            color='Kelompok', points='all')
+                fig_box.update_layout(showlegend=False, height=500)
+                st.plotly_chart(fig_box, use_container_width=True)
+        
+            with tab2:
+                fig_violin = px.violin(df_sim, x='Kelompok', y='Nilai', 
+                                  title='Violin Plot - Menunjukkan Skewness',
+                                  color='Kelompok', box=True, points='all')
+                fig_violin.update_layout(showlegend=False, height=500)
+                st.plotly_chart(fig_violin, use_container_width=True)
+        
+            with tab3:
+                fig_hist = px.histogram(df_sim, x='Nilai', color='Kelompok', 
+                                   title='Histogram - Distribusi Non-Normal',
+                                   marginal='box', barmode='overlay', opacity=0.6)
+                fig_hist.update_layout(height=500)
+                st.plotly_chart(fig_hist, use_container_width=True)
+        
+            with tab4:
+                # Q-Q Plot untuk setiap kelompok
+                fig_qq = make_subplots(
+                rows=1, cols=min(3, num_groups_sim),
+                subplot_titles=[f"Q-Q Plot {name}" for name in group_names_sim[:3]]
+                )
+            
+                for i, (name, data) in enumerate(list(zip(group_names_sim, groups_sim))[:3]):
+                    qq = stats.probplot(data, dist="norm")
+                    fig_qq.add_trace(
+                    go.Scatter(x=qq[0][0], y=qq[0][1], mode='markers', 
+                              name=name, showlegend=True),
+                    row=1, col=i+1
+                    )
+                    # Garis referensi
+                    fig_qq.add_trace(
+                        go.Scatter(x=qq[0][0], y=qq[1][1] + qq[1][0] * qq[0][0], 
+                              mode='lines', name='Normal', 
+                              line=dict(color='red', dash='dash'), showlegend=False),
+                        row=1, col=i+1
+                    )
+            
+                fig_qq.update_xaxes(title_text="Theoretical Quantiles")
+                fig_qq.update_yaxes(title_text="Sample Quantiles")
+                fig_qq.update_layout(height=400, title_text="Q-Q Plot - Menunjukkan Deviasi dari Normalitas")
+                st.plotly_chart(fig_qq, use_container_width=True)
+            
+                st.caption("💡 Jika titik-titik menyimpang dari garis merah, data tidak berdistribusi normal")
+        
+            # Perbandingan Median
+            st.markdown("### 📊 Perbandingan Median Kelompok")
+            median_data_sim = df_sim.groupby('Kelompok')['Nilai'].median().reset_index()
+            median_data_sim.columns = ['Kelompok', 'Median']
+        
+            fig_median = px.bar(median_data_sim, x='Kelompok', y='Median', 
+                           title='Perbandingan Median antar Kelompok',
+                           color='Kelompok', text='Median')
+            fig_median.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+            fig_median.update_layout(showlegend=False, height=400)
+            st.plotly_chart(fig_median, use_container_width=True)
+        
+            # Download data
+            st.markdown("### 💾 Download Data")
+            csv = df_sim.to_csv(index=False)
+            st.download_button(
+            label="📥 Download Data CSV",
+            data=csv,
+            file_name=f"data_kruskal_wallis_{distribution_type.lower().replace(' ', '_')}.csv",
+            mime="text/csv"
+            )
+
+    # ============ MENU UJI ASUMSI ============
+    else:
+        st.header("🔬 Uji Asumsi - Normalitas dan Homogenitas")
+    
+        st.markdown("""
+    Lakukan uji asumsi untuk menentukan apakah harus menggunakan **ANOVA** atau **Kruskal-Wallis**
+    """)
+    
+        # Input data
+        st.subheader("Input Data untuk Uji Asumsi")
+    
+        num_groups_test = st.number_input("Jumlah Kelompok", min_value=2, max_value=10, value=3, key="test_groups")
+    
+        groups_test_data = {}
+        group_test_names = []
+    
+        cols = st.columns(min(3, num_groups_test))
+    
+        for i in range(num_groups_test):
+            with cols[i % 3]:
+                group_name = st.text_input(f"Nama Kelompok {i+1}", value=f"Kelompok {i+1}", key=f"test_name_{i}")
+                group_test_names.append(group_name)
+            
+                data_input = st.text_area(
+                f"Data {group_name}",
+                value="20, 22, 21, 23, 24, 22, 25, 23, 21, 24" if i == 0 else f"{30+i*5}, {32+i*5}, {31+i*5}, {33+i*5}, {34+i*5}, {32+i*5}, {35+i*5}, {33+i*5}, {31+i*5}, {34+i*5}",
+                key=f"test_data_{i}",
+                height=100
+                )
+            
+                try:
+                    data = [float(x.strip()) for x in data_input.split(",") if x.strip()]
+                    groups_test_data[group_name] = data
+                except:
+                    st.error(f"Format tidak valid")
+                    groups_test_data[group_name] = []
+    
+        if st.button("🔬 Uji Asumsi", type="primary", key="test_button"):
+            if all(len(v) >= 3 for v in groups_test_data.values()):
+            
+                st.markdown("---")
+                st.subheader("📊 Hasil Uji Asumsi")
+            
+                # 1. UJI NORMALITAS (Shapiro-Wilk)
+                st.markdown("### 1️⃣ Uji Normalitas (Shapiro-Wilk)")
+                st.caption("H₀: Data berdistribusi normal")
+            
+                normality_results = []
+                all_normal = True
+            
+                for name, data in groups_test_data.items():
+                    stat, p_val = stats.shapiro(data)
+                    is_normal = p_val >= 0.05
+                    if not is_normal:
+                        all_normal = False
+                
+                    normality_results.append({
+                    'Kelompok': name,
+                    'Statistik': f"{stat:.4f}",
+                    'P-Value': f"{p_val:.4f}",
+                    'Status': '✅ Normal' if is_normal else '❌ Tidak Normal',
+                    'Keputusan': 'Gagal Tolak H₀' if is_normal else 'Tolak H₀'
+                    })
+            
+                norm_df = pd.DataFrame(normality_results)
+                st.dataframe(norm_df, use_container_width=True, hide_index=True)
+            
+                # 2. UJI HOMOGENITAS (Levene)
+                st.markdown("### 2️⃣ Uji Homogenitas Varians (Levene)")
+                st.caption("H₀: Varians semua kelompok homogen (sama)")
+            
+                groups_list = [groups_test_data[name] for name in group_test_names]
+                levene_stat, levene_p = stats.levene(*groups_list)
+            
+                homogen = levene_p >= 0.05
+            
+                levene_df = pd.DataFrame({
+                'Uji': ['Levene'],
+                'Statistik': [f"{levene_stat:.4f}"],
+                'P-Value': [f"{levene_p:.4f}"],
+                'Status': ['✅ Homogen' if homogen else '❌ Tidak Homogen'],
+                'Keputusan': ['Gagal Tolak H₀' if homogen else 'Tolak H₀']
+                })
+                st.dataframe(levene_df, use_container_width=True, hide_index=True)
+            
+                # REKOMENDASI
+                st.markdown("### 🎯 Rekomendasi Uji Statistik")
+            
+                if all_normal and homogen:
+                    st.success("""
+                ✅ **GUNAKAN ANOVA 1 JALUR**
+                
+                **Alasan:**
+                - ✅ Semua kelompok berdistribusi normal
+                - ✅ Varians homogen
+                
+                ANOVA akan memberikan hasil yang lebih powerful dan akurat untuk data Anda.
+                """)
+                elif all_normal and not homogen:
+                    st.warning("""
+                ⚠️ **GUNAKAN WELCH ANOVA atau KRUSKAL-WALLIS**
+                
+                **Alasan:**
+                - ✅ Semua kelompok berdistribusi normal
+                - ❌ Varians tidak homogen
+                
+                Welch ANOVA atau Kruskal-Wallis lebih robust terhadap heterogenitas varians.
+                """)
+                else:
+                    st.info("""
+                📊 **GUNAKAN UJI KRUSKAL-WALLIS**
+                
+                **Alasan:**
+                - ❌ Minimal satu kelompok tidak berdistribusi normal
+                
+                Kruskal-Wallis adalah alternatif non-parametrik yang tepat karena tidak memerlukan asumsi normalitas.
+                """)
+            
+                # Visualisasi untuk Uji Asumsi
+                st.markdown("### 📊 Visualisasi Data")
+            
+                all_data_test = []
+                all_labels_test = []
+                for name, data in groups_test_data.items():
+                    all_data_test.extend(data)
+                    all_labels_test.extend([name] * len(data))
+            
+                df_test = pd.DataFrame({'Nilai': all_data_test, 'Kelompok': all_labels_test})
+            
+                col1, col2 = st.columns(2)
+            
+                with col1:
+                    fig_box_test = px.box(df_test, x='Kelompok', y='Nilai', 
+                                     title='Box Plot - Cek Outliers dan Distribusi',
+                                     color='Kelompok', points='all')
+                    fig_box_test.update_layout(showlegend=False)
+                    st.plotly_chart(fig_box_test, use_container_width=True)
+            
+                with col2:
+                    fig_hist_test = px.histogram(df_test, x='Nilai', color='Kelompok', 
+                                            title='Histogram - Cek Normalitas Visual',
+                                            marginal='box', barmode='overlay', opacity=0.6)
+                    st.plotly_chart(fig_hist_test, use_container_width=True)
+            
+                # Statistik Deskriptif
+                st.markdown("### 📈 Statistik Deskriptif")
+                desc_test = df_test.groupby('Kelompok')['Nilai'].agg([
+                ('N', 'count'),
+                ('Mean', 'mean'),
+                ('Median', 'median'),
+                ('Std Dev', 'std'),
+                ('Varians', 'var'),
+                ('Skewness', lambda x: stats.skew(x))
+                ]).round(3)
+                st.dataframe(desc_test, use_container_width=True)
+            
+                # Interpretasi Skewness
+                st.info("""
+            💡 **Interpretasi Skewness:**
+            - Skewness ≈ 0: Distribusi simetris (mendekati normal)
+            - Skewness > 0: Skewed ke kanan (ekor di kanan lebih panjang)
+            - Skewness < 0: Skewed ke kiri (ekor di kiri lebih panjang)
+            - |Skewness| > 1: Data sangat skewed (pertimbangkan Kruskal-Wallis)
+            """)
+            
+            else:
+                st.error("⚠️ Setiap kelompok harus memiliki minimal 3 data untuk uji normalitas!")
+
+    # Footer
+    st.markdown("---")
+    st.markdown("""
+<div style='text-align: center; color: gray;'>
+    <p>📊 Aplikasi Pembelajaran Uji Kruskal-Wallis | Uji Non-Parametrik untuk > 2 Sampel</p>
+    <p style='font-size: 0.8em;'>💡 Alternatif non-parametrik untuk ANOVA ketika data tidak berdistribusi normal</p>
+</div>
+""", unsafe_allow_html=True)
+
+def tampilkan_materi26():
+    # Fungsi untuk Welch's ANOVA
+    def welch_anova(*args):
+        """
+        Menghitung Welch's ANOVA (ANOVA untuk varians tidak homogen)
+        """
+        k = len(args)  # jumlah kelompok
+        n_i = np.array([len(arg) for arg in args])  # ukuran sampel per kelompok
+        means = np.array([np.mean(arg) for arg in args])  # rata-rata per kelompok
+        vars = np.array([np.var(arg, ddof=1) for arg in args])  # varians per kelompok
+    
+        # Weights
+        w_i = n_i / vars
+    
+        # Grand mean (weighted)
+        grand_mean = np.sum(w_i * means) / np.sum(w_i)
+    
+        # Welch F-statistic
+        numerator = np.sum(w_i * (means - grand_mean)**2) / (k - 1)
+    
+        # Denominator correction
+        tmp = (1 - w_i / np.sum(w_i))**2 / (n_i - 1)
+        denominator = 1 + (2 * (k - 2) / (k**2 - 1)) * np.sum(tmp)
+    
+        F_welch = numerator / denominator
+    
+        # Degrees of freedom
+        df1 = k - 1
+        df2 = (k**2 - 1) / (3 * np.sum(tmp))
+    
+        # P-value
+        p_value = 1 - stats.f.cdf(F_welch, df1, df2)
+    
+        return F_welch, p_value, df1, df2
+
+    # Fungsi untuk Games-Howell post-hoc test
+    def games_howell_test(groups_dict):
+        """
+        Games-Howell post-hoc test untuk Welch's ANOVA
+        """
+        group_names = list(groups_dict.keys())
+        results = []
+    
+        for i in range(len(group_names)):
+            for j in range(i+1, len(group_names)):
+                g1_name = group_names[i]
+                g2_name = group_names[j]
+                g1 = groups_dict[g1_name]
+                g2 = groups_dict[g2_name]
+            
+                n1, n2 = len(g1), len(g2)
+                mean1, mean2 = np.mean(g1), np.mean(g2)
+                var1, var2 = np.var(g1, ddof=1), np.var(g2, ddof=1)
+            
+                # Mean difference
+                mean_diff = mean1 - mean2
+            
+                # Standard error
+                se = np.sqrt(var1/n1 + var2/n2)
+            
+                # t-statistic
+                t_stat = mean_diff / se
+            
+                # Degrees of freedom (Welch-Satterthwaite)
+                df = (var1/n1 + var2/n2)**2 / ((var1/n1)**2/(n1-1) + (var2/n2)**2/(n2-1))
+            
+                # P-value (two-tailed)
+                p_val = 2 * (1 - stats.t.cdf(abs(t_stat), df))
+            
+                results.append({
+                'Perbandingan': f"{g1_name} vs {g2_name}",
+                'Mean Diff': mean_diff,
+                't-statistic': t_stat,
+                'df': df,
+                'p-value': p_val,
+                'Signifikan': 'Ya ✓' if p_val < 0.05 else 'Tidak'
+                })
+    
+        return pd.DataFrame(results)
+
+    # Judul aplikasi
+    st.title("📊 Welch's ANOVA (One-Way)")
+    st.markdown("### ANOVA untuk Data dengan Varians Tidak Homogen")
+
+    # Sidebar untuk navigasi
+    menu = st.sidebar.radio(
+    "Pilih Menu:",
+    ["📚 Materi", "🧮 Simulasi Manual", "📈 Simulasi Data", "⚖️ Perbandingan Uji"]
+    )
+
+    # ============ MENU MATERI ============
+    if menu == "📚 Materi":
+        st.header("📚 Materi Welch's ANOVA")
+    
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["Pengertian", "Kapan Digunakan", "Asumsi", "Hipotesis", "Rumus"])
+    
+        with tab1:
+            st.subheader("Apa itu Welch's ANOVA?")
+            st.markdown("""
+        **Welch's ANOVA** adalah variasi dari ANOVA klasik yang **tidak memerlukan asumsi homogenitas varians** 
+        (homoscedasticity). Uji ini dikembangkan oleh Bernard Lewis Welch pada tahun 1951.
+        
+        **Karakteristik:**
+        - 🔹 Modifikasi dari ANOVA 1 jalur klasik
+        - 🔹 Robust terhadap **heterogenitas varians** (varians tidak sama)
+        - 🔹 Menggunakan **weighted means** berdasarkan varians kelompok
+        - 🔹 Degrees of freedom dihitung dengan metode Welch-Satterthwaite
+        - 🔹 Tetap memerlukan asumsi **normalitas**
+        
+        **Perbedaan dengan ANOVA Klasik:**
+        
+        | Aspek | ANOVA Klasik | Welch's ANOVA |
+        |-------|--------------|---------------|
+        | Homogenitas Varians | **Diperlukan** ✓ | **Tidak diperlukan** ✗ |
+        | Normalitas | Diperlukan | Diperlukan |
+        | Ukuran Sampel | Bisa tidak sama | Bisa tidak sama |
+        | Pooled Variance | Ya | Tidak (individual) |
+        | Degrees of Freedom | Integer | Desimal (adjusted) |
+        
+        **Contoh Kasus:**
+        - Membandingkan gaji karyawan dari 3 departemen (variabilitas gaji berbeda)
+        - Membandingkan waktu respon dari 4 server (varians tidak sama)
+        - Membandingkan nilai ujian dari 3 kelas dengan spread yang berbeda
+        """)
+        
+            st.success("✨ **Keunggulan**: Memberikan hasil yang lebih akurat ketika varians antar kelompok sangat berbeda!")
+    
+        with tab2:
+            st.subheader("Kapan Menggunakan Welch's ANOVA?")
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                st.markdown("""
+            ### ✅ Gunakan Welch's ANOVA Jika:
+            
+            1. **Data berdistribusi normal**
+               - Uji Shapiro-Wilk: p > 0.05
+               
+            2. **Varians TIDAK homogen**
+               - Uji Levene: p < 0.05
+               - Rasio varians terbesar/terkecil > 3
+               
+            3. **Ukuran sampel tidak sama**
+               - Dan varians berbeda antar kelompok
+               
+            4. **Ada 3 atau lebih kelompok independen**
+               - Untuk 2 kelompok, gunakan Welch's t-test
+               
+            5. **ANOVA klasik tidak memenuhi asumsi**
+               - Tetapi data masih normal
+            """)
+        
+            with col2:
+                st.markdown("""
+            ### ❌ Gunakan Uji Lain Jika:
+            
+            **ANOVA Klasik:**
+            - ✓ Data normal
+            - ✓ Varians homogen (Levene p > 0.05)
+            - → Lebih powerful jika asumsi terpenuhi
+            
+            **Kruskal-Wallis:**
+            - ✗ Data tidak normal
+            - ? Varians homogen atau tidak
+            - → Alternatif non-parametrik
+            
+            **Brown-Forsythe:**
+            - ✓ Data normal
+            - ✗ Varians tidak homogen
+            - → Alternatif lain untuk Welch's ANOVA
+            """)
+        
+            st.info("""
+        💡 **Proses Pemilihan Uji:**
+        1. Uji Normalitas (Shapiro-Wilk) → Jika p < 0.05: Gunakan **Kruskal-Wallis**
+        2. Jika Normal, Uji Homogenitas (Levene) → Jika p < 0.05: Gunakan **Welch's ANOVA**
+        3. Jika Normal & Homogen → Gunakan **ANOVA Klasik**
+        """)
+    
+        with tab3:
+            st.subheader("Asumsi Welch's ANOVA")
+            st.markdown("""
+        Welch's ANOVA memiliki asumsi yang lebih longgar dibanding ANOVA klasik:
+        
+        ### 1️⃣ Independensi Observasi ✅ (WAJIB)
+        - Setiap observasi harus independen
+        - Tidak ada subjek yang muncul di lebih dari satu kelompok
+        - Sampling harus random
+        
+        ### 2️⃣ Normalitas ✅ (WAJIB)
+        - Data dalam setiap kelompok harus berdistribusi normal
+        - **Cara Uji:**
+          - Visual: Q-Q plot, histogram
+          - Statistik: Shapiro-Wilk test (p > 0.05)
+        - **Catatan**: Robust terhadap pelanggaran ringan jika n > 30
+        
+        ### 3️⃣ Variabel Dependen ✅
+        - Harus berupa data numerik (interval atau rasio)
+        - Contoh: skor, waktu, berat, tinggi
+        
+        ### 4️⃣ Homogenitas Varians ❌ (TIDAK DIPERLUKAN)
+        - **INI YANG MEMBEDAKAN!**
+        - Welch's ANOVA dirancang untuk data dengan varians tidak homogen
+        - Tidak perlu memenuhi asumsi equal variance
+        
+        ### 📊 Perbandingan Asumsi
+        
+        | Asumsi | ANOVA Klasik | Welch's ANOVA | Kruskal-Wallis |
+        |--------|--------------|---------------|----------------|
+        | Normalitas | ✅ Wajib | ✅ Wajib | ❌ Tidak perlu |
+        | Homogenitas | ✅ Wajib | ❌ Tidak perlu | ❌ Tidak perlu |
+        | Independensi | ✅ Wajib | ✅ Wajib | ✅ Wajib |
+        """)
+        
+            st.warning("⚠️ **Penting**: Meskipun Welch's ANOVA robust terhadap heterogenitas varians, data TETAP harus berdistribusi normal!")
+    
+        with tab4:
+            st.subheader("Hipotesis Welch's ANOVA")
+        
+            st.markdown("""
+        ### Perumusan Hipotesis
+        
+        **H₀ (Hipotesis Nol):**
+        
+        Tidak ada perbedaan rata-rata populasi yang signifikan antar semua kelompok
+        
+        $$\\mu_1 = \\mu_2 = \\mu_3 = ... = \\mu_k$$
+        
+        **H₁ (Hipotesis Alternatif):**
+        
+        Minimal ada satu kelompok yang rata-ratanya berbeda signifikan
+        
+        $$\\text{Minimal ada satu } \\mu_i \\neq \\mu_j$$
+        
+        ### Kriteria Pengambilan Keputusan
+        
+        **Berdasarkan P-value:**
+        - Jika **p-value < α** (biasanya 0.05) → **Tolak H₀**
+          - ✓ Ada perbedaan signifikan antar kelompok
+          - Lanjutkan dengan **post-hoc test**
+          
+        - Jika **p-value ≥ α** → **Gagal Tolak H₀**
+          - ✗ Tidak ada perbedaan signifikan
+          - Post-hoc test tidak diperlukan
+        
+        **Berdasarkan F-statistik:**
+        - Jika **F-hitung > F-tabel** → Tolak H₀
+        - Jika **F-hitung ≤ F-tabel** → Gagal Tolak H₀
+        
+        ### Post-hoc Test untuk Welch's ANOVA
+        
+        Jika hasil signifikan, gunakan **Games-Howell test**:
+        - Dirancang khusus untuk data dengan varians tidak homogen
+        - Tidak mengasumsikan equal variance
+        - Robust terhadap ukuran sampel yang tidak sama
+        - Lebih konservatif dari Tukey HSD
+        
+        **Alternatif Post-hoc:**
+        - Dunnett's T3 test
+        - Tamhane's T2 test
+        """)
+        
+            st.info("💡 **Catatan**: Jangan gunakan Tukey HSD untuk Welch's ANOVA karena Tukey mengasumsikan varians homogen!")
+    
+        with tab5:
+            st.subheader("Rumus Welch's ANOVA")
+        
+            st.markdown("""
+        ### Formula Welch's F-statistic
+        
+        $$F_w = \\frac{\\sum_{i=1}^{k} w_i(\\bar{X}_i - \\bar{X}_w)^2 / (k-1)}{1 + \\frac{2(k-2)}{k^2-1} \\sum_{i=1}^{k} \\frac{(1-w_i/\\sum w_i)^2}{n_i-1}}$$
+        
+        **Dimana:**
+        
+        $$w_i = \\frac{n_i}{s_i^2}$$
+        
+        $$\\bar{X}_w = \\frac{\\sum_{i=1}^{k} w_i \\bar{X}_i}{\\sum_{i=1}^{k} w_i}$$
+        
+        **Keterangan:**
+        - **F_w** = Welch's F-statistic
+        - **k** = Jumlah kelompok
+        - **n_i** = Ukuran sampel kelompok ke-i
+        - **X̄_i** = Rata-rata kelompok ke-i
+        - **s_i²** = Varians kelompok ke-i
+        - **w_i** = Weight (bobot) untuk kelompok ke-i
+        - **X̄_w** = Weighted grand mean
+        
+        ### Degrees of Freedom
+        
+        **df₁ (numerator):**
+        $$df_1 = k - 1$$
+        
+        **df₂ (denominator) - Welch-Satterthwaite:**
+        $$df_2 = \\frac{(k^2-1)}{3\\sum_{i=1}^{k} \\frac{(1-w_i/\\sum w_i)^2}{n_i-1}}$$
+        
+        ### Langkah Perhitungan Manual:
+        
+        **Step 1:** Hitung rata-rata (X̄ᵢ) dan varians (sᵢ²) untuk setiap kelompok
+        
+        **Step 2:** Hitung weight untuk setiap kelompok:
+        ```
+        wᵢ = nᵢ / sᵢ²
+        ```
+        
+        **Step 3:** Hitung weighted grand mean:
+        ```
+        X̄_w = Σ(wᵢ × X̄ᵢ) / Σwᵢ
+        ```
+        
+        **Step 4:** Hitung numerator:
+        ```
+        Numerator = Σ[wᵢ(X̄ᵢ - X̄_w)²] / (k-1)
+        ```
+        
+        **Step 5:** Hitung correction factor untuk denominator:
+        ```
+        λ = Σ[(1 - wᵢ/Σwᵢ)² / (nᵢ-1)]
+        ```
+        
+        **Step 6:** Hitung denominator:
+        ```
+        Denominator = 1 + [2(k-2)/(k²-1)] × λ
+        ```
+        
+        **Step 7:** Hitung F_welch:
+        ```
+        F_w = Numerator / Denominator
+        ```
+        
+        **Step 8:** Hitung df dan p-value menggunakan distribusi F
+        """)
+        
+            st.success("✨ **Insight**: Kelompok dengan varians lebih kecil mendapat weight lebih besar dalam perhitungan!")
+
+    # ============ MENU SIMULASI MANUAL ============
+    elif menu == "🧮 Simulasi Manual":
+        st.header("🧮 Simulasi Manual - Input Data Sendiri")
+    
+        st.markdown("Masukkan data untuk setiap kelompok (pisahkan dengan koma)")
+    
+        col1, col2 = st.columns(2)
+    
+        with col1:
+            num_groups = st.number_input("Jumlah Kelompok", min_value=2, max_value=10, value=3)
+            alpha = st.number_input("Tingkat Signifikansi (α)", min_value=0.01, max_value=0.10, value=0.05, step=0.01)
+    
+        with col2:
+            compare_tests = st.checkbox("Bandingkan dengan ANOVA Klasik", value=True)
+            show_posthoc = st.checkbox("Tampilkan Games-Howell Post-hoc", value=True)
+    
+        # Input data
+        groups_data = {}
+        group_names = []
+    
+        st.markdown("---")
+        st.subheader("Input Data Kelompok")
+        st.caption("💡 Tip: Buat data dengan varians yang berbeda untuk melihat perbedaan Welch's ANOVA vs ANOVA klasik")
+    
+        cols = st.columns(min(3, num_groups))
+    
+        # Data contoh dengan varians berbeda
+        example_data = [
+        "50, 52, 51, 53, 49, 50, 52",  # Varians kecil
+        "45, 55, 40, 60, 38, 62, 43",  # Varians sedang
+        "30, 70, 35, 65, 25, 75, 40"   # Varians besar
+        ]
+    
+        for i in range(num_groups):
+            with cols[i % 3]:
+                group_name = st.text_input(f"Nama Kelompok {i+1}", value=f"Kelompok {i+1}", key=f"name_{i}")
+                group_names.append(group_name)
+            
+                data_input = st.text_area(
+                f"Data {group_name}",
+                value=example_data[i] if i < len(example_data) else "10, 12, 11, 13, 14",
+                key=f"data_{i}",
+                height=100
+                )
+            
+                try:
+                    data = [float(x.strip()) for x in data_input.split(",") if x.strip()]
+                    groups_data[group_name] = data
+                
+                    if len(data) >= 2:
+                        st.caption(f"✅ n={len(data)}, σ²={np.var(data, ddof=1):.2f}")
+                except:
+                    st.error(f"❌ Format tidak valid")
+                    groups_data[group_name] = []
+    
+        if st.button("🔍 Analisis Welch's ANOVA", type="primary"):
+            if len(groups_data) >= 2 and all(len(v) >= 2 for v in groups_data.values()):
+            
+                # Persiapan data
+                all_data = []
+                group_labels = []
+                for name, data in groups_data.items():
+                    all_data.extend(data)
+                    group_labels.extend([name] * len(data))
+            
+                df = pd.DataFrame({'Nilai': all_data, 'Kelompok': group_labels})
+            
+                # Welch's ANOVA
+                groups = [groups_data[name] for name in group_names]
+                f_welch, p_welch, df1, df2 = welch_anova(*groups)
+            
+                # ANOVA Klasik untuk perbandingan
+                f_classic, p_classic = stats.f_oneway(*groups)
+            
+                # Uji Asumsi
+                # 1. Normalitas
+                normality_results = {}
+                for name, data in groups_data.items():
+                    if len(data) >= 3:
+                        _, p_norm = stats.shapiro(data)
+                        normality_results[name] = p_norm
+            
+                # 2. Homogenitas Varians
+                levene_stat, levene_p = stats.levene(*groups)
+            
+                # Hasil Utama
+                st.markdown("---")
+                st.subheader("📊 Hasil Welch's ANOVA")
+            
+                col1, col2, col3, col4 = st.columns(4)
+                col1.metric("F-Welch", f"{f_welch:.4f}")
+                col2.metric("P-Value", f"{p_welch:.6f}")
+                col3.metric("df", f"({df1:.0f}, {df2:.2f})")
+                col4.metric("Keputusan", "Tolak H₀" if p_welch < alpha else "Gagal Tolak H₀")
+            
+                # Interpretasi
+                st.markdown("### 📝 Interpretasi")
+                if p_welch < alpha:
+                    st.success(f"""
+                ✅ **Kesimpulan Welch's ANOVA**: Dengan α = {alpha}, terdapat perbedaan rata-rata 
+                yang **signifikan** antar kelompok.
+                
+                - F-Welch = {f_welch:.4f}
+                - P-value = {p_welch:.6f} < {alpha}
+                - **Tolak H₀**: Minimal ada satu kelompok yang berbeda
+                    """)
+                else:
+                    st.info(f"""
+                ℹ️ **Kesimpulan Welch's ANOVA**: Dengan α = {alpha}, **tidak** terdapat perbedaan 
+                rata-rata yang signifikan antar kelompok.
+                
+                - F-Welch = {f_welch:.4f}
+                - P-value = {p_welch:.6f} ≥ {alpha}
+                - **Gagal Tolak H₀**: Semua kelompok tidak berbeda secara signifikan
+                """)
+            
+                # Perbandingan dengan ANOVA Klasik
+                if compare_tests:
+                    st.markdown("### ⚖️ Perbandingan: Welch's ANOVA vs ANOVA Klasik")
+                
+                    comparison_df = pd.DataFrame({
+                    'Metode': ["Welch's ANOVA", 'ANOVA Klasik'],
+                    'F-Statistik': [f"{f_welch:.4f}", f"{f_classic:.4f}"],
+                    'P-Value': [f"{p_welch:.6f}", f"{p_classic:.6f}"],
+                    'df': [f"({df1:.0f}, {df2:.2f})", f"({len(groups)-1}, {len(all_data)-len(groups)})"],
+                    'Keputusan': [
+                        "Tolak H₀" if p_welch < alpha else "Gagal Tolak H₀",
+                        "Tolak H₀" if p_classic < alpha else "Gagal Tolak H₀"
+                        ]
+                    })
+                    st.dataframe(comparison_df, use_container_width=True, hide_index=True)
+                
+                    # Analisis perbedaan
+                    if abs(p_welch - p_classic) > 0.01:
+                        st.warning(f"""
+                    ⚠️ **Perbedaan signifikan** antara kedua metode!
+                    
+                    Selisih p-value: {abs(p_welch - p_classic):.6f}
+                    
+                    Ini menunjukkan bahwa heterogenitas varians mempengaruhi hasil analisis.
+                    Welch's ANOVA lebih dapat dipercaya untuk data ini.
+                    """)
+                    else:
+                        st.info("✓ Kedua metode memberikan hasil yang serupa. Varians relatif homogen.")
+            
+                # Uji Asumsi
+                st.markdown("### 🔬 Uji Asumsi")
+            
+                col1, col2 = st.columns(2)
+            
+                with col1:
+                    st.markdown("#### 1️⃣ Uji Normalitas (Shapiro-Wilk)")
+                    norm_df = pd.DataFrame({
+                    'Kelompok': list(normality_results.keys()),
+                    'P-Value': [f"{p:.4f}" for p in normality_results.values()],
+                    'Status': ['✅ Normal' if p >= 0.05 else '❌ Tidak Normal' 
+                              for p in normality_results.values()]
+                    })
+                    st.dataframe(norm_df, use_container_width=True, hide_index=True)
+                
+                    all_normal = all(p >= 0.05 for p in normality_results.values())
+                    if all_normal:
+                        st.success("✅ Asumsi normalitas terpenuhi")
+                    else:
+                        st.error("❌ Beberapa kelompok tidak normal. Pertimbangkan Kruskal-Wallis.")
+            
+                with col2:
+                    st.markdown("#### 2️⃣ Uji Homogenitas Varians (Levene)")
+                    levene_df = pd.DataFrame({
+                    'Statistik': [f"{levene_stat:.4f}"],
+                    'P-Value': [f"{levene_p:.4f}"],
+                    'Status': ['✅ Homogen' if levene_p >= 0.05 else '❌ Tidak Homogen']
+                    })
+                    st.dataframe(levene_df, use_container_width=True, hide_index=True)
+                
+                    if levene_p < 0.05:
+                        st.success("✅ Varians tidak homogen → Welch's ANOVA adalah pilihan tepat!")
+                    else:
+                        st.info("ℹ️ Varians homogen → ANOVA klasik juga bisa digunakan")
+            
+                # Variance Ratio
+                variances = [np.var(data, ddof=1) for data in groups]
+                var_ratio = max(variances) / min(variances)
+            
+                st.markdown("#### 📊 Analisis Varians")
+                st.metric("Rasio Varians (Max/Min)", f"{var_ratio:.2f}", 
+                     help="Rasio > 3 menunjukkan heterogenitas varians yang signifikan")
+            
+                if var_ratio > 3:
+                    st.warning(f"⚠️ Rasio varians = {var_ratio:.2f} > 3 → Heterogenitas tinggi! Welch's ANOVA sangat direkomendasikan.")
+                elif var_ratio > 2:
+                    st.info(f"ℹ️ Rasio varians = {var_ratio:.2f} → Heterogenitas sedang. Welch's ANOVA lebih aman.")
+                else:
+                    st.success(f"✅ Rasio varians = {var_ratio:.2f} → Varians relatif homogen.")
+            
+                # Statistik Deskriptif
+                st.markdown("### 📈 Statistik Deskriptif")
+                desc_stats = df.groupby('Kelompok')['Nilai'].agg([
+                ('N', 'count'),
+                ('Mean', 'mean'),
+                ('Std Dev', 'std'),
+                ('Varians', lambda x: np.var(x, ddof=1)),
+                ('Min', 'min'),
+                ('Max', 'max')
+                ]).round(3)
+                st.dataframe(desc_stats, use_container_width=True)
+            
+                # Games-Howell Post-hoc
+                if show_posthoc and p_welch < alpha:
+                    st.markdown("### 🎯 Games-Howell Post-hoc Test")
+                    st.caption("Untuk mengetahui pasangan kelompok mana yang berbeda signifikan")
+                
+                    gh_results = games_howell_test(groups_data)
+                    gh_results_display = gh_results.copy()
+                    gh_results_display['Mean Diff'] = gh_results_display['Mean Diff'].round(3)
+                    gh_results_display['t-statistic'] = gh_results_display['t-statistic'].round(4)
+                    gh_results_display['df'] = gh_results_display['df'].round(2)
+                    gh_results_display['p-value'] = gh_results_display['p-value'].round(4)
+                
+                    st.dataframe(gh_results_display, use_container_width=True, hide_index=True)
+                
+                    sig_pairs = gh_results[gh_results['p-value'] < 0.05]
+                    if len(sig_pairs) > 0:
+                        st.success(f"✅ Ditemukan {len(sig_pairs)} pasangan yang berbeda signifikan (p < 0.05)")
+                    else:
+                        st.info("ℹ️ Tidak ada pasangan yang berbeda signifikan pada level α = 0.05")
+            
+                # Visualisasi
+                st.markdown("### 📊 Visualisasi Data")
+            
+                tab1, tab2, tab3 = st.tabs(["📦 Box Plot", "📊 Violin Plot", "📈 Variance Plot"])
+            
+                with tab1:
+                    fig_box = px.box(df, x='Kelompok', y='Nilai', 
+                                title='Box Plot - Distribusi Data per Kelompok',
+                                color='Kelompok', points='all')
+                    fig_box.add_hline(y=df['Nilai'].mean(), line_dash="dash", 
+                                 line_color="red", annotation_text="Grand Mean")
+                    fig_box.update_layout(showlegend=False, height=500)
+                    st.plotly_chart(fig_box, use_container_width=True)
+            
+                with tab2:
+                    fig_violin = px.violin(df, x='Kelompok', y='Nilai', 
+                                      title='Violin Plot - Perhatikan Perbedaan Spread',
+                                      color='Kelompok', box=True, points='all')
+                    fig_violin.update_layout(showlegend=False, height=500)
+                    st.plotly_chart(fig_violin, use_container_width=True)
+            
+                with tab3:
+                    # Plot varians
+                    var_df = pd.DataFrame({
+                    'Kelompok': group_names,
+                    'Varians': [np.var(groups_data[name], ddof=1) for name in group_names],
+                    'Std Dev': [np.std(groups_data[name], ddof=1) for name in group_names]
+                    })
+                
+                    fig_var = go.Figure()
+                    fig_var.add_trace(go.Bar(
+                    x=var_df['Kelompok'],
+                    y=var_df['Varians'],
+                    name='Varians',
+                    marker_color='lightblue',
+                    text=var_df['Varians'].round(2),
+                    textposition='outside'
+                    ))
+                    fig_var.update_layout(
+                    title='Perbandingan Varians antar Kelompok',
+                    xaxis_title='Kelompok',
+                    yaxis_title='Varians',
+                    height=500,
+                    showlegend=False
+                    )
+                    st.plotly_chart(fig_var, use_container_width=True)
+                
+                    st.caption("💡 Perbedaan tinggi varians menunjukkan heterogenitas varians (alasan pakai Welch's ANOVA)")
+            
+            else:
+                st.error("⚠️ Setiap kelompok harus memiliki minimal 2 data!")
+
+    # ============ MENU SIMULASI DATA ============
+    elif menu == "📈 Simulasi Data":
+        st.header("📈 Simulasi Data - Generate Data dengan Varians Berbeda")
+    
+        st.markdown("Generate data dengan varians yang berbeda untuk demonstrasi Welch's ANOVA")
+    
+        col1, col2, col3 = st.columns(3)
+    
+        with col1:
+            num_groups_sim = st.slider("Jumlah Kelompok", 2, 6, 3)
+            samples_per_group = st.slider("Sampel per Kelompok", 10, 100, 30)
+    
+        with col2:
+            mean_start = st.number_input("Mean Kelompok Pertama", value=50.0, step=1.0)
+            mean_increment = st.number_input("Kenaikan Mean antar Kelompok", value=5.0, step=1.0)
+    
+        with col3:
+            std_start = st.number_input("Std Dev Kelompok Pertama", value=5.0, step=1.0)
+            std_multiplier = st.slider("Multiplier Std Dev", 1.0, 5.0, 2.0, 0.5,
+                                   help="Setiap kelompok std dev dikali faktor ini")
+            alpha_sim = st.selectbox("Tingkat Signifikansi (α)", [0.01, 0.05, 0.10], index=1)
+    
+        seed_sim = st.number_input("Random Seed", value=42, step=1, key="seed_sim")
+    
+        if st.button("🎲 Generate & Analisis", type="primary"):
+            np.random.seed(seed_sim)
+        
+            # Generate data
+            groups_sim = []
+            group_names_sim = []
+            all_data_sim = []
+            all_labels_sim = []
+        
+            for i in range(num_groups_sim):
+                mean = mean_start + (i * mean_increment)
+                std = std_start * (std_multiplier ** i)
+            
+                data = np.random.normal(mean, std, samples_per_group)
+            
+                groups_sim.append(data)
+                group_name = f"Kelompok {i+1}"
+                group_names_sim.append(group_name)
+                all_data_sim.extend(data)
+                all_labels_sim.extend([group_name] * samples_per_group)
+        
+            df_sim = pd.DataFrame({'Nilai': all_data_sim, 'Kelompok': all_labels_sim})
+        
+            # Analisis
+            f_welch_sim, p_welch_sim, df1_sim, df2_sim = welch_anova(*groups_sim)
+            f_classic_sim, p_classic_sim = stats.f_oneway(*groups_sim)
+        
+            # Uji Asumsi
+            normality_sim = {}
+            for i, data in enumerate(groups_sim):
+                _, p_norm = stats.shapiro(data)
+                normality_sim[group_names_sim[i]] = p_norm
+        
+            levene_stat_sim, levene_p_sim = stats.levene(*groups_sim)
+        
+            # Hasil
+            st.markdown("---")
+            st.subheader("📊 Hasil Simulasi Welch's ANOVA")
+        
+            col1, col2, col3, col4 = st.columns(4)
+            col1.metric("F-Welch", f"{f_welch_sim:.4f}")
+            col2.metric("P-Value", f"{p_welch_sim:.6f}")
+            col3.metric("df", f"({df1_sim:.0f}, {df2_sim:.2f})")
+            col4.metric("Keputusan", "Tolak H₀" if p_welch_sim < alpha_sim else "Gagal Tolak H₀")
+        
+            # Interpretasi
+            st.markdown("### 📝 Interpretasi")
+            if p_welch_sim < alpha_sim:
+                st.success(f"""
+            ✅ **Kesimpulan**: Dengan α = {alpha_sim}, terdapat perbedaan rata-rata yang **signifikan** 
+            antar kelompok (p = {p_welch_sim:.6f} < {alpha_sim}).
+            """)
+            else:
+                st.info(f"""
+            ℹ️ **Kesimpulan**: Dengan α = {alpha_sim}, **tidak** terdapat perbedaan rata-rata 
+            yang signifikan antar kelompok (p = {p_welch_sim:.6f} ≥ {alpha_sim}).
+            """)
+        
+            # Perbandingan Metode
+            st.markdown("### ⚖️ Perbandingan: Welch's ANOVA vs ANOVA Klasik")
+        
+            comparison_sim = pd.DataFrame({
+            'Metode': ["Welch's ANOVA", 'ANOVA Klasik'],
+            'F-Statistik': [f"{f_welch_sim:.4f}", f"{f_classic_sim:.4f}"],
+            'P-Value': [f"{p_welch_sim:.6f}", f"{p_classic_sim:.6f}"],
+            'Keputusan (α=0.05)': [
+                "Tolak H₀" if p_welch_sim < 0.05 else "Gagal Tolak H₀",
+                "Tolak H₀" if p_classic_sim < 0.05 else "Gagal Tolak H₀"
+            ]
+            })
+            st.dataframe(comparison_sim, use_container_width=True, hide_index=True)
+        
+            # Analisis perbedaan
+            p_diff = abs(p_welch_sim - p_classic_sim)
+            if p_diff > 0.01:
+                st.warning(f"""
+            ⚠️ **Perbedaan Signifikan!**
+            
+            Selisih p-value: {p_diff:.6f}
+            
+            Ini disebabkan oleh heterogenitas varians yang tinggi. Welch's ANOVA memberikan 
+            hasil yang lebih akurat dalam kondisi ini.
+            """)
+            else:
+                st.info(f"ℹ️ Selisih p-value kecil ({p_diff:.6f}). Kedua metode memberikan hasil serupa.")
+        
+            # Uji Asumsi
+            st.markdown("### 🔬 Hasil Uji Asumsi")
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                st.markdown("#### Normalitas (Shapiro-Wilk)")
+                norm_df_sim = pd.DataFrame({
+                'Kelompok': list(normality_sim.keys()),
+                'P-Value': [f"{p:.4f}" for p in normality_sim.values()],
+                'Status': ['✅ Normal' if p >= 0.05 else '❌ Tidak Normal' 
+                          for p in normality_sim.values()]
+                })
+                st.dataframe(norm_df_sim, use_container_width=True, hide_index=True)
+        
+            with col2:
+                st.markdown("#### Homogenitas (Levene)")
+                st.metric("Levene Statistik", f"{levene_stat_sim:.4f}")
+                st.metric("P-Value", f"{levene_p_sim:.4f}")
+                if levene_p_sim < 0.05:
+                    st.error("❌ Varians TIDAK homogen")
+                    st.success("✅ Welch's ANOVA adalah pilihan yang tepat!")
+                else:
+                    st.success("✅ Varians homogen")
+                    st.info("ℹ️ ANOVA klasik juga bisa digunakan")
+        
+            # Variance Ratio
+            variances_sim = [np.var(data, ddof=1) for data in groups_sim]
+            var_ratio_sim = max(variances_sim) / min(variances_sim)
+        
+            st.markdown("#### 📊 Analisis Variabilitas")
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Varians Terkecil", f"{min(variances_sim):.2f}")
+            col2.metric("Varians Terbesar", f"{max(variances_sim):.2f}")
+            col3.metric("Rasio (Max/Min)", f"{var_ratio_sim:.2f}")
+        
+            if var_ratio_sim > 3:
+                st.error(f"❌ Rasio varians = {var_ratio_sim:.2f} > 3 → Heterogenitas TINGGI")
+            elif var_ratio_sim > 2:
+                st.warning(f"⚠️ Rasio varians = {var_ratio_sim:.2f} > 2 → Heterogenitas SEDANG")
+            else:
+                st.success(f"✅ Rasio varians = {var_ratio_sim:.2f} ≤ 2 → Relatif homogen")
+        
+            # Statistik Deskriptif
+            st.markdown("### 📈 Statistik Deskriptif")
+            desc_sim = df_sim.groupby('Kelompok')['Nilai'].agg([
+            ('N', 'count'),
+            ('Mean', 'mean'),
+            ('Std Dev', 'std'),
+            ('Varians', lambda x: np.var(x, ddof=1)),
+            ('Min', 'min'),
+            ('Max', 'max')
+            ]).round(3)
+            st.dataframe(desc_sim, use_container_width=True)
+        
+            # Visualisasi
+            st.markdown("### 📊 Visualisasi Data")
+        
+            tab1, tab2, tab3, tab4 = st.tabs(["📦 Box Plot", "📊 Violin Plot", "📈 Variance Chart", "🔔 Distribution"])
+        
+            with tab1:
+                fig_box = px.box(df_sim, x='Kelompok', y='Nilai', 
+                            title='Box Plot - Perhatikan Perbedaan Spread',
+                            color='Kelompok', points='all')
+                fig_box.update_layout(showlegend=False, height=500)
+                st.plotly_chart(fig_box, use_container_width=True)
+        
+            with tab2:
+                fig_violin = px.violin(df_sim, x='Kelompok', y='Nilai', 
+                                  title='Violin Plot - Variabilitas Berbeda',
+                                  color='Kelompok', box=True, points='all')
+                fig_violin.update_layout(showlegend=False, height=500)
+                st.plotly_chart(fig_violin, use_container_width=True)
+        
+            with tab3:
+                var_data = pd.DataFrame({
+                'Kelompok': group_names_sim,
+                'Varians': variances_sim,
+                'Std Dev': [np.std(data, ddof=1) for data in groups_sim]
+                })
+            
+                fig_var = make_subplots(specs=[[{"secondary_y": True}]])
+            
+                fig_var.add_trace(
+                    go.Bar(x=var_data['Kelompok'], y=var_data['Varians'], 
+                      name='Varians', marker_color='lightblue'),
+                    secondary_y=False
+                )
+            
+                fig_var.add_trace(
+                go.Scatter(x=var_data['Kelompok'], y=var_data['Std Dev'], 
+                          name='Std Dev', mode='lines+markers', 
+                          line=dict(color='red', width=3)),
+                secondary_y=True
+                )
+            
+                fig_var.update_layout(title='Perbandingan Varians dan Std Dev', height=500)
+                fig_var.update_xaxes(title_text="Kelompok")
+                fig_var.update_yaxes(title_text="Varians", secondary_y=False)
+                fig_var.update_yaxes(title_text="Std Dev", secondary_y=True)
+            
+                st.plotly_chart(fig_var, use_container_width=True)
+        
+            with tab4:
+                fig_hist = px.histogram(df_sim, x='Nilai', color='Kelompok', 
+                                   title='Distribusi Frekuensi - Perhatikan Spread',
+                                   marginal='box', barmode='overlay', opacity=0.6,
+                                   nbins=30)
+                fig_hist.update_layout(height=500)
+                st.plotly_chart(fig_hist, use_container_width=True)
+        
+            # Download
+            st.markdown("### 💾 Download Data")
+            csv_sim = df_sim.to_csv(index=False)
+            st.download_button(
+            label="📥 Download Data CSV",
+            data=csv_sim,
+            file_name="welch_anova_simulation.csv",
+            mime="text/csv"
+            )
+
+    # ============ MENU PERBANDINGAN UJI ============
+    else:
+        st.header("⚖️ Perbandingan Uji: ANOVA vs Welch's vs Kruskal-Wallis")
+    
+        st.markdown("""
+    Panduan memilih uji statistik yang tepat untuk membandingkan lebih dari 2 kelompok
+    """)
+    
+        # Flowchart
+        st.subheader("🌳 Decision Tree: Memilih Uji yang Tepat")
+    
+        st.markdown("""
+    ```
+    Apakah data berdistribusi NORMAL? (Uji Shapiro-Wilk)
+    │
+    ├─ YA ✓ → Apakah varians HOMOGEN? (Uji Levene)
+    │         │
+    │         ├─ YA ✓ → Gunakan ANOVA KLASIK
+    │         │         (Paling powerful jika asumsi terpenuhi)
+    │         │
+    │         └─ TIDAK ✗ → Gunakan WELCH'S ANOVA
+    │                      (Robust terhadap heterogenitas varians)
+    │
+    └─ TIDAK ✗ → Gunakan KRUSKAL-WALLIS
+                  (Uji non-parametrik, tidak perlu normalitas)
+    ```
+    """)
+    
+        # Tabel Perbandingan Detail
+        st.subheader("📊 Tabel Perbandingan Lengkap")
+    
+        comparison_table = pd.DataFrame({
+        'Aspek': [
+            'Asumsi Normalitas',
+            'Asumsi Homogenitas Varians',
+            'Jenis Uji',
+            'Ukuran Sampel',
+            'Sensitif terhadap Outlier',
+            'Power (jika asumsi terpenuhi)',
+            'Robust',
+            'Post-hoc Test',
+            'Interpretasi',
+            'Kapan Digunakan'
+        ],
+        'ANOVA Klasik': [
+            '✅ Diperlukan',
+            '✅ Diperlukan',
+            'Parametrik',
+            'Bebas (ideal n≥30)',
+            '⚠️ Sangat sensitif',
+            '⭐⭐⭐⭐⭐ (Tertinggi)',
+            '❌ Tidak robust',
+            'Tukey HSD, Bonferroni',
+            'Perbedaan rata-rata',
+            'Data normal & varians homogen'
+        ],
+        "Welch's ANOVA": [
+            '✅ Diperlukan',
+            '❌ TIDAK diperlukan',
+            'Parametrik',
+            'Bebas (ideal n≥30)',
+            '⚠️ Cukup sensitif',
+            '⭐⭐⭐⭐ (Tinggi)',
+            '✅ Robust thd heterogenitas',
+            'Games-Howell, Dunnett T3',
+            'Perbedaan rata-rata',
+            'Data normal, varians TIDAK homogen'
+        ],
+        'Kruskal-Wallis': [
+            '❌ TIDAK diperlukan',
+            '❌ TIDAK diperlukan',
+            'Non-parametrik',
+            'Bebas (lebih baik n≥5)',
+            '✅ Robust terhadap outlier',
+            '⭐⭐⭐ (Sedang)',
+            '✅ Sangat robust',
+            "Dunn's test, Mann-Whitney",
+            'Perbedaan median/distribusi',
+            'Data TIDAK normal atau ordinal'
+        ]
+        })
+    
+        st.dataframe(comparison_table, use_container_width=True, hide_index=True)
+    
+        # Contoh Kasus
+        st.subheader("📚 Contoh Kasus Penggunaan")
+    
+        col1, col2, col3 = st.columns(3)
+    
+        with col1:
+            st.markdown("""
+        ### ANOVA Klasik
+        
+        **Contoh:**
+        Membandingkan tinggi tanaman dari 3 jenis pupuk
+        
+        **Kondisi:**
+        - Data tinggi berdistribusi normal
+        - Varians ketiga kelompok homogen
+        - Tidak ada outlier ekstrem
+        
+        **Hasil:**
+        Dapat mendeteksi perbedaan kecil dengan power tinggi
+        """)
+    
+        with col2:
+            st.markdown("""
+        ### Welch's ANOVA
+        
+        **Contoh:**
+        Membandingkan gaji karyawan dari 4 departemen
+        
+        **Kondisi:**
+        - Data gaji berdistribusi normal
+        - Varians sangat berbeda (accounting vs marketing)
+        - Ukuran sampel berbeda per departemen
+        
+        **Hasil:**
+        Hasil lebih akurat dibanding ANOVA klasik
+        """)
+    
+        with col3:
+            st.markdown("""
+        ### Kruskal-Wallis
+        
+        **Contoh:**
+        Membandingkan skor kepuasan pelanggan (skala 1-5)
+        
+        **Kondisi:**
+        - Data ordinal (skala Likert)
+        - Data skewed (tidak normal)
+        - Ada outlier
+        
+        **Hasil:**
+        Tidak terpengaruh oleh outlier atau bentuk distribusi
+        """)
+    
+        # Simulasi Perbandingan
+        st.subheader("🧪 Simulasi Perbandingan")
+        st.markdown("Bandingkan ketiga metode dengan data yang sama")
+    
+        col1, col2 = st.columns(2)
+    
+        with col1:
+            scenario = st.selectbox(
+            "Pilih Skenario",
+            [
+                "Varians Homogen & Normal",
+                "Varians Heterogen & Normal",
+                "Varians Homogen & Tidak Normal",
+                "Varians Heterogen & Tidak Normal"
+            ]
+            )
+    
+        with col2:
+            n_per_group = st.slider("Sampel per Kelompok", 10, 100, 30, key="comp_n")
+    
+        if st.button("🔍 Jalankan Perbandingan", type="primary"):
+            np.random.seed(42)
+        
+            if scenario == "Varians Homogen & Normal":
+                g1 = np.random.normal(50, 10, n_per_group)
+                g2 = np.random.normal(55, 10, n_per_group)
+                g3 = np.random.normal(60, 10, n_per_group)
+            elif scenario == "Varians Heterogen & Normal":
+                g1 = np.random.normal(50, 5, n_per_group)
+                g2 = np.random.normal(55, 15, n_per_group)
+                g3 = np.random.normal(60, 25, n_per_group)
+            elif scenario == "Varians Homogen & Tidak Normal":
+                g1 = np.random.exponential(50, n_per_group)
+                g2 = np.random.exponential(55, n_per_group)
+                g3 = np.random.exponential(60, n_per_group)
+            else:  # Heterogen & Tidak Normal
+                g1 = np.random.exponential(30, n_per_group)
+                g2 = np.random.exponential(50, n_per_group) * 1.5
+                g3 = np.random.chisquare(5, n_per_group) * 10
+        
+            # Uji semua metode
+            f_classic, p_classic = stats.f_oneway(g1, g2, g3)
+            f_welch, p_welch, df1, df2 = welch_anova(g1, g2, g3)
+            h_kw, p_kw = stats.kruskal(g1, g2, g3)
+        
+            # Uji asumsi
+            _, p_norm1 = stats.shapiro(g1)
+            _, p_norm2 = stats.shapiro(g2)
+            _, p_norm3 = stats.shapiro(g3)
+            _, p_levene = stats.levene(g1, g2, g3)
+        
+            st.markdown("---")
+            st.markdown("### 📊 Hasil Perbandingan")
+        
+            results_comp = pd.DataFrame({
+            'Metode': ['ANOVA Klasik', "Welch's ANOVA", 'Kruskal-Wallis'],
+            'Statistik': [f"F = {f_classic:.4f}", f"F = {f_welch:.4f}", f"H = {h_kw:.4f}"],
+            'P-Value': [f"{p_classic:.6f}", f"{p_welch:.6f}", f"{p_kw:.6f}"],
+            'Keputusan': [
+                "Tolak H₀" if p_classic < 0.05 else "Gagal Tolak H₀",
+                "Tolak H₀" if p_welch < 0.05 else "Gagal Tolak H₀",
+                "Tolak H₀" if p_kw < 0.05 else "Gagal Tolak H₀"
+            ]
+            })
+            st.dataframe(results_comp, use_container_width=True, hide_index=True)
+        
+            # Cek asumsi
+            st.markdown("### 🔬 Pemeriksaan Asumsi")
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                st.markdown("#### Normalitas")
+                st.metric("Kelompok 1 (p-value)", f"{p_norm1:.4f}", 
+                     "✅ Normal" if p_norm1 >= 0.05 else "❌ Tidak Normal")
+                st.metric("Kelompok 2 (p-value)", f"{p_norm2:.4f}",
+                     "✅ Normal" if p_norm2 >= 0.05 else "❌ Tidak Normal")
+                st.metric("Kelompok 3 (p-value)", f"{p_norm3:.4f}",
+                     "✅ Normal" if p_norm3 >= 0.05 else "❌ Tidak Normal")
+        
+            with col2:
+                st.markdown("#### Homogenitas Varians")
+                st.metric("Levene Test (p-value)", f"{p_levene:.4f}",
+                     "✅ Homogen" if p_levene >= 0.05 else "❌ Heterogen")
+            
+                var_ratio_comp = max(np.var(g1), np.var(g2), np.var(g3)) / min(np.var(g1), np.var(g2), np.var(g3))
+                st.metric("Rasio Varians", f"{var_ratio_comp:.2f}",
+                     "✅ Homogen" if var_ratio_comp < 3 else "❌ Heterogen")
+        
+            # Rekomendasi
+            st.markdown("### 🎯 Rekomendasi")
+        
+            all_normal = p_norm1 >= 0.05 and p_norm2 >= 0.05 and p_norm3 >= 0.05
+            homogen = p_levene >= 0.05
+        
+            if all_normal and homogen:
+                st.success("""
+            ✅ **GUNAKAN ANOVA KLASIK**
+            
+            - Data berdistribusi normal
+            - Varians homogen
+            - Akan memberikan power tertinggi
+            """)
+            elif all_normal and not homogen:
+                st.warning("""
+            ⚠️ **GUNAKAN WELCH'S ANOVA**
+            
+            - Data berdistribusi normal
+            - Varians TIDAK homogen
+            - Lebih akurat dari ANOVA klasik untuk kasus ini
+            """)
+            else:
+                st.info("""
+            📊 **GUNAKAN KRUSKAL-WALLIS**
+            
+            - Data TIDAK berdistribusi normal
+            - Uji non-parametrik lebih tepat
+            - Tidak terpengaruh bentuk distribusi
+            """)
+
+    # Footer
+    st.markdown("---")
+    st.markdown("""
+<div style='text-align: center; color: gray;'>
+    <p>📊 Aplikasi Pembelajaran Welch's ANOVA | ANOVA untuk Varians Tidak Homogen</p>
+    <p style='font-size: 0.8em;'>💡 Alternatif robust untuk ANOVA klasik ketika asumsi homogenitas varians tidak terpenuhi</p>
+</div>
+""", unsafe_allow_html=True)
+
+def tampilkan_materi27():
+    # CSS untuk styling
+    st.markdown("""
+<style>
+    .main-header {
+        font-size: 2.5rem;
+        color: #1f77b4;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .sub-header {
+        font-size: 1.5rem;
+        color: #2c3e50;
+        margin-top: 2rem;
+    }
+    .info-box {
+        background-color: #e3f2fd;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border-left: 4px solid #1f77b4;
+        margin: 1rem 0;
+        color:black;
+    }
+    .warning-box {
+        background-color: #fff3cd;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border-left: 4px solid #ffc107;
+        margin: 1rem 0;
+        color: black;
+    }
+    .success-box {
+        background-color: #d4edda;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border-left: 4px solid #28a745;
+        margin: 1rem 0;
+        color: black;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+    # Fungsi untuk Tukey HSD
+    def tukey_hsd(data_groups, group_names, alpha=0.05):
+        """Melakukan uji Tukey HSD"""
+        results = []
+        n_groups = len(data_groups)
+        n_total = sum(len(g) for g in data_groups)
+    
+        # Hitung MSE (Mean Square Error) dari ANOVA
+        all_data = np.concatenate(data_groups)
+        group_labels = np.concatenate([[i]*len(g) for i, g in enumerate(data_groups)])
+    
+        # ANOVA untuk mendapatkan MSE
+        f_stat, p_val = f_oneway(*data_groups)
+    
+        # Hitung SSW (Sum of Squares Within)
+        grand_mean = np.mean(all_data)
+        ssw = sum(np.sum((g - np.mean(g))**2) for g in data_groups)
+        dfw = n_total - n_groups
+        mse = ssw / dfw
+    
+        # Hitung q kritis (menggunakan aproksimasi)
+        q_crit = stats.studentized_range.ppf(1-alpha, n_groups, dfw)
+    
+        # Bandingkan semua pasangan
+        for i, j in combinations(range(n_groups), 2):
+            mean_i = np.mean(data_groups[i])
+            mean_j = np.mean(data_groups[j])
+            n_i = len(data_groups[i])
+            n_j = len(data_groups[j])
+        
+            # Hitung HSD
+            diff = abs(mean_i - mean_j)
+            se = np.sqrt(mse * (1/n_i + 1/n_j))
+            hsd = q_crit * se
+        
+            is_significant = diff > hsd
+        
+            results.append({
+            'Kelompok 1': group_names[i],
+            'Kelompok 2': group_names[j],
+            'Mean 1': mean_i,
+            'Mean 2': mean_j,
+            'Selisih': diff,
+            'HSD': hsd,
+            'Signifikan': 'Ya' if is_significant else 'Tidak',
+            'p-value': '<0.05' if is_significant else '>0.05'
+            })
+    
+        return pd.DataFrame(results)
+
+    # Fungsi untuk Bonferroni
+    def bonferroni_test(data_groups, group_names, alpha=0.05):
+        """Melakukan uji Bonferroni"""
+        results = []
+        n_comparisons = len(list(combinations(range(len(data_groups)), 2)))
+        adjusted_alpha = alpha / n_comparisons
+    
+        for i, j in combinations(range(len(data_groups)), 2):
+            t_stat, p_val = stats.ttest_ind(data_groups[i], data_groups[j])
+            is_significant = p_val < adjusted_alpha
+        
+            results.append({
+            'Kelompok 1': group_names[i],
+            'Kelompok 2': group_names[j],
+            'Mean 1': np.mean(data_groups[i]),
+            'Mean 2': np.mean(data_groups[j]),
+            'Selisih': abs(np.mean(data_groups[i]) - np.mean(data_groups[j])),
+            't-statistic': t_stat,
+            'p-value': p_val,
+            'α terkoreksi': adjusted_alpha,
+            'Signifikan': 'Ya' if is_significant else 'Tidak'
+            })
+    
+        return pd.DataFrame(results)
+
+    # Fungsi untuk LSD (Least Significant Difference)
+    def lsd_test(data_groups, group_names, alpha=0.05):
+        """Melakukan uji LSD"""
+        results = []
+        n_groups = len(data_groups)
+        n_total = sum(len(g) for g in data_groups)
+    
+        # Hitung MSE
+        all_data = np.concatenate(data_groups)
+        ssw = sum(np.sum((g - np.mean(g))**2) for g in data_groups)
+        dfw = n_total - n_groups
+        mse = ssw / dfw
+    
+        t_crit = stats.t.ppf(1-alpha/2, dfw)
+    
+        for i, j in combinations(range(n_groups), 2):
+            mean_i = np.mean(data_groups[i])
+            mean_j = np.mean(data_groups[j])
+            n_i = len(data_groups[i])
+            n_j = len(data_groups[j])
+        
+            diff = abs(mean_i - mean_j)
+            se = np.sqrt(mse * (1/n_i + 1/n_j))
+            lsd = t_crit * se
+        
+            is_significant = diff > lsd
+        
+            results.append({
+            'Kelompok 1': group_names[i],
+            'Kelompok 2': group_names[j],
+            'Mean 1': mean_i,
+            'Mean 2': mean_j,
+            'Selisih': diff,
+            'LSD': lsd,
+            'Signifikan': 'Ya' if is_significant else 'Tidak'
+            })
+    
+        return pd.DataFrame(results)
+
+    # Sidebar untuk navigasi
+    st.sidebar.title("📚 Navigasi")
+    menu = st.sidebar.radio(
+    "Pilih Menu:",
+    ["🏠 Beranda", "📖 Materi", "🎯 Simulasi Interaktif", "📊 Upload Data", "ℹ️ Tentang"]
+    )
+
+    # BERANDA
+    if menu == "🏠 Beranda":
+        st.markdown("<h1 class='main-header'>📊 Uji Post-hoc untuk ANOVA 1 Jalur</h1>", unsafe_allow_html=True)
+    
+        col1, col2, col3 = st.columns(3)
+    
+        with col1:
+            st.markdown("""
+        <div class='info-box'>
+            <h3>🎓 Belajar Teori</h3>
+            <p>Pelajari konsep dasar ANOVA dan uji Post-hoc dengan penjelasan lengkap dan contoh.</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+        with col2:
+            st.markdown("""
+        <div class='info-box'>
+            <h3>🔬 Simulasi</h3>
+            <p>Lakukan simulasi interaktif dengan data yang dapat Anda atur sendiri.</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+        with col3:
+            st.markdown("""
+        <div class='info-box'>
+            <h3>📁 Upload Data</h3>
+            <p>Analisis data Anda sendiri dengan berbagai metode Post-hoc.</p>
+        </div>
+        """, unsafe_allow_html=True)
+    
+        st.markdown("---")
+    
+        st.markdown("""
+    ## Apa itu Uji Post-hoc?
+    
+    Uji Post-hoc adalah uji lanjutan yang dilakukan **setelah** ANOVA menunjukkan hasil yang signifikan. 
+    ANOVA hanya memberitahu kita bahwa ada perbedaan di antara kelompok, tetapi tidak menjelaskan 
+    kelompok mana yang berbeda. Di sinilah uji Post-hoc berperan!
+    
+    ### Kapan Menggunakan Uji Post-hoc?
+    - ✅ Setelah ANOVA 1 jalur menunjukkan p-value < 0.05
+    - ✅ Ketika memiliki 3 atau lebih kelompok untuk dibandingkan
+    - ✅ Untuk mengidentifikasi pasangan kelompok mana yang berbeda secara signifikan
+        """)
+
+    # MATERI
+    elif menu == "📖 Materi":
+        st.markdown("<h1 class='main-header'>📖 Materi Pembelajaran</h1>", unsafe_allow_html=True)
+    
+        tab1, tab2, tab3, tab4 = st.tabs(["🔍 ANOVA Dasar", "📐 Metode Post-hoc", "🧮 Contoh Perhitungan", "💡 Tips Pemilihan"])
+    
+        with tab1:
+            st.markdown("## 🔍 ANOVA 1 Jalur (One-Way ANOVA)")
+        
+            st.markdown("""
+        ### Definisi
+        ANOVA (Analysis of Variance) adalah uji statistik untuk membandingkan rata-rata dari **tiga atau lebih kelompok** independen.
+        
+        ### Hipotesis
+        - **H₀**: μ₁ = μ₂ = μ₃ = ... (Semua rata-rata kelompok sama)
+        - **H₁**: Setidaknya ada satu rata-rata yang berbeda
+        
+        ### Asumsi ANOVA
+        1. **Independensi**: Observasi dalam setiap kelompok independen
+        2. **Normalitas**: Data dalam setiap kelompok terdistribusi normal
+        3. **Homogenitas Varians**: Varians antar kelompok homogen (sama)
+        
+        ### Formula F-statistik
+            """)
+        
+            st.latex(r"F = \frac{MS_{between}}{MS_{within}} = \frac{SS_{between}/(k-1)}{SS_{within}/(N-k)}")
+        
+            st.markdown("""
+        Di mana:
+        - k = jumlah kelompok
+        - N = total jumlah observasi
+        - SS = Sum of Squares
+        - MS = Mean Square
+            """)
+    
+        with tab2:
+            st.markdown("## 📐 Metode Uji Post-hoc")
+        
+            col1, col2 = st.columns(2)
+        
+            with col1:
+                st.markdown("""
+            ### 1️⃣ Tukey HSD (Honest Significant Difference)
+            
+            **Karakteristik:**
+            - Paling populer dan banyak digunakan
+            - Mengontrol family-wise error rate
+            - Konservatif namun powerful
+            
+            **Rumus:**
+            """)
+            st.latex(r"HSD = q_{\alpha} \times \sqrt{\frac{MS_{within}}{n}}")
+            
+            st.markdown("""
+            **Kapan Digunakan:**
+            - ✅ Ukuran sampel sama atau hampir sama
+            - ✅ Membandingkan semua pasangan kelompok
+            - ✅ Ingin keseimbangan antara Type I dan Type II error
+            """)
+        
+            with col2:
+                st.markdown("""
+            ### 2️⃣ Bonferroni
+            
+            **Karakteristik:**
+            - Sangat konservatif
+            - Mudah dipahami dan dihitung
+            - Koreksi alpha untuk multiple comparisons
+            
+            **Rumus:**
+            """)
+                st.latex(r"\alpha_{adjusted} = \frac{\alpha}{m}")
+            
+                st.markdown("""
+            Di mana m = jumlah perbandingan
+            
+            **Kapan Digunakan:**
+            - ✅ Jumlah perbandingan sedikit
+            - ✅ Ingin sangat yakin (menghindari False Positive)
+            - ✅ Ukuran sampel besar
+            """)
+        
+                st.markdown("---")
+        
+            col3, col4 = st.columns(2)
+        
+            with col3:
+                st.markdown("""
+            ### 3️⃣ LSD (Least Significant Difference)
+            
+            **Karakteristik:**
+            - Paling liberal (kurang konservatif)
+            - Tidak mengkoreksi untuk multiple comparisons
+            - Power statistik tinggi
+            
+            **Rumus:**
+            """)
+                st.latex(r"LSD = t_{\alpha/2} \times \sqrt{MS_{within} \times (\frac{1}{n_i} + \frac{1}{n_j})}")
+            
+                st.markdown("""
+            **Kapan Digunakan:**
+            - ✅ Perbandingan sudah direncanakan (planned comparisons)
+            - ✅ Jumlah perbandingan sangat sedikit
+            - ⚠️ Hati-hati: Risiko Type I error lebih tinggi
+            """)
+        
+            with col4:
+                st.markdown("""
+            ### 4️⃣ Scheffé
+            
+            **Karakteristik:**
+            - Paling konservatif
+            - Dapat digunakan untuk semua jenis perbandingan
+            - Fleksibel untuk perbandingan kompleks
+            
+            **Kapan Digunakan:**
+            - ✅ Perbandingan tidak direncanakan sebelumnya
+            - ✅ Ingin melakukan perbandingan kompleks
+            - ✅ Ukuran sampel tidak sama
+            """)
+    
+        with tab3:
+            st.markdown("## 🧮 Contoh Perhitungan")
+        
+            st.markdown("""
+        ### Studi Kasus: Efektivitas Metode Belajar
+        
+        Seorang peneliti ingin mengetahui apakah ada perbedaan nilai ujian dari 3 metode belajar berbeda.
+        """)
+        
+            # Data contoh
+            metode_a = [85, 88, 90, 87, 89]
+            metode_b = [78, 80, 79, 82, 81]
+            metode_c = [92, 94, 93, 95, 91]
+        
+            df_example = pd.DataFrame({
+            'Metode A (Visual)': metode_a,
+            'Metode B (Audio)': metode_b,
+            'Metode C (Kinestetik)': metode_c
+            })
+        
+            st.dataframe(df_example, use_container_width=True)
+        
+            # Langkah 1: ANOVA
+            st.markdown("### Langkah 1: Uji ANOVA")
+            f_stat, p_val = f_oneway(metode_a, metode_b, metode_c)
+        
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("F-statistic", f"{f_stat:.4f}")
+            with col2:
+                st.metric("p-value", f"{p_val:.6f}")
+        
+            if p_val < 0.05:
+                st.markdown("""
+            <div class='success-box'>
+                ✅ <b>Hasil ANOVA Signifikan!</b> (p < 0.05)<br>
+                Ada perbedaan signifikan di antara metode belajar. Lanjutkan dengan uji Post-hoc.
+            </div>
+                """, unsafe_allow_html=True)
+            
+                # Langkah 2: Post-hoc
+                st.markdown("### Langkah 2: Uji Post-hoc (Tukey HSD)")
+            
+                data_groups = [metode_a, metode_b, metode_c]
+                group_names = ['Metode A', 'Metode B', 'Metode C']
+            
+                results_tukey = tukey_hsd(data_groups, group_names)
+                st.dataframe(results_tukey.round(3), use_container_width=True)
+            
+                # Visualisasi
+                fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+            
+                # Boxplot
+                data_long = []
+                for name, data in zip(group_names, data_groups):
+                    for val in data:
+                        data_long.append({'Metode': name, 'Nilai': val})
+                df_long = pd.DataFrame(data_long)
+            
+                sns.boxplot(data=df_long, x='Metode', y='Nilai', ax=ax1, palette='Set2')
+                ax1.set_title('Distribusi Nilai per Metode Belajar', fontsize=14, fontweight='bold')
+                ax1.set_ylabel('Nilai Ujian')
+                ax1.grid(axis='y', alpha=0.3)
+            
+                # Bar plot dengan error bars
+                means = [np.mean(d) for d in data_groups]
+                stds = [np.std(d) for d in data_groups]
+            
+                bars = ax2.bar(group_names, means, yerr=stds, capsize=5, 
+                          color=['#66c2a5', '#fc8d62', '#8da0cb'], alpha=0.7, edgecolor='black')
+                ax2.set_ylabel('Rata-rata Nilai')
+                ax2.set_title('Perbandingan Rata-rata Nilai', fontsize=14, fontweight='bold')
+                ax2.grid(axis='y', alpha=0.3)
+            
+                # Tambahkan nilai di atas bar
+                for bar, mean in zip(bars, means):
+                    height = bar.get_height()
+                    ax2.text(bar.get_x() + bar.get_width()/2., height,
+                        f'{mean:.1f}', ha='center', va='bottom', fontweight='bold')
+            
+                plt.tight_layout()
+                st.pyplot(fig)
+            
+                st.markdown("""
+            ### Interpretasi:
+            Berdasarkan hasil Tukey HSD, kita dapat melihat pasangan metode belajar mana yang memiliki 
+            perbedaan signifikan. Metode dengan selisih > HSD dianggap berbeda secara signifikan.
+            """)
+    
+        with tab4:
+            st.markdown("## 💡 Tips Pemilihan Metode Post-hoc")
+        
+            st.markdown("""
+            ### Diagram Alur Pemilihan Metode
+            """)
+        
+            # Flowchart sederhana
+            st.markdown("""
+        ```
+        Mulai
+          │
+          ├─→ Perbandingan sudah direncanakan? 
+          │   ├─→ Ya → Gunakan LSD atau Perbandingan Terencana
+          │   └─→ Tidak → Lanjut
+          │
+          ├─→ Ukuran sampel sama?
+          │   ├─→ Ya → Tukey HSD (Rekomendasi)
+          │   └─→ Tidak → Games-Howell atau Dunnett's T3
+          │
+          ├─→ Jumlah perbandingan sedikit?
+          │   ├─→ Ya → Bonferroni
+          │   └─→ Banyak → Tukey HSD
+          │
+          └─→ Perlu sangat konservatif?
+              ├─→ Ya → Scheffé atau Bonferroni
+              └─→ Tidak → Tukey HSD
+        ```
+        """)
+        
+            st.markdown("---")
+        
+            # Tabel perbandingan
+            comparison_df = pd.DataFrame({
+            'Metode': ['Tukey HSD', 'Bonferroni', 'LSD', 'Scheffé'],
+            'Konservatisme': ['Sedang', 'Tinggi', 'Rendah', 'Sangat Tinggi'],
+            'Power': ['Tinggi', 'Sedang', 'Sangat Tinggi', 'Rendah'],
+            'Ukuran Sampel': ['Sama/Mirip', 'Bebas', 'Bebas', 'Berbeda'],
+            'Rekomendasi': ['Umum', 'Sedikit perbandingan', 'Planned', 'Kompleks']
+            })
+        
+            st.markdown("### 📊 Tabel Perbandingan Metode")
+            st.dataframe(comparison_df, use_container_width=True)
+        
+            st.markdown("""
+        ### 🎯 Rekomendasi Umum:
+        
+        1. **Sebagian besar kasus**: Gunakan **Tukey HSD**
+           - Keseimbangan baik antara Type I dan Type II error
+           - Cocok untuk hampir semua situasi dengan ukuran sampel yang sama
+        
+        2. **Sangat menghindari False Positive**: Gunakan **Bonferroni**
+           - Penelitian medis atau klinik
+           - Konsekuensi error sangat serius
+        
+        3. **Perbandingan terencana**: Gunakan **LSD**
+           - Hipotesis spesifik sudah dibuat sebelum pengumpulan data
+           - Jumlah perbandingan sangat terbatas
+        
+        4. **Ukuran sampel sangat berbeda**: Gunakan **Games-Howell**
+           - Tidak mengasumsikan homogenitas varians
+           - Robust terhadap pelanggaran asumsi
+        """)
+
+    # SIMULASI INTERAKTIF
+    elif menu == "🎯 Simulasi Interaktif":
+        st.markdown("<h1 class='main-header'>🎯 Simulasi Interaktif</h1>", unsafe_allow_html=True)
+    
+        st.markdown("""
+    Buat data simulasi Anda sendiri dan lihat bagaimana berbagai metode Post-hoc bekerja!
+    """)
+    
+        # Pengaturan simulasi
+        st.sidebar.markdown("## ⚙️ Pengaturan Simulasi")
+    
+        n_groups = st.sidebar.slider("Jumlah Kelompok", 3, 5, 3)
+        sample_size = st.sidebar.slider("Ukuran Sampel per Kelompok", 10, 50, 20)
+        alpha = st.sidebar.slider("Level Signifikansi (α)", 0.01, 0.10, 0.05, 0.01)
+    
+        st.sidebar.markdown("### 📊 Parameter Data")
+    
+        # Buat input untuk setiap kelompok
+        group_data = []
+        group_names = []
+    
+        for i in range(n_groups):
+            st.sidebar.markdown(f"**Kelompok {i+1}**")
+            col1, col2 = st.sidebar.columns(2)
+            with col1:
+                mean = st.sidebar.number_input(f"Mean {i+1}", value=50.0 + i*10, key=f"mean_{i}")
+            with col2:
+                std = st.sidebar.number_input(f"Std Dev {i+1}", value=10.0, min_value=1.0, key=f"std_{i}")
+        
+            group_name = st.sidebar.text_input(f"Nama Kelompok {i+1}", value=f"Kelompok {chr(65+i)}", key=f"name_{i}")
+        
+            # Generate data
+            data = np.random.normal(mean, std, sample_size)
+            group_data.append(data)
+            group_names.append(group_name)
+    
+        if st.sidebar.button("🔄 Generate Data Baru", use_container_width=True):
+            st.rerun()
+    
+        # Tampilkan data
+        st.markdown("## 📊 Data yang Dihasilkan")
+    
+        # Buat DataFrame
+        df_sim = pd.DataFrame({name: data for name, data in zip(group_names, group_data)})
+    
+        col1, col2 = st.columns([2, 1])
+    
+        with col1:
+            st.dataframe(df_sim.describe(), use_container_width=True)
+    
+        with col2:
+            st.markdown("### 📈 Statistik Deskriptif")
+            for name, data in zip(group_names, group_data):
+                st.metric(f"{name} (Mean ± SD)", f"{np.mean(data):.2f} ± {np.std(data):.2f}")
+    
+        # Visualisasi data
+        st.markdown("## 📈 Visualisasi Data")
+    
+        fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+    
+        # 1. Boxplot
+        data_long = []
+        for name, data in zip(group_names, group_data):
+            for val in data:
+                data_long.append({'Kelompok': name, 'Nilai': val})
+        df_long = pd.DataFrame(data_long)
+    
+        sns.boxplot(data=df_long, x='Kelompok', y='Nilai', ax=axes[0, 0], palette='Set2')
+        axes[0, 0].set_title('Boxplot Distribusi Data', fontsize=12, fontweight='bold')
+        axes[0, 0].grid(axis='y', alpha=0.3)
+    
+        # 2. Violin plot
+        sns.violinplot(data=df_long, x='Kelompok', y='Nilai', ax=axes[0, 1], palette='Set3')
+        axes[0, 1].set_title('Violin Plot', fontsize=12, fontweight='bold')
+        axes[0, 1].grid(axis='y', alpha=0.3)
+    
+        # 3. Strip plot dengan mean
+        sns.stripplot(data=df_long, x='Kelompok', y='Nilai', ax=axes[1, 0], 
+                  alpha=0.5, palette='Set2')
+        means = [np.mean(d) for d in group_data]
+        axes[1, 0].scatter(range(len(means)), means, color='red', s=200, marker='D', 
+                       zorder=3, label='Mean', edgecolor='black', linewidth=2)
+        axes[1, 0].set_title('Strip Plot dengan Mean', fontsize=12, fontweight='bold')
+        axes[1, 0].legend()
+        axes[1, 0].grid(axis='y', alpha=0.3)
+    
+        # 4. Bar plot dengan error bars
+        means = [np.mean(d) for d in group_data]
+        stds = [np.std(d) for d in group_data]
+        axes[1, 1].bar(group_names, means, yerr=stds, capsize=5, 
+                   color=sns.color_palette('Set2', n_groups), alpha=0.7, edgecolor='black')
+        axes[1, 1].set_title('Rata-rata dengan Error Bars', fontsize=12, fontweight='bold')
+        axes[1, 1].set_ylabel('Nilai')
+        axes[1, 1].grid(axis='y', alpha=0.3)
+    
+        plt.tight_layout()
+        st.pyplot(fig)
+    
+        # ANOVA Test
+        st.markdown("## 🔬 Hasil ANOVA")
+    
+        f_stat, p_val = f_oneway(*group_data)
+    
+        col1, col2, col3 = st.columns(3)
+    
+        with col1:
+            st.metric("F-statistic", f"{f_stat:.4f}")
+        with col2:
+            st.metric("p-value", f"{p_val:.6f}")
+        with col3:
+            if p_val < alpha:
+                st.markdown("**Keputusan**: ✅ Tolak H₀")
+            else:
+                st.markdown("**Keputusan**: ❌ Terima H₀")
+    
+        if p_val < alpha:
+            st.markdown(f"""
+        <div class='success-box'>
+            ✅ <b>Hasil Signifikan!</b> (p = {p_val:.6f} < {alpha})<br>
+            Terdapat perbedaan signifikan antar kelompok. Lanjutkan dengan uji Post-hoc.
+        </div>
+            """, unsafe_allow_html=True)
+        
+            # Post-hoc Tests
+            st.markdown("## 🎯 Hasil Uji Post-hoc")
+        
+            tab1, tab2, tab3 = st.tabs(["Tukey HSD", "Bonferroni", "LSD"])
+        
+            with tab1:
+                st.markdown("### 📊 Tukey HSD Test")
+                results_tukey = tukey_hsd(group_data, group_names, alpha)
+                st.dataframe(results_tukey.round(4), use_container_width=True)
+            
+                # Heatmap untuk Tukey
+                n = len(group_names)
+                matrix = np.zeros((n, n))
+                for _, row in results_tukey.iterrows():
+                    i = group_names.index(row['Kelompok 1'])
+                    j = group_names.index(row['Kelompok 2'])
+                    if row['Signifikan'] == 'Ya':
+                        matrix[i, j] = 1
+                        matrix[j, i] = 1
+            
+                fig, ax = plt.subplots(figsize=(8, 6))
+                sns.heatmap(matrix, annot=True, fmt='.0f', cmap='RdYlGn', 
+                           xticklabels=group_names, yticklabels=group_names,
+                           cbar_kws={'label': 'Signifikan (1=Ya, 0=Tidak)'}, ax=ax)
+                ax.set_title('Heatmap Signifikansi Tukey HSD', fontsize=14, fontweight='bold')
+                plt.tight_layout()
+                st.pyplot(fig)
+            
+                st.markdown("""
+            **Interpretasi Tukey HSD:**
+            - HSD (Honest Significant Difference) adalah nilai threshold
+            - Jika selisih mean > HSD, maka perbedaan signifikan
+            - Metode ini mengontrol family-wise error rate
+            """)
+        
+            with tab2:
+                st.markdown("### 📊 Bonferroni Test")
+                results_bonf = bonferroni_test(group_data, group_names, alpha)
+                st.dataframe(results_bonf.round(4), use_container_width=True)
+            
+                # Heatmap untuk Bonferroni
+                n = len(group_names)
+                matrix = np.zeros((n, n))
+                for _, row in results_bonf.iterrows():
+                    i = group_names.index(row['Kelompok 1'])
+                    j = group_names.index(row['Kelompok 2'])
+                    if row['Signifikan'] == 'Ya':
+                        matrix[i, j] = 1
+                        matrix[j, i] = 1
+            
+                fig, ax = plt.subplots(figsize=(8, 6))
+                sns.heatmap(matrix, annot=True, fmt='.0f', cmap='RdYlGn', 
+                       xticklabels=group_names, yticklabels=group_names,
+                       cbar_kws={'label': 'Signifikan (1=Ya, 0=Tidak)'}, ax=ax)
+                ax.set_title('Heatmap Signifikansi Bonferroni', fontsize=14, fontweight='bold')
+                plt.tight_layout()
+                st.pyplot(fig)
+            
+                st.markdown(f"""
+            **Interpretasi Bonferroni:**
+            - Alpha terkoreksi: {alpha}/{len(results_bonf)} = {results_bonf['α terkoreksi'].iloc[0]:.6f}
+            - Metode sangat konservatif untuk menghindari Type I error
+            - Cocok untuk jumlah perbandingan yang sedikit
+            """)
+        
+            with tab3:
+                st.markdown("### 📊 LSD (Least Significant Difference) Test")
+                results_lsd = lsd_test(group_data, group_names, alpha)
+                st.dataframe(results_lsd.round(4), use_container_width=True)
+            
+                # Heatmap untuk LSD
+                n = len(group_names)
+                matrix = np.zeros((n, n))
+                for _, row in results_lsd.iterrows():
+                    i = group_names.index(row['Kelompok 1'])
+                    j = group_names.index(row['Kelompok 2'])
+                    if row['Signifikan'] == 'Ya':
+                        matrix[i, j] = 1
+                        matrix[j, i] = 1
+            
+                fig, ax = plt.subplots(figsize=(8, 6))
+                sns.heatmap(matrix, annot=True, fmt='.0f', cmap='RdYlGn', 
+                       xticklabels=group_names, yticklabels=group_names,
+                       cbar_kws={'label': 'Signifikan (1=Ya, 0=Tidak)'}, ax=ax)
+                ax.set_title('Heatmap Signifikansi LSD', fontsize=14, fontweight='bold')
+                plt.tight_layout()
+                st.pyplot(fig)
+            
+                st.markdown("""
+            **Interpretasi LSD:**
+            - Metode paling liberal (power tinggi)
+            - Tidak mengkoreksi untuk multiple comparisons
+            - ⚠️ Risiko Type I error lebih tinggi
+                """)
+        
+            # Perbandingan metode
+            st.markdown("## 🔄 Perbandingan Antar Metode")
+        
+            comparison_df = pd.DataFrame({
+            'Pasangan': results_tukey['Kelompok 1'] + ' vs ' + results_tukey['Kelompok 2'],
+            'Tukey': results_tukey['Signifikan'],
+            'Bonferroni': results_bonf['Signifikan'],
+            'LSD': results_lsd['Signifikan']
+            })
+        
+            st.dataframe(comparison_df, use_container_width=True)
+        
+            st.markdown("""
+        **Catatan:**
+        - **Tukey HSD**: Keseimbangan antara konservatif dan powerful
+        - **Bonferroni**: Paling konservatif (paling sedikit menolak H₀)
+        - **LSD**: Paling liberal (paling banyak menolak H₀)
+            """)
+        
+        else:
+            st.markdown(f"""
+        <div class='warning-box'>
+            ❌ <b>Hasil Tidak Signifikan</b> (p = {p_val:.6f} ≥ {alpha})<br>
+            Tidak ada perbedaan signifikan antar kelompok. Uji Post-hoc tidak diperlukan.
+        </div>
+        """, unsafe_allow_html=True)
+
+    # UPLOAD DATA
+    elif menu == "📊 Upload Data":
+        st.markdown("<h1 class='main-header'>📊 Analisis Data Anda</h1>", unsafe_allow_html=True)
+    
+        st.markdown("""
+    Upload file CSV Anda untuk melakukan analisis ANOVA dan uji Post-hoc.
+    
+    **Format Data:**
+    - Setiap kolom mewakili satu kelompok
+    - Baris berisi nilai observasi
+    - Tidak ada missing values
+    """)
+    
+        # Upload file
+        uploaded_file = st.file_uploader("Upload file CSV", type=['csv'])
+    
+        if uploaded_file is not None:
+            try:
+                df = pd.read_csv(uploaded_file)
+            
+                st.markdown("### 📋 Preview Data")
+                st.dataframe(df.head(10), use_container_width=True)
+            
+                # Statistik deskriptif
+                st.markdown("### 📊 Statistik Deskriptif")
+                st.dataframe(df.describe(), use_container_width=True)
+            
+                # Pengaturan analisis
+                st.markdown("### ⚙️ Pengaturan Analisis")
+            
+                col1, col2 = st.columns(2)
+            
+                with col1:
+                    selected_columns = st.multiselect(
+                    "Pilih kolom untuk dianalisis",
+                        df.columns.tolist(),
+                        default=df.columns.tolist()[:3] if len(df.columns) >= 3 else df.columns.tolist()
+                    )
+            
+                with col2:
+                    alpha_upload = st.slider("Level Signifikansi (α)", 0.01, 0.10, 0.05, 0.01, key="alpha_upload")
+            
+                if len(selected_columns) >= 3:
+                    # Ekstrak data
+                    group_data_upload = [df[col].dropna().values for col in selected_columns]
+                
+                    # Visualisasi
+                    st.markdown("### 📈 Visualisasi Data")
+                
+                    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+                
+                    # Boxplot
+                    data_long_upload = []
+                    for col in selected_columns:
+                        for val in df[col].dropna():
+                            data_long_upload.append({'Kelompok': col, 'Nilai': val})
+                    df_long_upload = pd.DataFrame(data_long_upload)
+                
+                    sns.boxplot(data=df_long_upload, x='Kelompok', y='Nilai', ax=axes[0], palette='Set2')
+                    axes[0].set_title('Boxplot Distribusi Data', fontsize=12, fontweight='bold')
+                    axes[0].tick_params(axis='x', rotation=45)
+                    axes[0].grid(axis='y', alpha=0.3)
+                
+                    # Bar plot
+                    means = [np.mean(d) for d in group_data_upload]
+                    stds = [np.std(d) for d in group_data_upload]
+                    axes[1].bar(selected_columns, means, yerr=stds, capsize=5,
+                           color=sns.color_palette('Set2', len(selected_columns)), 
+                           alpha=0.7, edgecolor='black')
+                    axes[1].set_title('Rata-rata dengan Error Bars', fontsize=12, fontweight='bold')
+                    axes[1].set_ylabel('Nilai')
+                    axes[1].tick_params(axis='x', rotation=45)
+                    axes[1].grid(axis='y', alpha=0.3)
+                
+                    plt.tight_layout()
+                    st.pyplot(fig)
+                
+                    # ANOVA
+                    st.markdown("### 🔬 Hasil ANOVA")
+                
+                    f_stat_upload, p_val_upload = f_oneway(*group_data_upload)
+                
+                    col1, col2, col3 = st.columns(3)
+                
+                    with col1:
+                        st.metric("F-statistic", f"{f_stat_upload:.4f}")
+                    with col2:
+                        st.metric("p-value", f"{p_val_upload:.6f}")
+                    with col3:
+                        if p_val_upload < alpha_upload:
+                            st.markdown("**Keputusan**: ✅ Tolak H₀")
+                        else:
+                            st.markdown("**Keputusan**: ❌ Terima H₀")
+                
+                    if p_val_upload < alpha_upload:
+                        st.markdown(f"""
+                        <div class='success-box'>
+                        ✅ <b>Hasil Signifikan!</b> (p = {p_val_upload:.6f} < {alpha_upload})<br>
+                        Terdapat perbedaan signifikan antar kelompok. Lanjutkan dengan uji Post-hoc.
+                    </div>
+                        """, unsafe_allow_html=True)
+                    
+                        # Post-hoc tests
+                        st.markdown("### 🎯 Hasil Uji Post-hoc")
+                    
+                        method = st.selectbox(
+                            "Pilih Metode Post-hoc",
+                            ["Tukey HSD", "Bonferroni", "LSD", "Semua Metode"]
+                        )
+                    
+                        if method == "Tukey HSD" or method == "Semua Metode":
+                            st.markdown("#### 📊 Tukey HSD")
+                            results_tukey_upload = tukey_hsd(group_data_upload, selected_columns, alpha_upload)
+                            st.dataframe(results_tukey_upload.round(4), use_container_width=True)
+                        
+                            # Download hasil
+                            csv_tukey = results_tukey_upload.to_csv(index=False)
+                            st.download_button(
+                            label="📥 Download Hasil Tukey HSD (CSV)",
+                            data=csv_tukey,
+                            file_name="tukey_hsd_results.csv",
+                            mime="text/csv"
+                            )
+                    
+                        if method == "Bonferroni" or method == "Semua Metode":
+                            st.markdown("#### 📊 Bonferroni")
+                            results_bonf_upload = bonferroni_test(group_data_upload, selected_columns, alpha_upload)
+                            st.dataframe(results_bonf_upload.round(4), use_container_width=True)
+                        
+                            csv_bonf = results_bonf_upload.to_csv(index=False)
+                            st.download_button(
+                            label="📥 Download Hasil Bonferroni (CSV)",
+                            data=csv_bonf,
+                            file_name="bonferroni_results.csv",
+                            mime="text/csv"
+                            )
+                    
+                        if method == "LSD" or method == "Semua Metode":
+                            st.markdown("#### 📊 LSD")
+                            results_lsd_upload = lsd_test(group_data_upload, selected_columns, alpha_upload)
+                            st.dataframe(results_lsd_upload.round(4), use_container_width=True)
+                        
+                            csv_lsd = results_lsd_upload.to_csv(index=False)
+                            st.download_button(
+                            label="📥 Download Hasil LSD (CSV)",
+                            data=csv_lsd,
+                            file_name="lsd_results.csv",
+                            mime="text/csv"
+                            )
+                    
+                    else:
+                        st.markdown(f"""
+                    <div class='warning-box'>
+                        ❌ <b>Hasil Tidak Signifikan</b> (p = {p_val_upload:.6f} ≥ {alpha_upload})<br>
+                        Tidak ada perbedaan signifikan antar kelompok. Uji Post-hoc tidak diperlukan.
+                    </div>
+                    """, unsafe_allow_html=True)
+            
+                else:
+                    st.warning("⚠️ Pilih minimal 3 kolom untuk analisis ANOVA!")
+                
+            except Exception as e:
+                st.error(f"❌ Error membaca file: {str(e)}")
+                st.info("Pastikan format CSV Anda benar dan tidak ada data yang kosong.")
+    
+        else:
+            st.info("👆 Upload file CSV untuk memulai analisis")
+        
+            # Contoh format data
+            st.markdown("### 📝 Contoh Format Data CSV")
+        
+            example_data = pd.DataFrame({
+            'Kelompok_A': [85, 88, 90, 87, 89, 86, 91],
+            'Kelompok_B': [78, 80, 79, 82, 81, 77, 83],
+            'Kelompok_C': [92, 94, 93, 95, 91, 96, 90]
+            })
+        
+            st.dataframe(example_data, use_container_width=True)
+        
+            # Download template
+            csv_template = example_data.to_csv(index=False)
+            st.download_button(
+            label="📥 Download Template CSV",
+            data=csv_template,
+            file_name="template_anova.csv",
+            mime="text/csv"
+            )
+
+    # TENTANG
+    elif menu == "ℹ️ Tentang":
+        st.markdown("<h1 class='main-header'>ℹ️ Tentang Aplikasi</h1>", unsafe_allow_html=True)
+    
+        st.markdown("""
+    ## 📚 Aplikasi Uji Post-hoc untuk ANOVA 1 Jalur
+    
+    Aplikasi ini dirancang untuk membantu mahasiswa, peneliti, dan praktisi dalam memahami dan 
+    melakukan analisis ANOVA 1 jalur beserta uji Post-hoc.
+    
+    ### ✨ Fitur Utama:
+    
+    1. **📖 Materi Pembelajaran Lengkap**
+       - Penjelasan konsep ANOVA dan Post-hoc
+       - Formula matematika
+       - Contoh perhitungan manual
+       - Tips pemilihan metode
+    
+    2. **🎯 Simulasi Interaktif**
+       - Generate data dengan parameter yang dapat disesuaikan
+       - Visualisasi real-time
+       - Perbandingan berbagai metode Post-hoc
+       - Interpretasi hasil otomatis
+    
+    3. **📊 Analisis Data Sendiri**
+       - Upload file CSV
+       - Analisis otomatis
+       - Export hasil dalam format CSV
+       - Visualisasi profesional
+    
+    ### 🔧 Metode Post-hoc yang Tersedia:
+    
+    - **Tukey HSD**: Metode paling populer dan seimbang
+    - **Bonferroni**: Sangat konservatif, cocok untuk menghindari False Positive
+    - **LSD**: Liberal, cocok untuk perbandingan terencana
+    
+    ### 📖 Referensi:
+    
+    1. Montgomery, D. C. (2017). *Design and Analysis of Experiments*. John Wiley & Sons.
+    2. Field, A. (2013). *Discovering Statistics Using IBM SPSS Statistics*. Sage Publications.
+    3. Maxwell, S. E., & Delaney, H. D. (2004). *Designing Experiments and Analyzing Data*. 
+       Lawrence Erlbaum Associates.
+    
+    ### 👨‍💻 Teknologi yang Digunakan:
+    
+    - **Python**: Bahasa pemrograman
+    - **Streamlit**: Framework web app
+    - **Pandas & NumPy**: Manipulasi data
+    - **SciPy**: Analisis statistik
+    - **Matplotlib & Seaborn**: Visualisasi
+    
+    ### 📧 Kontak & Feedback:
+    
+    Aplikasi ini dibuat untuk tujuan edukasi. Jika Anda memiliki saran, masukan, atau 
+    menemukan bug, silakan berikan feedback melalui tombol thumbs up/down di Streamlit.
+    
+    ---
+    
+    **Versi**: 1.0.0  
+    **Terakhir Diperbarui**: Desember 2024
+    
+    ### ⚖️ Disclaimer:
+    
+    Aplikasi ini disediakan untuk tujuan edukasi. Untuk penelitian yang akan dipublikasikan,
+    pastikan untuk melakukan validasi tambahan dan konsultasi dengan ahli statistik.
+    """)
+    
+        st.markdown("---")
+    
+        # Tips penggunaan
+        st.markdown("## 💡 Tips Penggunaan Aplikasi")
+    
+        col1, col2 = st.columns(2)
+    
+        with col1:
+            st.markdown("""
+        ### 🎓 Untuk Pembelajaran:
+        1. Mulai dari menu **Materi** untuk memahami konsep
+        2. Lanjut ke **Simulasi** untuk eksplorasi interaktif
+        3. Coba berbagai parameter dan amati hasilnya
+        4. Bandingkan hasil dari berbagai metode
+        """)
+    
+        with col2:
+            st.markdown("""
+        ### 🔬 Untuk Penelitian:
+        1. Siapkan data dalam format CSV
+        2. Upload melalui menu **Upload Data**
+        3. Pilih metode Post-hoc yang sesuai
+        4. Download hasil untuk dokumentasi
+        """)
+    
+        st.markdown("---")
+    
+        st.markdown("""
+    <div class='success-box'>
+        <h3>🎉 Terima Kasih telah Menggunakan Aplikasi Ini!</h3>
+        <p>Semoga aplikasi ini bermanfaat untuk pembelajaran dan penelitian Anda.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Footer
+    st.markdown("---")
+    st.markdown("""
+<div style='text-align: center; color: #666; padding: 1rem;'>
+    <p>📊 Aplikasi Uji Post-hoc ANOVA | Dibuat dengan ❤️ menggunakan Streamlit</p>
+    <p style='font-size: 0.8rem;'>© 2024 | Untuk Tujuan Edukasi</p>
+</div>
+""", unsafe_allow_html=True)
 #================================
 
 if st.session_state.tampilan1:
@@ -7716,6 +10651,12 @@ if st.session_state.tampilan26:
     tampilkan_materi23()
 if st.session_state.tampilan27:
     tampilkan_materi24()
+if st.session_state.tampilan28:
+    tampilkan_materi25()
+if st.session_state.tampilan29:
+    tampilkan_materi26()
+if st.session_state.tampilan30:
+    tampilkan_materi27()
 #======================================
 if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan1=False
@@ -7745,6 +10686,9 @@ if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Contoh Data Nilai"):
     st.session_state.tampilan1=False
@@ -7774,6 +10718,9 @@ if st.sidebar.button("Contoh Data Nilai"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 st.sidebar.markdown("Penguasaan Uji 1 Sampel")
 if st.sidebar.button("Test Penguasaan 1"):
@@ -7804,6 +10751,9 @@ if st.sidebar.button("Test Penguasaan 1"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Evaluasi Instrumen Soal")
@@ -7835,6 +10785,9 @@ if st.sidebar.button("Evaluasi Soal"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Pengenalan"):
@@ -7865,6 +10818,9 @@ if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan1=True
@@ -7894,6 +10850,9 @@ if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan1=False
@@ -7923,6 +10882,9 @@ if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan1=False
@@ -7952,6 +10914,9 @@ if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan1=False
@@ -7981,6 +10946,9 @@ if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan1=False
@@ -8010,6 +10978,9 @@ if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan1=False
@@ -8039,6 +11010,9 @@ if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan1=False
@@ -8068,6 +11042,9 @@ if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Flowchart Penelitian")
@@ -8099,6 +11076,9 @@ if st.sidebar.button("FlowChart"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Uji Normalitas"):
@@ -8129,6 +11109,9 @@ if st.sidebar.button("Uji Normalitas"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Uji Homogen"):
     st.session_state.tampilan1=False
@@ -8158,6 +11141,9 @@ if st.sidebar.button("Uji Homogen"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Data Parametrik")
@@ -8189,6 +11175,9 @@ if st.sidebar.button("Uji t 1 sampel"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Uji t 1 sampel Berpasangan"):
     st.session_state.tampilan1=False
@@ -8218,6 +11207,9 @@ if st.sidebar.button("Uji t 1 sampel Berpasangan"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Uji t' 2 sampel Independent"):
     st.session_state.tampilan1=False
@@ -8247,6 +11239,9 @@ if st.sidebar.button("Uji t' 2 sampel Independent"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = True
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Uji t 2 sampel Independent"):
     st.session_state.tampilan1=False
@@ -8276,6 +11271,41 @@ if st.sidebar.button("Uji t 2 sampel Independent"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
+    st.rerun()
+if st.sidebar.button("Uji welch's Anova  > 2 sampel Independent"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = True
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Uji Anova 1 Jalur"):
     st.session_state.tampilan1=False
@@ -8305,6 +11335,9 @@ if st.sidebar.button("Uji Anova 1 Jalur"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = True
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Data non Parametrik")
@@ -8336,6 +11369,9 @@ if st.sidebar.button("Uji Wilcoxon 1 sampel"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Uji Wilcoxon 1 sampel Berpasangan"):
     st.session_state.tampilan1=False
@@ -8365,6 +11401,9 @@ if st.sidebar.button("Uji Wilcoxon 1 sampel Berpasangan"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 if st.sidebar.button("Uji U Mann-Whitney 2 sampel Independen"):
     st.session_state.tampilan1=False
@@ -8394,6 +11433,74 @@ if st.sidebar.button("Uji U Mann-Whitney 2 sampel Independen"):
     st.session_state.tampilan25 = True
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
+    st.rerun()
+if st.sidebar.button("Uji Kruskal-Wallis > 2 sampel Independen"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = True
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
+    st.rerun()
+st.sidebar.markdown("---")
+if st.sidebar.button("Uji PostHoc"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = True
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Angket dan Saran"):
@@ -8424,6 +11531,9 @@ if st.sidebar.button("Angket dan Saran"):
     st.session_state.tampilan25 = False
     st.session_state.tampilan26 = False
     st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
     st.rerun()
 
 
