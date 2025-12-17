@@ -117,6 +117,12 @@ if "tampilan29" not in st.session_state:
 
 if "tampilan30" not in st.session_state:
     st.session_state.tampilan30 = False
+
+if "tampilan31" not in st.session_state:
+    st.session_state.tampilan31 = False
+
+if "tampilan32" not in st.session_state:
+    st.session_state.tampilan32 = False
     
 if "masukan1" not in st.session_state:
     st.session_state.masukan1=""
@@ -2503,6 +2509,8 @@ def tampilkan_materi9():
             st.session_state.tampilan28 = False
             st.session_state.tampilan29 = False
             st.session_state.tampilan30 = False
+            st.session_state.tampilan31 = False
+            st.session_state.tampilan32 = False
             st.rerun()
     with kolom[1]:
         if st.button("Uji F"):
@@ -2536,6 +2544,8 @@ def tampilkan_materi9():
             st.session_state.tampilan28 = False
             st.session_state.tampilan29 = False
             st.session_state.tampilan30 = False
+            st.session_state.tampilan31 = False
+            st.session_state.tampilan32 = False
             st.rerun()
     with kolom[2]:
         if st.button("Contoh Uji Homogen Lainnya"):
@@ -2569,6 +2579,8 @@ def tampilkan_materi9():
             st.session_state.tampilan28 = False
             st.session_state.tampilan29 = False
             st.session_state.tampilan30 = False
+            st.session_state.tampilan31 = False
+            st.session_state.tampilan32 = False
             st.rerun()
     # Custom CSS
     st.markdown("""
@@ -10595,6 +10607,14 @@ def tampilkan_materi27():
     <p style='font-size: 0.8rem;'>© 2024 | Untuk Tujuan Edukasi</p>
 </div>
 """, unsafe_allow_html=True)
+def tampilkan_materi28():
+    st.markdown("""
+    <iframe src="https://drive.google.com/file/d/1MxA2dxjTMdhbRnQSErHBwJF2v2knhySA/preview" style="width:100%; height:1000px;"></iframe>
+    """,unsafe_allow_html=True)
+def tampilkan_materi29():
+    st.markdown("""
+    <iframe src="https://martin-bernard26.github.io/mediaPBI/UASBI.html" style="width:100%; height:1000px;"></iframe>
+    """,unsafe_allow_html=True)
 #================================
 
 if st.session_state.tampilan1:
@@ -10657,6 +10677,10 @@ if st.session_state.tampilan29:
     tampilkan_materi26()
 if st.session_state.tampilan30:
     tampilkan_materi27()
+if st.session_state.tampilan31:
+    tampilkan_materi28()
+if st.session_state.tampilan32:
+    tampilkan_materi29()
 #======================================
 if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan1=False
@@ -10689,6 +10713,8 @@ if st.sidebar.button("Masukan Tugas"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Contoh Data Nilai"):
     st.session_state.tampilan1=False
@@ -10721,6 +10747,8 @@ if st.sidebar.button("Contoh Data Nilai"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 st.sidebar.markdown("Penguasaan Uji 1 Sampel")
 if st.sidebar.button("Test Penguasaan 1"):
@@ -10754,6 +10782,8 @@ if st.sidebar.button("Test Penguasaan 1"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Evaluasi Instrumen Soal")
@@ -10788,6 +10818,8 @@ if st.sidebar.button("Evaluasi Soal"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Pengenalan"):
@@ -10821,6 +10853,8 @@ if st.sidebar.button("Pengenalan"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan1=True
@@ -10853,6 +10887,8 @@ if st.sidebar.button("Skala Pengukuran Data"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan1=False
@@ -10885,6 +10921,8 @@ if st.sidebar.button("Pengantar Statistik dalam Penelitian R&D"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan1=False
@@ -10917,6 +10955,8 @@ if st.sidebar.button("Statistik Deskriptif"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan1=False
@@ -10949,6 +10989,8 @@ if st.sidebar.button("Grafik Z"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan1=False
@@ -10981,6 +11023,8 @@ if st.sidebar.button("Grafik Uji Z"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan1=False
@@ -11013,6 +11057,8 @@ if st.sidebar.button("Latihan Uji Z"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan1=False
@@ -11045,6 +11091,8 @@ if st.sidebar.button("Uji Hipotesis"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Flowchart Penelitian")
@@ -11079,6 +11127,8 @@ if st.sidebar.button("FlowChart"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Uji Normalitas"):
@@ -11112,6 +11162,8 @@ if st.sidebar.button("Uji Normalitas"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Uji Homogen"):
     st.session_state.tampilan1=False
@@ -11144,6 +11196,8 @@ if st.sidebar.button("Uji Homogen"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Data Parametrik")
@@ -11178,6 +11232,8 @@ if st.sidebar.button("Uji t 1 sampel"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Uji t 1 sampel Berpasangan"):
     st.session_state.tampilan1=False
@@ -11210,6 +11266,8 @@ if st.sidebar.button("Uji t 1 sampel Berpasangan"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Uji t' 2 sampel Independent"):
     st.session_state.tampilan1=False
@@ -11242,6 +11300,8 @@ if st.sidebar.button("Uji t' 2 sampel Independent"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Uji t 2 sampel Independent"):
     st.session_state.tampilan1=False
@@ -11274,6 +11334,8 @@ if st.sidebar.button("Uji t 2 sampel Independent"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Uji welch's Anova  > 2 sampel Independent"):
     st.session_state.tampilan1=False
@@ -11306,6 +11368,8 @@ if st.sidebar.button("Uji welch's Anova  > 2 sampel Independent"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = True
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Uji Anova 1 Jalur"):
     st.session_state.tampilan1=False
@@ -11338,6 +11402,8 @@ if st.sidebar.button("Uji Anova 1 Jalur"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.markdown("Data non Parametrik")
@@ -11372,6 +11438,8 @@ if st.sidebar.button("Uji Wilcoxon 1 sampel"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Uji Wilcoxon 1 sampel Berpasangan"):
     st.session_state.tampilan1=False
@@ -11404,6 +11472,8 @@ if st.sidebar.button("Uji Wilcoxon 1 sampel Berpasangan"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Uji U Mann-Whitney 2 sampel Independen"):
     st.session_state.tampilan1=False
@@ -11436,6 +11506,8 @@ if st.sidebar.button("Uji U Mann-Whitney 2 sampel Independen"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 if st.sidebar.button("Uji Kruskal-Wallis > 2 sampel Independen"):
     st.session_state.tampilan1=False
@@ -11468,6 +11540,8 @@ if st.sidebar.button("Uji Kruskal-Wallis > 2 sampel Independen"):
     st.session_state.tampilan28 = True
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 st.sidebar.markdown("---")
 if st.sidebar.button("Uji PostHoc"):
@@ -11501,8 +11575,78 @@ if st.sidebar.button("Uji PostHoc"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = True
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 st.sidebar.markdown("---")
+if st.sidebar.button("Soal UAS"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = True
+    st.session_state.tampilan32 = False
+    st.rerun()
+if st.sidebar.button("Pengumpulan UAS"):
+    st.session_state.tampilan1=False
+    st.session_state.tampilan2=False
+    st.session_state.tampilan3 = False
+    st.session_state.tampilan4 = False
+    st.session_state.tampilan5 = False
+    st.session_state.tampilan6 = False
+    st.session_state.tampilan7 = False
+    st.session_state.tampilan8 = False
+    st.session_state.tampilan9 = False
+    st.session_state.tampilan10 = False
+    st.session_state.tampilan11 = False
+    st.session_state.tampilan12 = False
+    st.session_state.tampilan13 = False
+    st.session_state.tampilan14 = False
+    st.session_state.tampilan15 = False
+    st.session_state.tampilan16 = False
+    st.session_state.tampilan17 = False
+    st.session_state.tampilan18 = False
+    st.session_state.tampilan19 = False
+    st.session_state.tampilan20 = False
+    st.session_state.tampilan21 = False
+    st.session_state.tampilan22 = False
+    st.session_state.tampilan23 = False
+    st.session_state.tampilan24 = False
+    st.session_state.tampilan25 = False
+    st.session_state.tampilan26 = False
+    st.session_state.tampilan27 = False
+    st.session_state.tampilan28 = False
+    st.session_state.tampilan29 = False
+    st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = True
+    st.rerun()
 if st.sidebar.button("Angket dan Saran"):
     st.session_state.tampilan1=False
     st.session_state.tampilan2=False
@@ -11534,6 +11678,8 @@ if st.sidebar.button("Angket dan Saran"):
     st.session_state.tampilan28 = False
     st.session_state.tampilan29 = False
     st.session_state.tampilan30 = False
+    st.session_state.tampilan31 = False
+    st.session_state.tampilan32 = False
     st.rerun()
 
 
